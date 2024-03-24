@@ -5,16 +5,13 @@
   },
   "baseUrl": ".",
   "paths": {
-    "@/components/*": [
-      "components/*"
-    ],
     "@/lib/*": [
       "lib/*"
     ],
   },
   "include": [
     "components",
-    "lib"
+    "libs"
   ],
   "exclude": [
     "node_modules",

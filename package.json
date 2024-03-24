@@ -5,12 +5,14 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "commit": "sui-mono commit"
   },
   "devDependencies": {
-    "@makify/eslint-config": "*",
-    "@makify/typescript-config": "*",
+    "@makify/eslint-config": "workspace:*",
+    "@makify/typescript-config": "workspace:*",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.2.8",
     "turbo": "latest"
   },
   "engines": {

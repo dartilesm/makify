@@ -1,3 +1,10 @@
 {
-  "extends": "next/core-web-vitals"
+  "root": true,
+  "extends": [
+    "@makify/eslint-config"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": true
+  }
 }

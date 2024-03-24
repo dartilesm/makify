@@ -8,7 +8,7 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white/20 backdrop-blur-lg transition-all hover:shadow-lg",
+        default: "bg-white backdrop-blur-lg transition-all hover:shadow-lg",
         blurry: "bg-white/10 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur"
       }
     },
