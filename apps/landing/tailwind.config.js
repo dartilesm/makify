@@ -1,9 +1,13 @@
+const path = require("path")
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
+    // Makify ui components
+    path.join(path.dirname(require.resolve("@makify/ui")), "components/**/*.{ts,tsx}"),
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],

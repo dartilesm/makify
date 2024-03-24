@@ -10,6 +10,7 @@
     },
   },
   "include": [
+    "index.ts",
     "components",
     "libs"
   ],

@@ -25,6 +25,9 @@
       ],
       "@/styles/*": [
         "styles/*"
+      ],
+      "@makify/ui/*": [
+        "node_modules/@makify/ui/components/*"
       ]
     },
     "strict": true,

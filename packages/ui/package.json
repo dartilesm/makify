@@ -3,7 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./*": "./components/*"
+    ".": [
+      "./index.ts"
+    ],
+    "./*": [
+      "./*"
+    ]
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
