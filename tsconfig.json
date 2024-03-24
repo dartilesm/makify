@@ -1,0 +1,3 @@
+{
+  "extends": "@makify/typescript-config/base.json"
+}

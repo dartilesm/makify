@@ -1,9 +1,8 @@
 import WebVitals from "@/components/home/web-vitals";
 import { Twitter } from "@/components/shared/icons";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@makify/ui/components/button";
+import { Card, CardContent, CardFooter, CardTitle } from "@makify/ui/components/card";
 import { DEPLOY_URL } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 export default function Home() {
