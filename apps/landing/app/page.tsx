@@ -3,8 +3,7 @@ import { Twitter } from "@/components/shared/icons";
 import { DEPLOY_URL } from "@/lib/constants";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Button } from "@makify/ui/components/button";
-import { Card, CardContent, CardFooter, CardTitle } from "@makify/ui/components/card";
+import { Button, Card, CardContent, CardFooter, CardTitle } from "@makify/ui";
 
 export default function Home() {
   return (

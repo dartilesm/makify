@@ -4,15 +4,16 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "@/lib/*": [
-        "./lib/*"
+      "@makify/ui/*": [
+        "./*"
       ],
     },
   },
   "include": [
     "index.ts",
+    "tailwind.config.ts",
     "components",
-    "libs"
+    "lib"
   ],
   "exclude": [
     "node_modules",

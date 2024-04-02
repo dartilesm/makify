@@ -45,7 +45,6 @@
     "vaul": "^0.6.8"
   },
   "devDependencies": {
-    "@s-ui/mono": "^2.45.0",
     "@makify/eslint-config": "workspace:*",
     "@makify/typescript-config": "workspace:*",
     "@tailwindcss/forms": "^0.5.6",

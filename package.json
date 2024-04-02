@@ -11,8 +11,10 @@
   "devDependencies": {
     "@makify/eslint-config": "workspace:*",
     "@makify/typescript-config": "workspace:*",
+    "@s-ui/mono": "^2.45.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.2.8",
+    "tailwindcss": "^3.4.3",
     "turbo": "latest"
   },
   "engines": {

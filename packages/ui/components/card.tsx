@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@makify/ui/lib/utils"
 import { VariantProps, cva } from "class-variance-authority"
 
 const cardVariants = cva(
