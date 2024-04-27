@@ -1,0 +1,22 @@
+{
+  "extends": "@makify/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@makify/ui/*": [
+        "./*"
+      ],
+    },
+  },
+  "include": [
+    "index.ts",
+    "tailwind.config.ts",
+    "components",
+    "lib"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
