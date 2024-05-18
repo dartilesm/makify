@@ -61,7 +61,7 @@ export default function Tooltip({
         <TooltipPrimitive.Content
           sideOffset={8}
           side="top"
-          className="z-[99] hidden animate-slide-up-fade items-center overflow-hidden rounded-md border border-gray-200 bg-white shadow-md md:block"
+          className="animate-slide-up-fade z-[99] hidden items-center overflow-hidden rounded-md border border-gray-200 bg-white shadow-md md:block"
         >
           {typeof content === "string" ? (
             <div className="block max-w-xs px-4 py-2 text-center text-sm text-gray-700">
