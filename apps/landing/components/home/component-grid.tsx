@@ -41,8 +41,9 @@ export default function ComponentGrid() {
         >
           <p className="text-gray-600">Popover</p>
           <ChevronDown
-            className={`h-4 w-4 text-gray-600 transition-all ${openPopover ? "rotate-180" : ""
-              }`}
+            className={`h-4 w-4 text-gray-600 transition-all ${
+              openPopover ? "rotate-180" : ""
+            }`}
           />
         </button>
       </Popover>
