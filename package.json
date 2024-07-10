@@ -6,7 +6,8 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "commit": "sui-mono commit"
+    "commit": "sui-mono commit",
+    "prepare-data": "tsx --env-file=.env.local ./apps/chat-with-pdf/scripts/pinecone-embed-docs.ts"
   },
   "devDependencies": {
     "@makify/eslint-config": "workspace:*",
@@ -15,6 +16,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.4.3",
+    "tsx": "^4.16.0",
     "turbo": "latest"
   },
   "engines": {
@@ -28,9 +30,17 @@
   "dependencies": {
     "@ai-sdk/google": "^0.0.14",
     "@ai-sdk/openai": "^0.0.13",
+    "@google/generative-ai": "^0.14.1",
+    "@langchain/community": "^0.2.16",
+    "@langchain/google-genai": "^0.0.21",
+    "@langchain/openai": "^0.2.1",
+    "@langchain/pinecone": "^0.0.7",
+    "@pinecone-database/pinecone": "^2.2.2",
     "ai": "^3.1.12",
     "eslint-config-next": "latest",
+    "langchain": "^0.2.8",
     "next": "latest",
+    "pdf-parse": "^1.1.1",
     "react": "latest",
     "react-dom": "latest",
     "react-markdown": "^9.0.1",
