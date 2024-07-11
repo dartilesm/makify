@@ -1,5 +1,5 @@
-import { Chat } from "@/components/chat";
-import { ChatList } from "@/components/chat-list";
+import { Chat } from "@/components/chat/chat";
+import { ChatList } from "@/components/chat/chat-list";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
 
 export function ChatScreen() {

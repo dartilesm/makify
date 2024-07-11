@@ -4,10 +4,16 @@ import { Avatar, AvatarFallback, AvatarImage, Button, Input } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useChat } from "ai/react";
-import { AssistantMessage } from "./chat/assistant-message";
+import { AssistantMessage } from "./assistant-message";
+import { useParams } from "next/navigation";
 
 export function Chat({ className }: { className?: string }) {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const params = useParams();
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    body: {
+      documentId: params.documentId,
+    },
+  });
 
   return (
     <div className={cn("flex h-full flex-col", className)}>

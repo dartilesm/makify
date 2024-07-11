@@ -4,7 +4,7 @@ import { StreamingTextResponse, streamText } from 'ai';
 import { getContext } from 'utils/context';
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages, documentId } = await req.json();
 
   const documentContext = await getContext(messages.at(-1).content) || '';
 
