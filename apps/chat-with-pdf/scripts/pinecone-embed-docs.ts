@@ -4,8 +4,7 @@ import { getChunkedDocsFromPDF } from "@makify/chat-with-pdf/lib/pdf-loader";
 
 async function embedDocs() {
     try {
-        const pineconeClient = getPineconeClient() 
-        const pineconeIndexClient = pineconeClient.index("makify-chat-with-pdf").namespace('phrasal-verbs')
+        const pineconeClient = await getPineconeClient() 
 
         console.log("Preparing chunks from PDF file")
 
@@ -15,7 +14,7 @@ async function embedDocs() {
         // console.log(embedding)
         console.log(`Loading ${docs.length} chunks into Pinecone`)
 
-        await embedAndStoreDocs(pineconeIndexClient, docs)
+        await embedAndStoreDocs(pineconeClient, docs)
         
         console.log("Data embedded and stored in Pinecone index")
     } catch (error) {

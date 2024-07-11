@@ -30,12 +30,14 @@ export async function embedAndStoreDocs(pineconeIndex: Index, docs: any) {
 
 export async function getEmbeddings(value: string) {
     try {
-      const { embedding } = await embed({
-        model: openai.embedding('text-embedding-3-small'),
-        value
+      const embeddings = new GoogleGenerativeAIEmbeddings({
+        model: 'embedding-001',
+        taskType: TaskType.RETRIEVAL_DOCUMENT,
+        title: 'Document title',
+        apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
       })
 
-      return embedding
+      return await embeddings.embedQuery(value)
     } catch (error) {
         console.error(error)
     }
