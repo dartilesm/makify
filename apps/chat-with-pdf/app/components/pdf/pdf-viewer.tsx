@@ -85,7 +85,7 @@ export function PdfViewer({ className }: { className?: string }) {
               <Skeleton className="absolute left-0 top-0 block h-full w-full" />
             )}
             <Document
-              file="https://www.adobe.com/support/products/enterprise/knowledgecenter/media/c4611_sample_explain.pdf"
+              file="http://localhost:3000/genesis-cv.pdf"
               onSourceSuccess={updatePdfContainerWidth}
               onLoadSuccess={handlePdfData}
               loading={null}

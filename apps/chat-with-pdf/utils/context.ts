@@ -8,12 +8,12 @@ export async function getMatchesFromEmbeddings(embeddings: number[]) {
     const queryResult = await pineconeClient.query({
         topK: 5,
         vector: embeddings,
-        includeValues: true
+        includeMetadata: true
     })
 
     return queryResult.matches || []
   } catch (error) {
-    console.log('Error querying Pinecone:', error)
+    console.log("error querying embeddings", error);
     throw error
   }
 }

@@ -30,15 +30,26 @@ export async function embedAndStoreDocs(pineconeIndex: Index, docs: any) {
 
 export async function getEmbeddings(value: string) {
     try {
-      const embeddings = new GoogleGenerativeAIEmbeddings({
+      // Embed the text using the Google Generative AI API
+      const googleGenerativeAIEmbeddings = new GoogleGenerativeAIEmbeddings({
         model: 'embedding-001',
         taskType: TaskType.RETRIEVAL_DOCUMENT,
         title: 'Document title',
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-      })
+    })
 
-      return await embeddings.embedQuery(value)
+    const embedding = await googleGenerativeAIEmbeddings.embedQuery(value)
+
+      // Embed the text using the OpenAI API
+
+      // const { embedding } = await embed({
+      //   model: openai.embedding('text-embedding-ada-002'),
+      //   value: value.replace(/\n/g, ' '),
+      // })
+
+      return embedding
     } catch (error) {
-        console.error(error)
+      console.log('Error in getEmbeddings', error)
+      throw new Error(`Error in getEmbeddings: ${error}`)
     }
 }
