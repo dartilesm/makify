@@ -1,35 +1,34 @@
 import { Chat } from "@/components/chat/chat";
 import { ChatList } from "@/components/chat/chat-list";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
-import { PrismaClient } from "@prisma/client";
+import { Chat as ChatPrisma, PrismaClient } from "@prisma/client";
 import { Message } from "ai";
+import { cache } from "react";
 
 const prisma = new PrismaClient();
 
-async function getDocumentUrl(chatId: string) {
-  const chat = await prisma.chat.findUnique({
-    where: {
-      id: chatId,
-    },
-  });
-  return chat?.documentUrl;
-}
+const getCachedChatData = cache(getChatData) as (
+  chatId: string,
+) => Promise<ChatPrisma>;
 
-async function getMessages(chatId: string) {
+async function getChatData(chatId: string) {
+  console.log("Getting chatData");
   const chat = await prisma.chat.findUnique({
     where: {
       id: chatId,
     },
     select: {
       messages: true,
+      documentUrl: true,
     },
   });
-  return chat?.messages;
+  return chat;
 }
 
 export async function ChatScreen({ documentId }: { documentId: string }) {
-  const documentUrl = await getDocumentUrl(documentId as string);
-  const messages = await getMessages(documentId as string);
+  const { documentUrl, messages } = await getCachedChatData(
+    documentId as string,
+  );
 
   return (
     <div className="flex h-screen w-full overflow-hidden">

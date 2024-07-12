@@ -3,8 +3,11 @@ import { cn } from "@makify/ui/lib/utils";
 import { PrismaClient } from "@prisma/client";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { cache } from "react";
 
 const prisma = new PrismaClient();
+
+const getCachedChats = cache(getChats);
 
 async function getChats() {
   const chats = await prisma.chat.findMany();
@@ -16,7 +19,7 @@ type ChatListProps = {
 };
 
 export async function ChatList({ documentId }: ChatListProps) {
-  const chats = await getChats();
+  const chats = await getCachedChats();
 
   return (
     <div className="hidden h-full border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">

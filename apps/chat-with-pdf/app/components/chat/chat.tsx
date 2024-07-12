@@ -1,15 +1,15 @@
 "use client";
 
+import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import { Avatar, AvatarFallback, AvatarImage, Button, Input } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { useChat } from "ai/react";
-import { AssistantMessage } from "./assistant-message";
-import { useParams } from "next/navigation";
-import { Message } from "ai";
-import { useEffect } from "react";
-import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import { Chat as ChatPrisma } from "@prisma/client";
+import { DotsVerticalIcon } from "@radix-ui/react-icons";
+import { Message } from "ai";
+import { useChat } from "ai/react";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { ChatMessages } from "./chat-messages";
 
 type ChatProps = {
   className?: string;
@@ -58,30 +58,7 @@ export function Chat({ className, initialMessages }: ChatProps) {
       </header>
       <div className="flex-1 overflow-auto p-4">
         <div className="grid gap-4">
-          {messages.map((message, index) => {
-            return (
-              <div
-                key={index}
-                className={cn(
-                  "flex",
-                  message.role === "user" ? "justify-end" : "",
-                )}
-              >
-                <div className="max-w-[70%] space-y-1.5">
-                  <div className="rounded-lg bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800">
-                    {message.role === "user" ? (
-                      <p>{message.content}</p>
-                    ) : (
-                      <AssistantMessage>{message.content}</AssistantMessage>
-                    )}
-                  </div>
-                  {/* <div className="text-right text-xs text-gray-500 dark:text-gray-400">
-                      {message.time}
-                    </div> */}
-                </div>
-              </div>
-            );
-          })}
+          <ChatMessages messages={messages as Message[]} />
         </div>
       </div>
       <div className="border-t bg-gray-100 px-4 py-3 dark:border-gray-800 dark:bg-gray-950">
