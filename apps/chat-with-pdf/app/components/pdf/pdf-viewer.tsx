@@ -1,13 +1,12 @@
 "use client";
 
+import { Skeleton } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
-import { Skeleton } from "@makify/ui";
-import { PdfPagination } from "@/components/pdf/pdf-pagination";
 import { PdfToolbar } from "./pdf-toolbar";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
@@ -17,7 +16,13 @@ export type PdfData = {
   title: string;
 };
 
-export function PdfViewer({ className }: { className?: string }) {
+export function PdfViewer({
+  className,
+  documentUrl,
+}: {
+  className?: string;
+  documentUrl: string;
+}) {
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdfContainerWidth, setPdfContainerWidth] = useState<number>(0);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
@@ -85,7 +90,7 @@ export function PdfViewer({ className }: { className?: string }) {
               <Skeleton className="absolute left-0 top-0 block h-full w-full" />
             )}
             <Document
-              file="http://localhost:3000/genesis-cv.pdf"
+              file={documentUrl}
               onSourceSuccess={updatePdfContainerWidth}
               onLoadSuccess={handlePdfData}
               loading={null}

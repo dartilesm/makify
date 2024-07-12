@@ -7,7 +7,7 @@ import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { TaskType } from "@google/generative-ai";
 
 
-export async function prepareDocument(page) {
+export async function prepareDocument(page, chatId: string) {
     // Get the content of the page
     let { pageContent, metadata } = page;
     pageContent = pageContent.replace(/\n/g, "");
@@ -23,6 +23,8 @@ export async function prepareDocument(page) {
         new Document({
             pageContent,
             metadata: {
+                chatId,
+                documentName: metadata.loc.title,
                 pageNumer: metadata.loc.pageNumber,
                 text: truncateStringByBytes(pageContent, 36000)
             }
@@ -42,6 +44,8 @@ export async function embedDocument(doc: Document<Record<string, any>>) {
             id: hash,
             values: embeddings,
             metadata: {
+                chatId: doc.metadata.chatId,
+                documentName: doc.metadata.documentName,
                 text: doc.metadata.text,
                 pageNumber: doc.metadata.pageNumber
             }

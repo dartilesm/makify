@@ -1,4 +1,5 @@
 import type { Index, PineconeRecord } from '@pinecone-database/pinecone';
+import { getPineconeClient } from './pinecone.client';
 
 const sliceIntoChunks = <T>(arr: T[], chunkSize: number) => {
   return Array.from({ length: Math.ceil(arr.length / chunkSize) }, (_, i) =>
@@ -7,7 +8,6 @@ const sliceIntoChunks = <T>(arr: T[], chunkSize: number) => {
 };
 
 export async function chunkedUpsert(
-    index: Index,
     vectors: Array<PineconeRecord>,
     namespace: string,
     chunkSize = 10
@@ -20,7 +20,8 @@ export async function chunkedUpsert(
     await Promise.allSettled(
       chunks.map(async (chunk) => {
         try {
-          await index.namespace(namespace).upsert(vectors);
+          const pineconeClient = await getPineconeClient(namespace);
+          await pineconeClient.upsert(chunk);
         } catch (e) {
           console.log('Error upserting chunk', e);
         }

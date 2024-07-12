@@ -6,14 +6,38 @@ import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useChat } from "ai/react";
 import { AssistantMessage } from "./assistant-message";
 import { useParams } from "next/navigation";
+import { Message } from "ai";
+import { useEffect } from "react";
+import { updateChatMessages } from "@/app/actions/update-chat-messages";
+import { Chat as ChatPrisma } from "@prisma/client";
 
-export function Chat({ className }: { className?: string }) {
+type ChatProps = {
+  className?: string;
+  initialMessages: Message[];
+};
+
+export function Chat({ className, initialMessages }: ChatProps) {
   const params = useParams();
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    body: {
-      documentId: params.documentId,
-    },
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      id: params.documentId as string,
+      body: {
+        documentId: params.documentId,
+      },
+      initialMessages,
+    });
+
+  useEffect(() => {
+    console.log(initialMessages, messages, isLoading);
+    const hasAddedMessages = initialMessages
+      ? messages.length > initialMessages?.length
+      : messages.length > 0;
+    if (hasAddedMessages && !isLoading)
+      updateChatMessages({
+        documentId: params.documentId as string,
+        messages: messages as unknown as ChatPrisma["messages"],
+      });
+  }, [messages, isLoading]);
 
   return (
     <div className={cn("flex h-full flex-col", className)}>

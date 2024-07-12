@@ -1,8 +1,8 @@
-import { getPineconeClient } from "./pinecode.client";
+import { getPineconeClient } from "./pinecone.client";
 import { getEmbeddings } from "./vector-store";
 
-export async function getMatchesFromEmbeddings(embeddings: number[]) {
-  const pineconeClient = await getPineconeClient();
+export async function getMatchesFromEmbeddings(embeddings: number[], documentId: string) {
+  const pineconeClient = await getPineconeClient(documentId);
 
   try {
     const queryResult = await pineconeClient.query({
@@ -18,12 +18,12 @@ export async function getMatchesFromEmbeddings(embeddings: number[]) {
   }
 }
 
-export async function getContext(query: string) {
+export async function getContext(query: string, documentId: string) {
     // User query embeddings
     const userQueryEmbeddings = await getEmbeddings(query)
 
     // Get matches from Pinecone
-    const matches = await getMatchesFromEmbeddings(userQueryEmbeddings)
+    const matches = await getMatchesFromEmbeddings(userQueryEmbeddings, documentId)
 
     const qualifiedMatches = matches.filter((match) => match.score > 0.7)
 
