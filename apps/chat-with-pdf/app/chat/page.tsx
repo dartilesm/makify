@@ -1,5 +1,5 @@
 import { NewChat } from "@/components/chat/new-chat";
 
-export default function Page() {
+export default async function Page() {
   return <NewChat />;
 }
