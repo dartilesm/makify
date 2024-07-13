@@ -1,11 +1,9 @@
+import { prisma } from "@/lib/prisma";
 import { Avatar, AvatarFallback, AvatarImage } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { PrismaClient } from "@prisma/client";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { cache } from "react";
-
-const prisma = new PrismaClient();
 
 const getCachedChats = cache(getChats);
 

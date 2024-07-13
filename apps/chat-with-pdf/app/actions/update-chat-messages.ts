@@ -1,8 +1,7 @@
 "use server";
 
-import { Chat, PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { Chat } from "@prisma/client";
 
 type UpdateChatMessagesParams = {
     documentId: string;

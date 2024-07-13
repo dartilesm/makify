@@ -2,12 +2,10 @@
 
 import { chunkedUpsert } from "@/lib/chunked-upsert";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
-import { getPineconeClient } from "@/lib/pinecone.client";
+import { prisma } from "@/lib/prisma";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
-import { Chat, PrismaClient } from "@prisma/client";
+import { Chat } from "@prisma/client";
 import { redirect } from "next/navigation";
-
-const prisma = new PrismaClient();
 
 export async function createNewChat(formData: FormData) {
   let chat: Chat;

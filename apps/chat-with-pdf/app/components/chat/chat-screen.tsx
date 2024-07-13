@@ -1,11 +1,10 @@
 import { Chat } from "@/components/chat/chat";
 import { ChatList } from "@/components/chat/chat-list";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
-import { Chat as ChatPrisma, PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { Chat as ChatPrisma } from "@prisma/client";
 import { Message } from "ai";
 import { cache } from "react";
-
-const prisma = new PrismaClient();
 
 const getCachedChatData = cache(getChatData) as (
   chatId: string,
