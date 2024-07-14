@@ -12,20 +12,34 @@ import {
 import { cn } from "@makify/ui/lib/utils";
 import { Message } from "ai";
 import { CopyIcon, ArrowDown } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
+import { AnimatePresence, motion, useInView } from "framer-motion";
 
 type ChatMessagesProps = {
   messages: Message[];
 };
 
+const AnimatedButton = motion(Button);
+
 export function ChatMessages({ messages }: ChatMessagesProps) {
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
   const [messageTooltipOpenIndex, setMessageTooltipOpenIndex] = useState<
     number | null
   >(null);
 
-  useEffect(scrollToBottom, [messages]);
+  const isLastMessageInView = useInView(lastMessageRef, {
+    root: chatContainerRef.current as unknown as RefObject<HTMLDivElement>,
+  });
+
+  const isScrollHeightGreaterThanContainerHeight =
+    (chatContainerRef.current &&
+      chatContainerRef.current?.scrollHeight >
+        chatContainerRef.current?.clientHeight) ||
+    false;
+
+  useEffect(scrollToBottom, [messages.length]);
 
   // Controls the tooltip open state for each message, as it collides with the inner tooltip
   function updateMessageTooltipOpenIndex(index: number, isOpen?: boolean) {
@@ -44,13 +58,20 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
     });
   }
 
+  function asignRefToLastMessage(el: HTMLDivElement | null, index: number) {
+    const isLastMessage = index === messages.length - 1;
+    if (el && isLastMessage) {
+      lastMessageRef.current = el;
+    }
+  }
+
   return (
-    <div className="relative overflow-hidden">
-      <div className="h-full flex-1 overflow-auto p-4" ref={chatContainerRef}>
-        <div className="grid gap-4">
+    <div className="relative flex-1 overflow-hidden">
+      <div className="flex h-full overflow-auto p-4" ref={chatContainerRef}>
+        <div className="flex flex-col gap-4">
           {messages.map((message, index) => {
             return (
-              <TooltipProvider>
+              <TooltipProvider key={message.id}>
                 <Tooltip
                   delayDuration={0}
                   onOpenChange={(isOpen) =>
@@ -58,13 +79,15 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
                   }
                   open={index === messageTooltipOpenIndex}
                 >
-                  <TooltipTrigger className="text-left" asChild>
+                  <TooltipTrigger asChild>
                     <div
-                      key={index}
-                      className={cn(
-                        "flex",
-                        message.role === "user" ? "justify-end" : "",
-                      )}
+                      className={cn("flex w-full text-left", {
+                        "justify-end": message.role === "user",
+                        "mt-auto": index === 0, // TODO: Fix this to start from the bottom
+                      })}
+                      ref={(el) => {
+                        asignRefToLastMessage(el, index);
+                      }}
                     >
                       <div className="max-w-[70%] space-y-1.5">
                         <div
@@ -102,7 +125,7 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
                                       updateMessageTooltipOpenIndex(index)
                                     }
                                   >
-                                    <TooltipTrigger>
+                                    <TooltipTrigger asChild>
                                       <ToggleGroupItem
                                         value="a"
                                         className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-3xl hover:bg-gray-200"
@@ -138,14 +161,22 @@ export function ChatMessages({ messages }: ChatMessagesProps) {
           })}
         </div>
       </div>
-      <Button
-        className="absolute bottom-4 left-2/4 -translate-x-2/4"
-        size="icon"
-        onClick={scrollToBottom}
-      >
-        <ArrowDown className="h-4 w-4" />
-        <span className="sr-only">Scroll to bottom</span>
-      </Button>
+      <AnimatePresence>
+        {isScrollHeightGreaterThanContainerHeight && !isLastMessageInView && (
+          <AnimatedButton
+            className="absolute bottom-4 left-2/4 -translate-x-2/4"
+            size="icon"
+            onClick={scrollToBottom}
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ y: { type: "just" } }}
+            exit={{ opacity: 0, y: 100 }}
+          >
+            <ArrowDown className="h-4 w-4" />
+            <span className="sr-only">Scroll to bottom</span>
+          </AnimatedButton>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

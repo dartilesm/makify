@@ -3,7 +3,7 @@
 import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import { cn } from "@makify/ui/lib/utils";
 import { Chat as ChatPrisma } from "@prisma/client";
-import { Message } from "ai";
+import { CoreMessage, Message } from "ai";
 import { useChat } from "ai/react";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
@@ -24,6 +24,8 @@ export function Chat({ className, initialMessages }: ChatProps) {
     handleInputChange,
     handleSubmit,
     isLoading,
+    setMessages,
+    reload,
   } = useChat({
     id: params.documentId as string,
     body: {
@@ -31,6 +33,26 @@ export function Chat({ className, initialMessages }: ChatProps) {
     },
     initialMessages,
   });
+
+  useEffect(() => {
+    if (!initialMessages?.length)
+      handleSubmit(
+        { preventDefault: () => null },
+        {
+          body: {
+            documentId: params.documentId,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "Introduce yourself and mention you are here to help without mentioning your name. Summarize the document and provide me with some questions that are related and answerable from the document. Don't say the questions are 'answerable from the document'.",
+              },
+            ] as CoreMessage[],
+            isInitialMessage: true,
+          },
+        },
+      );
+  }, []);
 
   useEffect(() => {
     const hasAddedMessages = initialMessages
