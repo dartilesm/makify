@@ -15,7 +15,7 @@ const nextConfig = {
         return config;
     },
     transpilePackages: ['@makify/ui'],
-    reactStrictMode: true,
+    reactStrictMode: false,
     swcMinify: true,
 };
 
