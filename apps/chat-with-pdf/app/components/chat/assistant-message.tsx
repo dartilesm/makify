@@ -12,7 +12,10 @@ export function AssistantMessage({
   type: string;
 }) {
   const params = useParams();
-  const { append } = useChat({ id: params.documentId as string });
+
+  const { append } = useChat({
+    id: params.documentId as string,
+  });
 
   function submitQuestion(question: string) {
     append({ role: "user", content: question });

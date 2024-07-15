@@ -6,19 +6,19 @@ import { Chat as ChatPrisma } from "@prisma/client";
 import { CoreMessage, Message } from "ai";
 import { useChat } from "ai/react";
 import { useParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { ChatFooter } from "./chat-footer";
 import { ChatHeader } from "./chat-header";
 import { ChatMessages } from "./chat-messages";
 import ChatMessagesStream from "./chat-messages-stream";
 import { preload } from "react-dom";
+import { ChatContext } from "@/app/context/chat-context";
 
 type ChatProps = {
   className?: string;
-  initialMessages: Message[];
 };
 
-export function Chat({ className, initialMessages }: ChatProps) {
+export function Chat({ className }: ChatProps) {
   const preloadPrompts = useRef([
     {
       message:
@@ -32,6 +32,11 @@ export function Chat({ className, initialMessages }: ChatProps) {
     },
   ]);
   const params = useParams();
+  const { chatData, isLoading: isChatContextLoading } = useContext(ChatContext);
+
+  // Store the initial messages from the chat context
+  const initialMessages = chatData.messages as unknown as Message[];
+
   const {
     append,
     messages,
@@ -44,14 +49,15 @@ export function Chat({ className, initialMessages }: ChatProps) {
     body: {
       documentId: params.documentId,
     },
-    initialMessages,
     onFinish: onChatFinishStream,
   });
 
   useEffect(() => {
-    if (!initialMessages?.length) sendPreloadedPrompts();
-    if (initialMessages?.length) preloadPrompts.current = [];
-  }, []);
+    if (!isChatContextLoading && !initialMessages?.length)
+      sendPreloadedPrompts();
+    if (!isChatContextLoading && initialMessages?.length)
+      preloadPrompts.current = [];
+  }, [isChatContextLoading]);
 
   useEffect(() => {
     const hasAddedMessages = initialMessages

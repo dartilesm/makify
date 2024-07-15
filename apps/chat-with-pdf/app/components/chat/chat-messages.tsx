@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatContext } from "@/app/context/chat-context";
 import {
   Button,
   ToggleGroup,
@@ -10,24 +11,26 @@ import {
   TooltipTrigger,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { Message } from "ai";
-import { CopyIcon, ArrowDown } from "lucide-react";
-import { RefObject, useEffect, useRef, useState } from "react";
-import { AssistantMessage } from "./assistant-message";
+import { useChat } from "ai/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-
-type ChatMessagesProps = {
-  messages: Message[];
-};
+import { ArrowDown, CopyIcon } from "lucide-react";
+import { useParams } from "next/navigation";
+import { RefObject, useContext, useEffect, useRef, useState } from "react";
+import { AssistantMessage } from "./assistant-message";
 
 const AnimatedButton = motion(Button);
 
-export function ChatMessages({ messages }: ChatMessagesProps) {
+export function ChatMessages() {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
   const [messageTooltipOpenIndex, setMessageTooltipOpenIndex] = useState<
     number | null
   >(null);
+  const params = useParams();
+
+  const { messages } = useChat({
+    id: params.documentId as string,
+  });
 
   const isLastMessageInView = useInView(lastMessageRef, {
     root: chatContainerRef.current as unknown as RefObject<HTMLDivElement>,
