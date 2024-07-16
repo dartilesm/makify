@@ -1,6 +1,5 @@
 "use client";
 
-import { ChatContext } from "@/app/context/chat-context";
 import {
   Button,
   ToggleGroup,
@@ -15,7 +14,7 @@ import { useChat } from "ai/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { ArrowDown, CopyIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { RefObject, useContext, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
 
 const AnimatedButton = motion(Button);
@@ -107,15 +106,15 @@ export function ChatMessages() {
                                 message.role === "user",
                             })}
                           >
-                            {message.role === "user" ? (
+                            {message.role === "user" && (
                               <p>{message.content}</p>
-                            ) : (
+                            )}
+                            {message.role === "assistant" && (
                               <>
                                 <AssistantMessage
                                   type={
-                                    messagesWithAnnotations?.[
-                                      index
-                                    ]?.annotations?.at(0)?.type as string
+                                    messagesWithAnnotations?.[index]
+                                      ?.annotations?.[0]?.type as string
                                   }
                                 >
                                   {message.content}

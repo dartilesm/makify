@@ -34,21 +34,25 @@ export function AssistantMessage({
           <ul
             className={cn("list-inside pb-1", {
               "list-disc": type !== "questions",
+              "flex flex-col gap-2 py-2": type === "questions",
             })}
           >
             {children}
           </ul>
         ),
         li: ({ children }) => (
-          <li className="pb-1">
+          <li
+            className={cn({
+              "pb-1": type !== "questions",
+            })}
+          >
             {type === "questions" ? (
-              <Button
-                className="z-10"
-                variant="outline"
+              <button
+                className="z-10 box-border inline rounded-2xl border-[1px] border-gray-300 bg-gray-50 p-2 text-left transition-colors hover:bg-gray-200"
                 onClick={() => submitQuestion(children?.toString() as string)}
               >
                 {children}
-              </Button>
+              </button>
             ) : (
               children
             )}
@@ -60,3 +64,9 @@ export function AssistantMessage({
     </Markdown>
   );
 }
+// display: inline;
+//     background-color: #ededed;
+//     padding: 4px;
+//     border-radius: 12px;
+//     border: 1px solid #d8d8d8;
+//     text-align: start;

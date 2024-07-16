@@ -1,18 +1,16 @@
 "use client";
 
 import { updateChatMessages } from "@/app/actions/update-chat-messages";
+import { ChatContext } from "@/app/context/chat-context";
 import { cn } from "@makify/ui/lib/utils";
 import { Chat as ChatPrisma } from "@prisma/client";
-import { CoreMessage, Message } from "ai";
+import { Message } from "ai";
 import { useChat } from "ai/react";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useRef } from "react";
 import { ChatFooter } from "./chat-footer";
 import { ChatHeader } from "./chat-header";
 import { ChatMessages } from "./chat-messages";
-import ChatMessagesStream from "./chat-messages-stream";
-import { preload } from "react-dom";
-import { ChatContext } from "@/app/context/chat-context";
 
 type ChatProps = {
   className?: string;
@@ -27,7 +25,7 @@ export function Chat({ className }: ChatProps) {
     },
     {
       message:
-        "Give me a list of a few questions that I can ask someone to see if they have read the document. Give me the questions as a list. Say those question are suggestions to start.",
+        "Give me a list of a few questions that I can ask someone to see if they have read the document. Give me the questions as a list. Say those question are suggestions to start and don't mention the questions are to see if they have read the document.",
       type: "questions",
     },
   ]);
@@ -37,14 +35,7 @@ export function Chat({ className }: ChatProps) {
   // Store the initial messages from the chat context
   const initialMessages = chatData.messages as unknown as Message[];
 
-  const {
-    append,
-    messages,
-    input: inputValue,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-  } = useChat({
+  const { append, messages, isLoading } = useChat({
     id: params.documentId as string,
     body: {
       documentId: params.documentId,
@@ -60,6 +51,7 @@ export function Chat({ className }: ChatProps) {
   }, [isChatContextLoading]);
 
   useEffect(() => {
+    // Check if new messages have been added to the chat to not update the chat messages with the same messages
     const hasAddedMessages = initialMessages
       ? messages.length > initialMessages?.length
       : messages.length > 0;
@@ -94,8 +86,6 @@ export function Chat({ className }: ChatProps) {
     sendPreloadedPrompts();
   }
 
-  console.log({ messages });
-
   return (
     <div
       className={cn(
@@ -104,12 +94,8 @@ export function Chat({ className }: ChatProps) {
       )}
     >
       <ChatHeader />
-      <ChatMessages messages={messages as Message[]} />
-      <ChatFooter
-        inputValue={inputValue}
-        onSubmit={handleSubmit}
-        onInputChange={handleInputChange}
-      />
+      <ChatMessages />
+      <ChatFooter />
     </div>
   );
 }

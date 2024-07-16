@@ -1,20 +1,18 @@
-import { Button, Input, Label, Textarea } from "@makify/ui";
+import { Button, Textarea } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
+import { useChat } from "ai/react";
 import { SendIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
-type ChatFooterProps = {
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  inputValue: string;
-  onInputChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-};
-
-export function ChatFooter({
-  onSubmit,
-  inputValue,
-  onInputChange,
-}: ChatFooterProps) {
+export function ChatFooter() {
+  const params = useParams();
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
+  const {
+    input: inputValue,
+    handleSubmit,
+    handleInputChange,
+  } = useChat({ id: params.documentId as string });
 
   function extractTextareaLineHeight(textarea: HTMLTextAreaElement) {
     const computedStyle = window.getComputedStyle(textarea);
@@ -38,22 +36,12 @@ export function ChatFooter({
 
   function handleTextareaChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     resizeTextarea(event);
-    onInputChange(event);
+    handleInputChange(event);
   }
 
   return (
     <div className="z-10 px-4 pb-3">
-      {/* <form className="flex items-center gap-2" onSubmit={onSubmit}>
-        <Input
-          className="flex-1 rounded-xl"
-          placeholder="Type your message..."
-          type="text"
-          value={inputValue}
-          onChange={onInputChange}
-        />
-        <Button>Submit</Button>
-      </form> */}
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <div
           className={cn(
             "bg-primary-foreground relative flex flex-row justify-between gap-1 rounded-3xl p-2 pl-4 pr-3",
