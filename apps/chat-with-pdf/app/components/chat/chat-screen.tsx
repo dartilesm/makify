@@ -7,9 +7,6 @@ export async function ChatScreen({ documentId }: { documentId: string }) {
   return (
     <ChatProvider documentId={documentId}>
       <div className="flex h-screen w-full overflow-hidden">
-        <div className="max-w-96">
-          <ChatList documentId={documentId} />
-        </div>
         <div className="flex w-full flex-1 flex-row justify-between">
           <PdfViewer className="flex-1" />
           <Chat className="flex-1" />

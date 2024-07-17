@@ -6,8 +6,20 @@ import {
   TooltipTrigger,
 } from "@makify/ui";
 import { DownloadIcon } from "lucide-react";
+import { useEffect } from "react";
+import { Resolution, usePDF } from "react-to-pdf";
 
 export function ChatHeader() {
+  const { toPDF, targetRef } = usePDF({
+    method: "save",
+    filename: "chat.pdf",
+    resolution: Resolution.MEDIUM,
+  });
+
+  useEffect(() => {
+    targetRef.current = document.querySelector("#chat-messages");
+  }, []);
+
   return (
     <header className="flex items-center border-b-[1px] border-gray-100 p-2">
       <TooltipProvider>
@@ -111,7 +123,7 @@ export function ChatHeader() {
           </Tooltip> */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={() => toPDF()}>
                 <DownloadIcon className="h-4 w-4" />
                 <span className="sr-only">Download chat</span>
               </Button>

@@ -14,7 +14,8 @@
     "framer-motion": "^11.3.2",
     "next": "14.1.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-to-pdf": "^1.0.1"
   },
   "devDependencies": {
     "@ai-sdk/google": "^0.0.14",

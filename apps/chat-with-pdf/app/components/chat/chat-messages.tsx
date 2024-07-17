@@ -72,7 +72,7 @@ export function ChatMessages() {
   }
 
   return (
-    <div className="relative flex-1 overflow-hidden">
+    <div className="relative flex-1 overflow-hidden" id="chat-messages">
       <div className="flex h-full overflow-auto p-4" ref={chatContainerRef}>
         <div className="flex h-fit flex-col gap-4">
           {messages
