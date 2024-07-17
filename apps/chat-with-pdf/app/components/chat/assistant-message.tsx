@@ -48,7 +48,7 @@ export function AssistantMessage({
           >
             {type === "questions" ? (
               <button
-                className="z-10 box-border inline rounded-2xl border-[1px] border-gray-300 bg-gray-50 p-2 text-left transition-colors hover:bg-gray-200"
+                className="z-10 box-border inline rounded-md border-[1px] border-gray-300 bg-gray-50 p-2 text-left transition-colors hover:bg-gray-200"
                 onClick={() => submitQuestion(children?.toString() as string)}
               >
                 {children}

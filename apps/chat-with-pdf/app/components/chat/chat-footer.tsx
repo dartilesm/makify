@@ -44,7 +44,7 @@ export function ChatFooter() {
       <form onSubmit={handleSubmit}>
         <div
           className={cn(
-            "bg-primary-foreground relative flex flex-row justify-between gap-1 rounded-3xl p-2 pl-4 pr-3",
+            "bg-primary-foreground relative flex flex-row justify-between gap-1 rounded-md p-2 pl-4 pr-3",
             {
               "items-center": !hasTextareaGrown,
               "items-end": hasTextareaGrown,

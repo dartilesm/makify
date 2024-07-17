@@ -100,9 +100,9 @@ export function ChatMessages() {
                         <div className="max-w-[70%] space-y-1.5">
                           <div
                             className={cn({
-                              "rounded-3xl bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800":
+                              "rounded-md bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800":
                                 message.role === "assistant",
-                              "bg-primary rounded-3xl px-4 py-3 text-sm text-white":
+                              "bg-primary rounded-md px-4 py-3 text-sm text-white":
                                 message.role === "user",
                             })}
                           >
@@ -123,7 +123,7 @@ export function ChatMessages() {
                                 <TooltipContent
                                   align="start"
                                   side="bottom"
-                                  className="rounded-3xl border-[1px] border-gray-200 bg-gray-50 p-1"
+                                  className="rounded-md border-[1px] border-gray-200 bg-gray-50 p-1"
                                   sideOffset={-10}
                                   alignOffset={10}
                                   avoidCollisions={false}
@@ -142,7 +142,7 @@ export function ChatMessages() {
                                       <TooltipTrigger asChild>
                                         <ToggleGroupItem
                                           value="a"
-                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-3xl hover:bg-gray-200"
+                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
                                           onClick={() =>
                                             copyMessage(message.content)
                                           }
@@ -154,7 +154,7 @@ export function ChatMessages() {
                                       <TooltipContent
                                         align="center"
                                         side="top"
-                                        className="bg-primary rounded-3xl text-xs"
+                                        className="bg-primary rounded-md text-xs"
                                         arrowPadding={2}
                                         sideOffset={6}
                                       >

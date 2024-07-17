@@ -19,6 +19,7 @@ export async function POST(req: Request) {
   const messagesToAI = [
     ...messages.filter((message) => message?.role === "user"),
   ];
+  console.log({ messages, documentId, isInitialMessage, messagesToAI });
 
   const result = await streamText({
     model: google("models/gemini-1.5-pro-latest"),
@@ -38,4 +39,5 @@ export async function POST(req: Request) {
   });
   
   return result.toAIStreamResponse();
+  // return new StreamingTextResponse(result.toAIStream());
 }
