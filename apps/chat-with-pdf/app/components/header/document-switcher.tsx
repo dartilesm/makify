@@ -42,6 +42,7 @@ import {
   CheckIcon,
 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type DocumentSwitcherProps = {
@@ -51,13 +52,13 @@ type DocumentSwitcherProps = {
 
 export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const params = useParams();
+  const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState(
-    chats.find((chat) => chat.id === params.documentId) || chats[0],
-  );
+  const selectedDocument =
+    chats.find((chat) => chat.id === params.documentId) || chats[0];
 
   useEffect(setPopoverWidth, []);
 
@@ -73,7 +74,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   }
 
   return (
-    <div className="flex flex-row items-center justify-center gap-2">
+    <div className="flex w-3/4 max-w-96 flex-row items-center justify-center gap-2">
       <span className="text-muted-foreground text-sm">Chatting with:</span>
       <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
         <Popover open={open} onOpenChange={setOpen}>
@@ -85,14 +86,22 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
               ref={buttonRef}
               aria-label="Select a team"
               className={cn(
-                "flex h-14 w-3/4 max-w-96 justify-between gap-2 truncate",
+                "flex h-14 flex-1 justify-between gap-2 truncate",
                 className,
               )}
             >
               <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
-              <span className="truncate">
-                FIFA World Cup Winners List From 1930 to 2022
-              </span>
+              <div className="flex flex-col truncate text-left">
+                <span className="truncate">
+                  {selectedDocument?.documentMetadata?.title}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {selectedDocument?.documentMetadata?.numPages} page
+                  {selectedDocument?.documentMetadata?.numPages > 1
+                    ? "s"
+                    : ""}{" "}
+                </span>
+              </div>
               <ChevronsUpDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -109,17 +118,18 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     <CommandItem
                       key={chat.id}
                       onSelect={() => {
-                        console.log("I am clicking on this");
-                        setSelectedDocument(chat);
                         setOpen(false);
+                        router.push(`/chat/${chat.id}`);
                       }}
-                      className="flex h-14 cursor-pointer gap-2 text-sm"
+                      className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                     >
-                      <FileTextIcon className="h-4 w-4 text-gray-500" />
-                      {chat.id}
+                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
+                      <span className="truncate">
+                        {chat?.documentMetadata?.title}
+                      </span>
                       <CheckIcon
                         className={cn(
-                          "ml-auto h-4 w-4",
+                          "h-4 min-h-4 w-4 shrink-0",
                           params.documentId === chat.id
                             ? "opacity-100"
                             : "opacity-0",
@@ -134,7 +144,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                 <CommandGroup>
                   <DialogTrigger asChild>
                     <CommandItem
-                      className="h-14"
+                      className="h-10"
                       onSelect={() => {
                         setOpen(false);
                         setShowNewTeamDialog(true);

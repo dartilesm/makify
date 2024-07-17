@@ -16,7 +16,7 @@ export async function Header() {
   return (
     <header className="border-b">
       <div className="flex h-20 flex-row items-center justify-evenly px-4">
-        <div className="text-lg font-bold">Chat with PDF</div>
+        <div className="text-sm">Chat with PDF</div>
         <div className="flex flex-1 justify-center">
           <DocumentSwitcher chats={chats} />
         </div>

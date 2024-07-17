@@ -9,6 +9,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
 import { PdfToolbar } from "./pdf-toolbar";
 import { ChatContext } from "@/app/context/chat-context";
+import { updateChatMessages } from "@/app/actions/update-chat-messages";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
@@ -41,6 +42,13 @@ export function PdfViewer({ className }: { className?: string }) {
       numPages,
       title,
     };
+
+    if (!chatData.documentMetadata) {
+      updateChatMessages({
+        documentId: chatData.id as string,
+        documentMetadata: pdfData,
+      });
+    }
 
     setPdfData(pdfData);
   }
