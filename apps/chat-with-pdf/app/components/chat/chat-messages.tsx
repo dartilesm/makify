@@ -12,7 +12,7 @@ import {
 import { cn } from "@makify/ui/lib/utils";
 import { useChat } from "ai/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { ArrowDown, CopyIcon } from "lucide-react";
+import { ArrowDown, CopyIcon, FlagIcon, RefreshCcwIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { RefObject, useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
@@ -158,7 +158,61 @@ export function ChatMessages() {
                                         arrowPadding={2}
                                         sideOffset={6}
                                       >
-                                        Copy
+                                        Copy message
+                                      </TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip
+                                      delayDuration={0}
+                                      onOpenChange={() =>
+                                        updateMessageTooltipOpenIndex(index)
+                                      }
+                                    >
+                                      <TooltipTrigger asChild>
+                                        <ToggleGroupItem
+                                          value="a"
+                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
+                                        >
+                                          <RefreshCcwIcon className="text-primary h-4 w-4 text-opacity-70" />
+                                          <span className="sr-only">
+                                            Regenerate response
+                                          </span>
+                                        </ToggleGroupItem>
+                                      </TooltipTrigger>
+                                      <TooltipContent
+                                        align="center"
+                                        side="top"
+                                        className="bg-primary rounded-md text-xs"
+                                        arrowPadding={2}
+                                        sideOffset={6}
+                                      >
+                                        Regenerate response
+                                      </TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip
+                                      delayDuration={0}
+                                      onOpenChange={() =>
+                                        updateMessageTooltipOpenIndex(index)
+                                      }
+                                    >
+                                      <TooltipTrigger asChild>
+                                        <ToggleGroupItem
+                                          value="a"
+                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
+                                        >
+                                          <FlagIcon className="text-primary h-4 w-4 text-opacity-70" />
+                                          <span className="sr-only">
+                                            Report an issue
+                                          </span>
+                                        </ToggleGroupItem>
+                                      </TooltipTrigger>
+                                      <TooltipContent
+                                        align="center"
+                                        side="top"
+                                        className="bg-primary rounded-md text-xs"
+                                        arrowPadding={2}
+                                        sideOffset={6}
+                                      >
+                                        Report an issue
                                       </TooltipContent>
                                     </Tooltip>
                                   </ToggleGroup>
@@ -180,6 +234,7 @@ export function ChatMessages() {
           <AnimatedButton
             className="absolute bottom-4 left-2/4 -translate-x-2/4"
             size="icon"
+            variant="outline"
             onClick={scrollToBottom}
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}

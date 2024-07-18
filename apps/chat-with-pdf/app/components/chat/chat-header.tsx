@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@makify/ui";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, RotateCcwIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Resolution, usePDF } from "react-to-pdf";
 
@@ -22,7 +22,7 @@ export function ChatHeader() {
 
   return (
     <header className="flex items-center border-b-[1px] border-gray-100 p-2">
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         {/* <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -123,12 +123,35 @@ export function ChatHeader() {
           </Tooltip> */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={() => toPDF()}>
-                <DownloadIcon className="h-4 w-4" />
-                <span className="sr-only">Download chat</span>
+              <Button
+                className="flex gap-2"
+                variant="outline"
+                size="default"
+                onClick={() => toPDF()}
+              >
+                <span className="sr-only">Reset chat</span>
+                <RotateCcwIcon className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Download chat</TooltipContent>
+            <TooltipContent side="bottom">
+              Delete the conversation and start a new one.
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="flex gap-2"
+                variant="outline"
+                size="default"
+                onClick={() => toPDF()}
+              >
+                <span>Download chat</span>
+                <DownloadIcon className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              Download the conversation as PDF.
+            </TooltipContent>
           </Tooltip>
         </div>
       </TooltipProvider>
