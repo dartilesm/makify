@@ -12,6 +12,7 @@ export * from "./pagination";
 export * from "./popover";
 export * from "./separator";
 export * from "./select";
+export * from "./tabs";
 export * from "./textarea";
 export * from "./toggle";
 export * from "./toggle-group";
