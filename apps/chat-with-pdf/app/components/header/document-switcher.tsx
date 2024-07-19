@@ -19,31 +19,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@makify/ui/components/dialog";
-import { Input } from "@makify/ui/components/input";
-import { Label } from "@makify/ui/components/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@makify/ui/components/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@makify/ui/components/select";
 import { cn } from "@makify/ui/lib/utils";
 import { Chat } from "@prisma/client";
 import {
+  CheckIcon,
+  ChevronsUpDownIcon,
   FileTextIcon,
   PlusCircleIcon,
-  ChevronsUpDownIcon,
-  CheckIcon,
 } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { NewDocumentDialogContent } from "./document-switcher/new-document-dialog-content";
+import { FormProvider, useForm } from "react-hook-form";
+import { uploadNewDocument } from "@/app/actions/upload-new-document";
 
 type DocumentSwitcherProps = {
   className?: string;
@@ -57,10 +50,13 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
-  const selectedDocument =
-    chats.find((chat) => chat.id === params.documentId) || chats[0];
+
+  const methods = useForm({ mode: "onChange" });
 
   useEffect(setPopoverWidth, []);
+
+  const selectedDocument =
+    chats.find((chat) => chat.id === params.documentId) || chats[0];
 
   function setPopoverWidth() {
     const buttonStyles = window.getComputedStyle(buttonRef.current as Element);
@@ -74,8 +70,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   }
 
   return (
-    <div className="flex w-3/4 max-w-96 flex-row items-center justify-center gap-2">
-      <span className="text-muted-foreground text-sm">Chatting with:</span>
+    <div className="flex w-3/4 max-w-96 flex-row items-center justify-center">
       <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -110,7 +105,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             style={popoverDynamicStyles}
           >
             <Command>
-              <CommandInput placeholder="Search team..." />
+              <CommandInput placeholder="Search document..." />
               <CommandEmpty>No team found.</CommandEmpty>
               <CommandList>
                 <CommandGroup>
@@ -123,10 +118,12 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                       }}
                       className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                     >
-                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
-                      <span className="truncate">
-                        {chat?.documentMetadata?.title}
-                      </span>
+                      <div className="flex flex-1 flex-row items-center gap-2">
+                        <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
+                        <span className="truncate">
+                          {chat?.documentMetadata?.title}
+                        </span>
+                      </div>
                       <CheckIcon
                         className={cn(
                           "h-4 min-h-4 w-4 shrink-0",
@@ -144,7 +141,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                 <CommandGroup>
                   <DialogTrigger asChild>
                     <CommandItem
-                      className="h-10"
+                      className="h-10 cursor-pointer"
                       onSelect={() => {
                         setOpen(false);
                         setShowNewTeamDialog(true);
@@ -159,52 +156,29 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             </Command>
           </PopoverContent>
         </Popover>
-        <DialogContent>
+        <DialogContent className="flex flex-col">
           <DialogHeader>
-            <DialogTitle>Import new document</DialogTitle>
+            <DialogTitle>Start chatting with a new document</DialogTitle>
             <DialogDescription>
               Add a new document to chat with with.
             </DialogDescription>
           </DialogHeader>
-          <div>
-            <div className="space-y-4 py-2 pb-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Team name</Label>
-                <Input id="name" placeholder="Acme Inc." />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="plan">Subscription plan</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a plan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="free">
-                      <span className="font-medium">Free</span> -{" "}
-                      <span className="text-muted-foreground">
-                        Trial for two weeks
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="pro">
-                      <span className="font-medium">Pro</span> -{" "}
-                      <span className="text-muted-foreground">
-                        $9/month per user
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowNewTeamDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Continue</Button>
-          </DialogFooter>
+          <FormProvider {...methods}>
+            <form className="flex flex-col gap-2" action={uploadNewDocument}>
+              <NewDocumentDialogContent />
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowNewTeamDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={!methods.formState.isValid}>
+                  Import
+                </Button>
+              </DialogFooter>
+            </form>
+          </FormProvider>
         </DialogContent>
       </Dialog>
     </div>
