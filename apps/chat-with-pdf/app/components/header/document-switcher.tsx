@@ -35,7 +35,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NewDocumentDialogContent } from "./document-switcher/new-document-dialog-content";
-import { FormProvider, useForm } from "react-hook-form";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { uploadNewDocument } from "@/app/actions/upload-new-document";
 
 type DocumentSwitcherProps = {
@@ -51,7 +51,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [open, setOpen] = useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
 
-  const methods = useForm({ mode: "onChange" });
+  const methods = useForm({ mode: "all" });
 
   useEffect(setPopoverWidth, []);
 
@@ -67,6 +67,20 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       maxWidth: buttonMaxWidth,
       width: buttonWidth,
     });
+  }
+
+  async function formAction(formInputValues: FieldValues = {}) {
+    const formData = new FormData();
+
+    // Filter out empty values
+    Object.keys(formInputValues)
+      .filter((key) => formInputValues[key])
+      .forEach((key) => {
+        formData.set(key, formInputValues[key]);
+      });
+
+    // Upload the new document
+    uploadNewDocument(formData);
   }
 
   return (
@@ -160,11 +174,14 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           <DialogHeader>
             <DialogTitle>Start chatting with a new document</DialogTitle>
             <DialogDescription>
-              Add a new document to chat with with.
+              Add a new document to chat with.
             </DialogDescription>
           </DialogHeader>
           <FormProvider {...methods}>
-            <form className="flex flex-col gap-2" action={uploadNewDocument}>
+            <form
+              className="flex flex-col gap-2"
+              onSubmit={methods.handleSubmit(formAction)}
+            >
               <NewDocumentDialogContent />
               <DialogFooter>
                 <Button

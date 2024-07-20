@@ -1,11 +1,9 @@
 "use server";
 
 export async function uploadNewDocument(formData: FormData) {
-  const file = formData.get("pdf-file") as File;
-  const fileLink = formData.get("pdf-link") as string;
+  const formDataEntries = Array.from(formData.entries());
 
-  console.log({
-    file,
-    fileLink,
-  });
+  for (const [key, value] of formDataEntries) {
+    console.log({ key, value });
+  }
 }
