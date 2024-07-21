@@ -50,7 +50,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
-  const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
+  const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState([]);
 
   const methods = useForm({ mode: "all" });
@@ -71,6 +71,13 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
     });
   }
 
+  function handleDialogToggle(isOpen: boolean) {
+    setShowNewDocumentDialog(isOpen);
+    if (!isOpen) {
+      setLoadingMessages([]);
+    }
+  }
+
   async function formAction(formInputValues: FieldValues = {}) {
     const formData = new FormData();
 
@@ -81,44 +88,50 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
         formData.set(key, formInputValues[key]);
       });
 
-    // Upload the new document
-    /* const stream = await uploadNewDocument(formData); */
-    async function* fetchStream() {
-      const response = await fetch("/api/chat/new-chat", {
-        method: "POST",
-        body: formData,
-      });
-      const reader = response.body?.getReader();
-      // Read the stream
-      while (true) {
-        const { done, value } = await reader?.read();
-        if (done) {
-          break;
-        }
+    const response = await fetch("/api/chat/new-chat", {
+      method: "POST",
+      body: formData,
+      cache: "no-store",
+    });
 
-        const decodedValue = new TextDecoder().decode(value);
+    const reader = await response.body?.getReader();
+    const decoder = new TextDecoder();
 
-        const parsedValue = JSON.parse(decodedValue);
-        yield parsedValue;
+    async function read() {
+      const { done, value } = await reader?.read();
+
+      if (done) {
+        return null;
       }
-    }
 
-    for await (const loadingMessagesArr of fetchStream()) {
-      const loadingMessagesFiltered = loadingMessagesArr.slice(
-        0,
-        loadingMessages.length - 1,
+      const chunk = decoder.decode(value, { stream: true });
+      const parsedLoadingMessages = JSON.parse(chunk);
+
+      const filteredLoadingMessages = parsedLoadingMessages.filter(
+        (message) => message.text,
       );
-      console.log(loadingMessagesArr, loadingMessagesFiltered);
-      setLoadingMessages(loadingMessagesFiltered);
-      if (loadingMessagesArr.at(-1)?.chatId) {
-        router.push(`/chat/${loadingMessagesArr.at(-1).chatId}`);
+      setLoadingMessages(filteredLoadingMessages);
+
+      const lastLoadingMessage = parsedLoadingMessages.at(-1);
+      if (lastLoadingMessage.chatId) {
+        setShowNewDocumentDialog(false);
+        setLoadingMessages([]);
+        setTimeout(
+          () => router.push(`/chat/${lastLoadingMessage.chatId}`),
+          1000,
+        );
       }
+      return read();
     }
+
+    read();
+
+    // Upload the new document
   }
 
   return (
     <div className="flex w-3/4 max-w-96 flex-row items-center justify-center">
-      <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
+      <Dialog open={showNewDocumentDialog} onOpenChange={handleDialogToggle}>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -191,7 +204,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                       className="h-10 cursor-pointer"
                       onSelect={() => {
                         setOpen(false);
-                        setShowNewTeamDialog(true);
+                        setShowNewDocumentDialog(true);
                       }}
                     >
                       <PlusCircleIcon className="mr-2 h-5 w-5" />
@@ -203,40 +216,42 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             </Command>
           </PopoverContent>
         </Popover>
-        <DialogContent className="flex h-[400px] flex-col">
-          <DialogHeader>
-            <DialogTitle>Start chatting with a new document</DialogTitle>
-            <DialogDescription>
-              Add a new document to chat with.
-            </DialogDescription>
-          </DialogHeader>
-          {!loadingMessages.length && (
-            <FormProvider {...methods}>
-              <form
-                className="flex flex-1 flex-col justify-between gap-2"
-                onSubmit={methods.handleSubmit(formAction)}
-              >
-                <NewDocumentDialogContent />
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowNewTeamDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={!methods.formState.isValid}>
-                    Import
-                  </Button>
-                </DialogFooter>
-              </form>
-            </FormProvider>
-          )}
-          {!!loadingMessages.length && (
-            <div className="flex flex-1 flex-col justify-between gap-2">
-              <NewDocumentLoadingState loadingMessages={loadingMessages} />
-            </div>
-          )}
-        </DialogContent>
+        {showNewDocumentDialog && (
+          <DialogContent className="flex h-[400px] flex-col">
+            <DialogHeader>
+              <DialogTitle>Start chatting with a new document</DialogTitle>
+              <DialogDescription>
+                Add a new document to chat with.
+              </DialogDescription>
+            </DialogHeader>
+            {!loadingMessages.length && (
+              <FormProvider {...methods}>
+                <form
+                  className="flex flex-1 flex-col justify-between gap-2"
+                  onSubmit={methods.handleSubmit(formAction)}
+                >
+                  <NewDocumentDialogContent />
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowNewDocumentDialog(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={!methods.formState.isValid}>
+                      Import
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </FormProvider>
+            )}
+            {!!loadingMessages.length && (
+              <div className="flex flex-1 flex-col justify-between gap-2">
+                <NewDocumentLoadingState loadingMessages={loadingMessages} />
+              </div>
+            )}
+          </DialogContent>
+        )}
       </Dialog>
     </div>
   );

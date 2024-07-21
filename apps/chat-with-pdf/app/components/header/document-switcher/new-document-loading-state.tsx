@@ -1,8 +1,10 @@
-import { cn } from "@makify/ui/lib/utils";
 import { motion } from "framer-motion";
-import { CheckIcon, ClockIcon, SparklesIcon } from "lucide-react";
+import { CheckIcon, ClockIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { loadingPdfLinkMessages } from "./constants/loading-messages";
+import { SparkleIcon } from "icons/sparkle";
+
+const SparkleIconAnimated = motion(SparkleIcon);
 
 type NewDocumentLoadingStateProps = {
   loadingMessages: typeof loadingPdfLinkMessages;
@@ -28,7 +30,43 @@ export function NewDocumentLoadingState({
 
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">
-      <SparklesIcon className="text-primary h-8 w-8" />
+      <div className="relative h-16 w-16">
+        <SparkleIconAnimated
+          className="text-primary absolute bottom-2 h-10 w-10"
+          animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0, opacity: 0 }}
+          transition={{
+            repeat: Infinity,
+            duration: 0.5,
+            repeatDelay: 0.5,
+            repeatType: "reverse",
+          }}
+        />
+        <SparkleIconAnimated
+          className="text-primary absolute bottom-0 right-0 h-6 w-6"
+          animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0, opacity: 0 }}
+          transition={{
+            delay: 0.25,
+            repeat: Infinity,
+            duration: 0.5,
+            repeatDelay: 0.5,
+            repeatType: "reverse",
+          }}
+        />
+        <SparkleIconAnimated
+          className="text-primary absolute right-2 top-2 h-5 w-5"
+          animate={{ scale: 1, opacity: 1 }}
+          initial={{ scale: 0, opacity: 0 }}
+          transition={{
+            delay: 0.5,
+            repeat: Infinity,
+            duration: 0.5,
+            repeatDelay: 0.5,
+            repeatType: "reverse",
+          }}
+        />
+      </div>
       <div className="relative">
         <div className="from-background pointer-events-none absolute inset-x-0 top-0 z-10 h-4 bg-gradient-to-b to-transparent" />
         <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 z-10 h-4 bg-gradient-to-t to-transparent" />

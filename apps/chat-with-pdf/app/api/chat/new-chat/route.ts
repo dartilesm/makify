@@ -2,9 +2,13 @@ import { INPUT_NAME } from "@/components/header/document-switcher/constants/inpu
 import { loadingPdfLinkMessages } from "@/components/header/document-switcher/constants/loading-messages";
 import { chunkedUpsert } from "@/lib/chunked-upsert";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
+import { getPdfData } from "@/lib/get-pdf-metadata";
 import { prisma } from "@/lib/prisma";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { NextRequest, NextResponse } from "next/server";
+
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
@@ -39,53 +43,77 @@ export async function POST(request: NextRequest) {
 }
 
 async function* createNewChatFromLink(documentUrl: string) {
-  const loadingMessages = [...loadingPdfLinkMessages];
+  try {
+    const loadingMessagesAsString = JSON.stringify(loadingPdfLinkMessages);
+    const loadingMessages = JSON.parse(loadingMessagesAsString);
 
-  // Create a new chat in the database
-  loadingMessages[0]!.active = true;
-  yield loadingMessages;
-  const chat = await prisma.chat.create({
-    data: {
-      documentUrl: documentUrl,
-    },
-  });
+    // Fetching PDF data and creating a new chat in the database
+    loadingMessages[0]!.active = true;
+    yield loadingMessages;
+    // TODO: How to remove this delay?
+    // It doesn't work well without it, the data seems to arrive appended to the fronted
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const pdfData = await getPdfData({ link: documentUrl });
+    const chat = await prisma.chat.create({
+      data: {
+        documentUrl: documentUrl,
+        documentMetadata: pdfData?.metadata,
+      },
+    });
 
-  // Load the PDF
-  loadingMessages[0]!.completed = true;
-  loadingMessages[0]!.active = false;
-  loadingMessages[1]!.active = true;
-  yield loadingMessages;
-  const response = await fetch(documentUrl);
-  const blob = await response.blob();
-  const loader = new WebPDFLoader(blob);
-  const pages = await loader.load();
+    // Load the PDF
+    loadingMessages[0]!.completed = true;
+    loadingMessages[0]!.active = false;
+    loadingMessages[1]!.active = true;
+    yield loadingMessages;
+    // TODO: How to remove this delay?
+    // It doesn't work well without it, the data seems to arrive appended to the fronted
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
+    const pages = await loader.load();
 
-  // Split it into chunks
-  loadingMessages[1]!.completed = true;
-  loadingMessages[1]!.active = false;
-  loadingMessages[2]!.active = true;
-  yield loadingMessages;
-  const documents = await Promise.all(
-    pages.map((page) => prepareDocument(page, chat.id)),
-  );
+    // Split it into chunks
+    loadingMessages[1]!.completed = true;
+    loadingMessages[1]!.active = false;
+    loadingMessages[2]!.active = true;
+    yield loadingMessages;
+    // TODO: How to remove this delay?
+    // It doesn't work well without it, the data seems to arrive appended to the fronted
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const documents = await Promise.all(
+      pages.map((page) => prepareDocument(page, chat.id)),
+    );
 
-  // Vectorize the documents
-  loadingMessages[2]!.completed = true;
-  loadingMessages[2]!.active = false;
-  loadingMessages[3]!.active = true;
-  yield loadingMessages;
-  const vectors = await Promise.all(documents.flat().map(embedDocument));
+    // Vectorize the documents
+    loadingMessages[2]!.completed = true;
+    loadingMessages[2]!.active = false;
+    loadingMessages[3]!.active = true;
+    yield loadingMessages;
+    // TODO: How to remove this delay?
+    // It doesn't work well without it, the data seems to arrive appended to the fronted
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    const vectors = await Promise.all(documents.flat().map(embedDocument));
 
-  // Store the vectors in Pinecone
-  loadingMessages[3]!.completed = true;
-  loadingMessages[3]!.active = false;
-  loadingMessages[4]!.active = true;
-  yield loadingMessages;
-  await chunkedUpsert(vectors, chat.id);
+    // Store the vectors in Pinecone
+    loadingMessages[3]!.completed = true;
+    loadingMessages[3]!.active = false;
+    loadingMessages[4]!.active = true;
+    yield loadingMessages;
+    // TODO: How to remove this delay?
+    // It doesn't work well without it, the data seems to arrive appended to the fronted
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    await chunkedUpsert(vectors, chat.id);
 
-  // Set as completed the last message
-  loadingMessages[4]!.completed = true;
-  loadingMessages[4]!.active = false;
-  loadingMessages[5]!.chatId = chat.id;
-  yield loadingMessages;
+    // Set as completed the last message
+    loadingMessages[4]!.completed = true;
+    loadingMessages[4]!.active = false;
+    loadingMessages[5]!.chatId = chat.id;
+    /* loadingMessages[5]!.chatId = "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0"; */
+    yield loadingMessages;
+    // TODO: How to remove this delay?
+    // It doesn't work well without it, the data seems to arrive appended to the fronted
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  } catch (error) {
+    console.log(error);
+  }
 }
