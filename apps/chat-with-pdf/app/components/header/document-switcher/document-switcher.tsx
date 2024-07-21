@@ -34,9 +34,10 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { NewDocumentDialogContent } from "./document-switcher/new-document-dialog-content";
+import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { uploadNewDocument } from "@/app/actions/upload-new-document";
+import { NewDocumentLoadingState } from "./new-document-loading-state";
 
 type DocumentSwitcherProps = {
   className?: string;
@@ -50,6 +51,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState([]);
 
   const methods = useForm({ mode: "all" });
 
@@ -80,7 +82,38 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       });
 
     // Upload the new document
-    uploadNewDocument(formData);
+    /* const stream = await uploadNewDocument(formData); */
+    async function* fetchStream() {
+      const response = await fetch("/api/chat/new-chat", {
+        method: "POST",
+        body: formData,
+      });
+      const reader = response.body?.getReader();
+      // Read the stream
+      while (true) {
+        const { done, value } = await reader?.read();
+        if (done) {
+          break;
+        }
+
+        const decodedValue = new TextDecoder().decode(value);
+
+        const parsedValue = JSON.parse(decodedValue);
+        yield parsedValue;
+      }
+    }
+
+    for await (const loadingMessagesArr of fetchStream()) {
+      const loadingMessagesFiltered = loadingMessagesArr.slice(
+        0,
+        loadingMessages.length - 1,
+      );
+      console.log(loadingMessagesArr, loadingMessagesFiltered);
+      setLoadingMessages(loadingMessagesFiltered);
+      if (loadingMessagesArr.at(-1)?.chatId) {
+        router.push(`/chat/${loadingMessagesArr.at(-1).chatId}`);
+      }
+    }
   }
 
   return (
@@ -170,32 +203,39 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             </Command>
           </PopoverContent>
         </Popover>
-        <DialogContent className="flex flex-col">
+        <DialogContent className="flex h-[400px] flex-col">
           <DialogHeader>
             <DialogTitle>Start chatting with a new document</DialogTitle>
             <DialogDescription>
               Add a new document to chat with.
             </DialogDescription>
           </DialogHeader>
-          <FormProvider {...methods}>
-            <form
-              className="flex flex-col gap-2"
-              onSubmit={methods.handleSubmit(formAction)}
-            >
-              <NewDocumentDialogContent />
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowNewTeamDialog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={!methods.formState.isValid}>
-                  Import
-                </Button>
-              </DialogFooter>
-            </form>
-          </FormProvider>
+          {!loadingMessages.length && (
+            <FormProvider {...methods}>
+              <form
+                className="flex flex-1 flex-col justify-between gap-2"
+                onSubmit={methods.handleSubmit(formAction)}
+              >
+                <NewDocumentDialogContent />
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowNewTeamDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={!methods.formState.isValid}>
+                    Import
+                  </Button>
+                </DialogFooter>
+              </form>
+            </FormProvider>
+          )}
+          {!!loadingMessages.length && (
+            <div className="flex flex-1 flex-col justify-between gap-2">
+              <NewDocumentLoadingState loadingMessages={loadingMessages} />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

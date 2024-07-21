@@ -19,15 +19,11 @@ import {
   useFormContext,
   useWatch,
 } from "react-hook-form";
+import { INPUT_NAME } from "./constants/input-names";
 
 const enum DOCUMENT_SWITCHER_TAB {
   LINK = "link",
   IMPORT = "import",
-}
-
-const enum INPUT_NAME {
-  LINK = "pdf-link",
-  FILE = "pdf-file",
 }
 
 type FileAttached = {

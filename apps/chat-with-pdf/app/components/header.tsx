@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { DocumentSwitcher } from "./header/document-switcher";
+import { DocumentSwitcher } from "./header/document-switcher/document-switcher";
 import { UserNav } from "./header/user-nav";
 import { prisma } from "@/lib/prisma";
 
