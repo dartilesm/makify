@@ -30,13 +30,14 @@ import {
   CheckIcon,
   ChevronsUpDownIcon,
   FileTextIcon,
+  Loader2,
   PlusCircleIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
-import { uploadNewDocument } from "@/app/actions/upload-new-document";
+import { loadingPdfLinkMessages } from "./constants/loading-messages";
+import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { NewDocumentLoadingState } from "./new-document-loading-state";
 
 type DocumentSwitcherProps = {
@@ -51,7 +52,9 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
-  const [loadingMessages, setLoadingMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState<
+    typeof loadingPdfLinkMessages
+  >([]);
 
   const methods = useForm({ mode: "all" });
 
@@ -94,6 +97,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       cache: "no-store",
     });
 
+    setLoadingMessages(loadingPdfLinkMessages);
+
     const reader = await response.body?.getReader();
     const decoder = new TextDecoder();
 
@@ -116,6 +121,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       if (lastLoadingMessage.chatId) {
         setShowNewDocumentDialog(false);
         setLoadingMessages([]);
+        methods.reset();
         setTimeout(
           () => router.push(`/chat/${lastLoadingMessage.chatId}`),
           1000,
@@ -238,7 +244,17 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={!methods.formState.isValid}>
+                    <Button
+                      type="submit"
+                      disabled={
+                        !methods.formState.isValid ||
+                        methods.formState.isSubmitting
+                      }
+                      className="flex flex-row gap-2"
+                    >
+                      {methods.formState.isSubmitting && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
                       Import
                     </Button>
                   </DialogFooter>

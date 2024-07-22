@@ -1,14 +1,19 @@
 import { PDFDocument } from "pdf-lib";
 
 type GetPdfMetadataProps = {
-  file?: File;
-  link?: string;
+  documentFile?: File;
+  documentUrl?: string;
 };
 
-export async function getPdfData({ file, link }: GetPdfMetadataProps) {
-  if (!file && !link) return null;
+export async function getPdfData({
+  documentFile,
+  documentUrl,
+}: GetPdfMetadataProps) {
+  if (!documentFile && !documentUrl) return null;
 
-  if (link) return getPdfDataFromLink(link);
+  if (documentUrl) return getPdfDataFromLink(documentUrl);
+
+  if (documentFile) return getPdfDataFromFile(documentFile);
 }
 
 async function getPdfDataFromLink(link: string) {
@@ -16,9 +21,12 @@ async function getPdfDataFromLink(link: string) {
   const pdfBlob = await response.blob();
   const pdfBytes = await pdfBlob.arrayBuffer();
 
-  const pdfDoc = await PDFDocument.load(pdfBytes);
+  const pdfDoc = await PDFDocument.load(pdfBytes, {
+    updateMetadata: false,
+    ignoreEncryption: true,
+  });
 
-  const title = pdfDoc.getTitle();
+  const title = pdfDoc.getTitle() || "Untitled";
   const numPages = pdfDoc.getPageCount();
   const size = pdfBlob.size;
   const sizeInKB = +(size / 1024).toFixed(2);
@@ -39,4 +47,48 @@ async function getPdfDataFromLink(link: string) {
   };
 
   return pdfData;
+}
+
+async function getPdfDataFromFile(file: File) {
+  const reader = new FileReader();
+
+  reader.onabort = () => console.log("file reading was aborted");
+  reader.onerror = () => console.log("file reading has failed");
+
+  return new Promise((resolve, reject) => {
+    reader.onload = async () => {
+      const binaryStr = reader.result;
+
+      const pdfDoc = await PDFDocument.load(binaryStr as ArrayBuffer, {
+        updateMetadata: false,
+        ignoreEncryption: true,
+      });
+
+      const title = pdfDoc.getTitle() || "Untitled";
+      const numPages = pdfDoc.getPageCount();
+      const fileName = file.name;
+      const size = file.size;
+      const sizeInKB = +(size / 1024).toFixed(2);
+      const sizeInMB = +(sizeInKB / 1024).toFixed(2);
+
+      const metadata = {
+        fileName,
+        title,
+        numPages,
+        size: {
+          kb: sizeInKB,
+          mb: sizeInMB,
+        },
+      };
+
+      const pdfData = {
+        metadata,
+        pdfBlob: file,
+      };
+
+      resolve(pdfData);
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
 }

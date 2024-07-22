@@ -1,7 +1,7 @@
 export const loadingPdfLinkMessages = [
   {
     text: "Fetching PDF data",
-    active: false,
+    active: true,
     completed: false,
     chatId: "",
   },
@@ -35,4 +35,4 @@ export const loadingPdfLinkMessages = [
     completed: null,
     chatId: "",
   },
-] as const;
+];
