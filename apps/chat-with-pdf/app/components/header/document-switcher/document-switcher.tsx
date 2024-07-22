@@ -36,9 +36,12 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
-import { loadingPdfLinkMessages } from "./constants/loading-messages";
 import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { NewDocumentLoadingState } from "./new-document-loading-state";
+import {
+  loadingPdfFileMessages,
+  loadingPdfLinkMessages,
+} from "@/lib/get-loading-messages";
 
 type DocumentSwitcherProps = {
   className?: string;
@@ -53,7 +56,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [open, setOpen] = useState(false);
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState<
-    typeof loadingPdfLinkMessages
+    typeof loadingPdfLinkMessages | typeof loadingPdfFileMessages
   >([]);
 
   const methods = useForm({ mode: "all" });

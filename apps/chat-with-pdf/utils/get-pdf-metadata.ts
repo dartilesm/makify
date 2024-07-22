@@ -11,13 +11,47 @@ export async function getPdfData({
 }: GetPdfMetadataProps) {
   if (!documentFile && !documentUrl) return null;
 
-  if (documentUrl) return getPdfDataFromLink(documentUrl);
+  let fileFetchResponse = null;
 
-  if (documentFile) return getPdfDataFromFile(documentFile);
+  fileFetchResponse = documentUrl
+    ? await fetch(documentUrl)
+    : fileFetchResponse;
+
+  const pdfFile = fileFetchResponse
+    ? await fileFetchResponse?.blob()
+    : (documentFile as File);
+  const pdfBytes = await pdfFile.arrayBuffer();
+
+  const pdfDoc = await PDFDocument.load(pdfBytes, {
+    updateMetadata: false,
+    ignoreEncryption: true,
+  });
+
+  const title = pdfDoc.getTitle() || "Untitled";
+  const numPages = pdfDoc.getPageCount();
+  const size = pdfFile.size;
+  const sizeInKB = +(size / 1024).toFixed(2);
+  const sizeInMB = +(sizeInKB / 1024).toFixed(2);
+
+  const metadata = {
+    title,
+    numPages,
+    size: {
+      kb: sizeInKB,
+      mb: sizeInMB,
+    },
+  };
+
+  const pdfData = {
+    metadata,
+    pdfBlob: pdfFile,
+  };
+
+  return pdfData;
 }
 
-async function getPdfDataFromLink(link: string) {
-  const response = await fetch(link);
+async function getPdfDataFromLink(documentUrl: string) {
+  const response = await fetch(documentUrl);
   const pdfBlob = await response.blob();
   const pdfBytes = await pdfBlob.arrayBuffer();
 
@@ -50,6 +84,7 @@ async function getPdfDataFromLink(link: string) {
 }
 
 async function getPdfDataFromFile(file: File) {
+  file.arrayBuffer();
   const reader = new FileReader();
 
   reader.onabort = () => console.log("file reading was aborted");

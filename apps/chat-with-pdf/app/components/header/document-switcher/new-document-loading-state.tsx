@@ -1,13 +1,18 @@
+import {
+  loadingPdfFileMessages,
+  loadingPdfLinkMessages,
+} from "@/lib/get-loading-messages";
 import { motion } from "framer-motion";
-import { CheckIcon, ClockIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { loadingPdfLinkMessages } from "./constants/loading-messages";
 import { SparkleIcon } from "icons/sparkle";
+import { CheckIcon, ClockIcon, LoaderCircleIcon } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 const SparkleIconAnimated = motion(SparkleIcon);
 
 type NewDocumentLoadingStateProps = {
-  loadingMessages: typeof loadingPdfLinkMessages;
+  loadingMessages:
+    | typeof loadingPdfLinkMessages
+    | typeof loadingPdfFileMessages;
 };
 
 export function NewDocumentLoadingState({
@@ -102,9 +107,11 @@ export function NewDocumentLoadingState({
                 }}
               >
                 <div>
-                  {step.completed ? (
-                    <CheckIcon className="h-5 w-5" />
-                  ) : (
+                  {step.completed && <CheckIcon className="h-5 w-5" />}
+                  {step.active && (
+                    <LoaderCircleIcon className="h-5 w-5 animate-spin" />
+                  )}
+                  {!step.completed && !step.active && (
                     <ClockIcon className="h-5 w-5" />
                   )}
                 </div>

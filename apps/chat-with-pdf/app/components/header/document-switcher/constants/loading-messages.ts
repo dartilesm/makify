@@ -6,12 +6,6 @@ export const loadingPdfLinkMessages = [
     chatId: "",
   },
   {
-    text: "Parsing your PDF",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
     text: "Processing your document",
     active: false,
     completed: false,
