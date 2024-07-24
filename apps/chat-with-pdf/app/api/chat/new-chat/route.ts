@@ -70,8 +70,9 @@ async function* createNewChat({
   // It doesn't work well without it, the data seems to arrive appended to the fronted
   await new Promise((resolve) => setTimeout(resolve, 1000));
   let chat;
+  let pdfData;
   try {
-    const pdfData = await getPdfData({ documentUrl, documentFile });
+    pdfData = await getPdfData({ documentUrl, documentFile });
     chat = await prisma.chat.create({
       data: {
         documentUrl: documentUrl,

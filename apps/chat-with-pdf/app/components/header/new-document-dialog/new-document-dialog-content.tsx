@@ -19,7 +19,7 @@ import {
   useFormContext,
   useWatch,
 } from "react-hook-form";
-import { INPUT_NAME } from "./constants/input-names";
+import { INPUT_NAME } from "../document-switcher/constants/input-names";
 
 const enum DOCUMENT_SWITCHER_TAB {
   LINK = "link",
