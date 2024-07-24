@@ -1,88 +1,50 @@
-export const loadingPdfLinkMessages = [
-  {
-    text: "Fetching PDF data",
-    active: true,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: "Processing your document",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: "Learning from your document",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: "Storing knowledge in the cloud",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: null,
-    active: null,
-    completed: null,
-    chatId: "",
-  },
-];
+import {
+  loadingPdfFileMessages,
+  loadingPdfLinkMessages,
+} from "@/components/header/document-switcher/constants/loading-messages";
 
-export const loadingPdfFileMessages = [
-  {
-    text: "Uploading PDF and fetching data",
-    active: true,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: "Processing your document",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: "Learning from your document",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: "Storing knowledge in the cloud",
-    active: false,
-    completed: false,
-    chatId: "",
-  },
-  {
-    text: null,
-    active: null,
-    completed: null,
-    chatId: "",
-  },
-];
-
-let currentActiveIndex = 0;
+let currentActiveIndex = -1;
 let loadingMessagesCopy = [] as
   | typeof loadingPdfFileMessages
   | typeof loadingPdfLinkMessages;
 
 export function resetLoadingMessages() {
-  currentActiveIndex = 0;
+  currentActiveIndex = -1;
   loadingMessagesCopy = [];
 }
 
-export function* getLoadingMessages(isViaLink: boolean, chatId: string | null) {
-  if (currentActiveIndex === 0) {
-    const loadingMessagesStringified = JSON.stringify(
-      isViaLink ? loadingPdfLinkMessages : loadingPdfFileMessages,
-    );
-    loadingMessagesCopy = JSON.parse(loadingMessagesStringified);
+type GetLoadingMessagesProps = {
+  isViaLink: boolean;
+  chatId: string | null;
+  errorMessage?: string;
+};
+
+export function getLoadingMessages({
+  isViaLink,
+  chatId,
+  errorMessage,
+}: GetLoadingMessagesProps) {
+  if (errorMessage) {
+    const isLoadingMessagesCopyEmpty = loadingMessagesCopy.length === 0;
+    const loadingMessagesToClone = isLoadingMessagesCopyEmpty
+      ? isViaLink
+        ? loadingPdfLinkMessages
+        : loadingPdfFileMessages
+      : loadingMessagesCopy;
+    const loadingMessagesNewCopy = structuredClone(loadingMessagesToClone);
+    loadingMessagesNewCopy[currentActiveIndex]!.error = errorMessage;
+    resetLoadingMessages();
+    return loadingMessagesNewCopy;
   }
 
-  console.log(currentActiveIndex);
+  currentActiveIndex = currentActiveIndex + 1;
+
+  if (currentActiveIndex === 0) {
+    loadingMessagesCopy = structuredClone(
+      isViaLink ? loadingPdfLinkMessages : loadingPdfFileMessages,
+    );
+  }
+
   if (loadingMessagesCopy?.length === 0) return [];
 
   if (currentActiveIndex > 0) {
@@ -91,14 +53,12 @@ export function* getLoadingMessages(isViaLink: boolean, chatId: string | null) {
   }
 
   if (currentActiveIndex === loadingMessagesCopy.length - 1) {
-    const loadingMessagesCopyStringified = JSON.stringify(loadingMessagesCopy);
-    const loadingMessagesNewCopy = JSON.parse(loadingMessagesCopyStringified);
-    loadingMessagesNewCopy[currentActiveIndex]!.chatId = chatId;
+    const loadingMessagesNewCopy = structuredClone(loadingMessagesCopy);
+    loadingMessagesNewCopy[currentActiveIndex]!.chatId = chatId as string;
     resetLoadingMessages();
-    yield loadingMessagesNewCopy;
+    return loadingMessagesNewCopy;
   }
 
   loadingMessagesCopy[currentActiveIndex]!.active = true;
-  currentActiveIndex = currentActiveIndex + 1;
-  yield loadingMessagesCopy;
+  return loadingMessagesCopy;
 }

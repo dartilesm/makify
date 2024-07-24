@@ -41,7 +41,7 @@ import { NewDocumentLoadingState } from "./new-document-loading-state";
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
-} from "@/lib/get-loading-messages";
+} from "./constants/loading-messages";
 
 type DocumentSwitcherProps = {
   className?: string;
@@ -109,11 +109,13 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       const { done, value } = await reader?.read();
 
       if (done) {
+        console.log("it is done", value);
         return null;
       }
 
       const chunk = decoder.decode(value, { stream: true });
       const parsedLoadingMessages = JSON.parse(chunk);
+      console.log({ parsedLoadingMessages });
 
       const filteredLoadingMessages = parsedLoadingMessages.filter(
         (message) => message.text,
@@ -266,7 +268,10 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             )}
             {!!loadingMessages.length && (
               <div className="flex flex-1 flex-col justify-between gap-2">
-                <NewDocumentLoadingState loadingMessages={loadingMessages} />
+                <NewDocumentLoadingState
+                  loadingMessages={loadingMessages}
+                  onTryAgain={() => setLoadingMessages([])}
+                />
               </div>
             )}
           </DialogContent>
