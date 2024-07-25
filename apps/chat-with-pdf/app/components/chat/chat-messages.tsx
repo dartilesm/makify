@@ -8,14 +8,28 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  useToast,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { useChat } from "ai/react";
+import { Message, useChat } from "ai/react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
-import { ArrowDown, CopyIcon, FlagIcon, RefreshCcwIcon } from "lucide-react";
+import {
+  ArrowDown,
+  BookmarkIcon,
+  CopyIcon,
+  FlagIcon,
+  RefreshCcwIcon,
+} from "lucide-react";
 import { useParams } from "next/navigation";
 import { RefObject, useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
+
+const enum QUICK_ACTIONS {
+  COPY = "copy",
+  REGENERATE = "regenerate",
+  BOOKMARK = "bookmark",
+  REPORT = "report",
+}
 
 const AnimatedButton = motion(Button);
 
@@ -26,14 +40,19 @@ export function ChatMessages() {
     number | null
   >(null);
   const params = useParams();
+  const { toast } = useToast();
 
-  const { messages } = useChat({
+  const { messages, reload } = useChat({
     id: params.documentId as string,
   });
+
+  useEffect(scrollToBottom, [messages.length]);
 
   const isLastMessageInView = useInView(lastMessageRef, {
     root: chatContainerRef.current as unknown as RefObject<HTMLDivElement>,
   });
+
+  const filteredMessages = messages.filter((message) => !message.annotations);
 
   const isScrollHeightGreaterThanContainerHeight =
     (chatContainerRef.current &&
@@ -45,7 +64,32 @@ export function ChatMessages() {
     (message) => message.annotations,
   );
 
-  useEffect(scrollToBottom, [messages.length]);
+  const quickActions = [
+    {
+      Icon: CopyIcon,
+      label: "Copy message",
+      value: QUICK_ACTIONS.COPY,
+      onlyLastMessage: false,
+    },
+    {
+      Icon: RefreshCcwIcon,
+      label: "Regenerate response",
+      value: QUICK_ACTIONS.REGENERATE,
+      onlyLastMessage: true,
+    },
+    {
+      Icon: BookmarkIcon,
+      label: "Bookmark response (not implemented)",
+      value: QUICK_ACTIONS.BOOKMARK,
+      onlyLastMessage: false,
+    },
+    {
+      Icon: FlagIcon,
+      label: "Report an issue (not implemented)",
+      value: QUICK_ACTIONS.REPORT,
+      onlyLastMessage: false,
+    },
+  ];
 
   // Controls the tooltip open state for each message, as it collides with the inner tooltip
   function updateMessageTooltipOpenIndex(index: number, isOpen?: boolean) {
@@ -57,6 +101,21 @@ export function ChatMessages() {
     navigator.clipboard.writeText(message);
   }
 
+  function handleToggleAction(action: QUICK_ACTIONS, message: Message) {
+    if (action === QUICK_ACTIONS.COPY) {
+      copyMessage(message.content);
+      toast({
+        title: "Message copied successfully!",
+      });
+    }
+    if (action === QUICK_ACTIONS.REGENERATE) {
+      reload();
+      toast({
+        title: "Regenerating response",
+      });
+    }
+  }
+
   function scrollToBottom() {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
@@ -65,7 +124,7 @@ export function ChatMessages() {
   }
 
   function asignRefToLastMessage(el: HTMLDivElement | null, index: number) {
-    const isLastMessage = index === messages.length - 1;
+    const isLastMessage = index === filteredMessages.length - 1;
     if (el && isLastMessage) {
       lastMessageRef.current = el;
     }
@@ -75,158 +134,119 @@ export function ChatMessages() {
     <div className="relative flex-1 overflow-hidden" id="chat-messages">
       <div className="flex h-full overflow-auto p-4" ref={chatContainerRef}>
         <div className="flex h-fit flex-col gap-4">
-          {messages
-            .filter((message) => !message.annotations)
-            .map((message, index) => {
-              return (
-                <TooltipProvider key={message.id}>
-                  <Tooltip
-                    delayDuration={0}
-                    onOpenChange={(isOpen) =>
-                      updateMessageTooltipOpenIndex(index, isOpen)
-                    }
-                    open={index === messageTooltipOpenIndex}
-                  >
-                    <TooltipTrigger asChild>
-                      <div
-                        className={cn("flex w-full text-left", {
-                          "justify-end": message.role === "user",
-                          "mt-auto": index === 0, // TODO: Fix this to start from the bottom
-                        })}
-                        ref={(el) => {
-                          asignRefToLastMessage(el, index);
-                        }}
-                      >
-                        <div className="max-w-[70%] space-y-1.5">
-                          <div
-                            className={cn({
-                              "rounded-md bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800":
-                                message.role === "assistant",
-                              "bg-primary rounded-md px-4 py-3 text-sm text-white":
-                                message.role === "user",
-                            })}
-                          >
-                            {message.role === "user" && (
-                              <p>{message.content}</p>
-                            )}
-                            {message.role === "assistant" && (
-                              <>
-                                <AssistantMessage
-                                  type={
-                                    messagesWithAnnotations?.[index]
-                                      ?.annotations?.[0]?.type as string
+          {filteredMessages.map((message, index) => {
+            return (
+              <TooltipProvider key={message.id}>
+                <Tooltip
+                  delayDuration={0}
+                  onOpenChange={(isOpen) =>
+                    updateMessageTooltipOpenIndex(index, isOpen)
+                  }
+                  open={index === messageTooltipOpenIndex}
+                >
+                  <TooltipTrigger asChild>
+                    <div
+                      className={cn("flex w-full text-left", {
+                        "justify-end": message.role === "user",
+                        "mt-auto": index === 0, // TODO: Fix this to start from the bottom
+                      })}
+                      ref={(el) => {
+                        asignRefToLastMessage(el, index);
+                      }}
+                    >
+                      <div className="max-w-[70%] space-y-1.5">
+                        <div
+                          className={cn({
+                            "rounded-md bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800":
+                              message.role === "assistant",
+                            "bg-primary rounded-md px-4 py-3 text-sm text-white":
+                              message.role === "user",
+                          })}
+                        >
+                          {message.role === "user" && <p>{message.content}</p>}
+                          {message.role === "assistant" && (
+                            <>
+                              <AssistantMessage
+                                type={
+                                  messagesWithAnnotations?.[index]
+                                    ?.annotations?.[0]?.type as string
+                                }
+                              >
+                                {message.content}
+                              </AssistantMessage>
+
+                              <TooltipContent
+                                align="start"
+                                side="bottom"
+                                className="rounded-md border-[1px] border-gray-200 bg-gray-50 p-1"
+                                sideOffset={-10}
+                                alignOffset={10}
+                                avoidCollisions={false}
+                              >
+                                <ToggleGroup
+                                  type="single"
+                                  size="xs"
+                                  className="z-10"
+                                  onValueChange={(action: QUICK_ACTIONS) =>
+                                    handleToggleAction(action, message, index)
                                   }
                                 >
-                                  {message.content}
-                                </AssistantMessage>
-
-                                <TooltipContent
-                                  align="start"
-                                  side="bottom"
-                                  className="rounded-md border-[1px] border-gray-200 bg-gray-50 p-1"
-                                  sideOffset={-10}
-                                  alignOffset={10}
-                                  avoidCollisions={false}
-                                >
-                                  <ToggleGroup
-                                    type="single"
-                                    size="xs"
-                                    className="z-10"
-                                  >
-                                    <Tooltip
-                                      delayDuration={0}
-                                      onOpenChange={() =>
-                                        updateMessageTooltipOpenIndex(index)
+                                  {quickActions.map(
+                                    ({
+                                      Icon,
+                                      label,
+                                      value,
+                                      onlyLastMessage,
+                                    }) => {
+                                      if (
+                                        onlyLastMessage &&
+                                        index !== filteredMessages.length - 1
+                                      ) {
+                                        return null;
                                       }
-                                    >
-                                      <TooltipTrigger asChild>
-                                        <ToggleGroupItem
-                                          value="a"
-                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
-                                          onClick={() =>
-                                            copyMessage(message.content)
+                                      return (
+                                        <Tooltip
+                                          delayDuration={0}
+                                          onOpenChange={() =>
+                                            updateMessageTooltipOpenIndex(index)
                                           }
                                         >
-                                          <CopyIcon className="text-primary h-4 w-4 text-opacity-70" />
-                                          <span className="sr-only">Copy</span>
-                                        </ToggleGroupItem>
-                                      </TooltipTrigger>
-                                      <TooltipContent
-                                        align="center"
-                                        side="top"
-                                        className="bg-primary rounded-md text-xs"
-                                        arrowPadding={2}
-                                        sideOffset={6}
-                                      >
-                                        Copy message
-                                      </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip
-                                      delayDuration={0}
-                                      onOpenChange={() =>
-                                        updateMessageTooltipOpenIndex(index)
-                                      }
-                                    >
-                                      <TooltipTrigger asChild>
-                                        <ToggleGroupItem
-                                          value="a"
-                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
-                                        >
-                                          <RefreshCcwIcon className="text-primary h-4 w-4 text-opacity-70" />
-                                          <span className="sr-only">
-                                            Regenerate response
-                                          </span>
-                                        </ToggleGroupItem>
-                                      </TooltipTrigger>
-                                      <TooltipContent
-                                        align="center"
-                                        side="top"
-                                        className="bg-primary rounded-md text-xs"
-                                        arrowPadding={2}
-                                        sideOffset={6}
-                                      >
-                                        Regenerate response
-                                      </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip
-                                      delayDuration={0}
-                                      onOpenChange={() =>
-                                        updateMessageTooltipOpenIndex(index)
-                                      }
-                                    >
-                                      <TooltipTrigger asChild>
-                                        <ToggleGroupItem
-                                          value="a"
-                                          className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
-                                        >
-                                          <FlagIcon className="text-primary h-4 w-4 text-opacity-70" />
-                                          <span className="sr-only">
-                                            Report an issue
-                                          </span>
-                                        </ToggleGroupItem>
-                                      </TooltipTrigger>
-                                      <TooltipContent
-                                        align="center"
-                                        side="top"
-                                        className="bg-primary rounded-md text-xs"
-                                        arrowPadding={2}
-                                        sideOffset={6}
-                                      >
-                                        Report an issue
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </ToggleGroup>
-                                </TooltipContent>
-                              </>
-                            )}
-                          </div>
+                                          <TooltipTrigger asChild>
+                                            <ToggleGroupItem
+                                              value={value}
+                                              className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
+                                            >
+                                              <Icon className="text-primary h-4 w-4 text-opacity-70" />
+                                              <span className="sr-only">
+                                                {label}
+                                              </span>
+                                            </ToggleGroupItem>
+                                          </TooltipTrigger>
+                                          <TooltipContent
+                                            align="center"
+                                            side="top"
+                                            className="bg-primary rounded-md text-xs"
+                                            arrowPadding={2}
+                                            sideOffset={6}
+                                          >
+                                            {label}
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      );
+                                    },
+                                  )}
+                                </ToggleGroup>
+                              </TooltipContent>
+                            </>
+                          )}
                         </div>
                       </div>
-                    </TooltipTrigger>
-                  </Tooltip>
-                </TooltipProvider>
-              );
-            })}
+                    </div>
+                  </TooltipTrigger>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })}
         </div>
       </div>
       <AnimatePresence>

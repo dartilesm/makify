@@ -39,6 +39,15 @@ export function ChatFooter() {
     handleInputChange(event);
   }
 
+  function handleTextareaKeyDown(
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSubmit();
+    }
+  }
+
   return (
     <div className="z-10 px-4 pb-3">
       <form onSubmit={handleSubmit}>
@@ -52,13 +61,19 @@ export function ChatFooter() {
           )}
         >
           <Textarea
-            className="max-h-24 min-h-2 flex-1 resize-none border-0 border-none p-0 shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
+            className="max-h-24 min-h-2 flex-1 resize-none border-0 border-none p-[2px] shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
             placeholder={`Ask me anything about the document...`}
             rows={1}
             onChange={handleTextareaChange}
+            onKeyDown={handleTextareaKeyDown}
             value={inputValue}
           />
-          <Button type="submit" variant="ghost" size="icon">
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            disabled={!inputValue}
+          >
             <SendIcon className="h-4 w-4" />
             <span className="sr-only">Send</span>
           </Button>
