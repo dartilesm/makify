@@ -20,6 +20,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.52.1",
+    "react-pdf": "9.1.0",
     "react-to-pdf": "^1.0.1"
   },
   "devDependencies": {
@@ -47,7 +48,6 @@
     "react": "latest",
     "react-dom": "latest",
     "react-markdown": "^9.0.1",
-    "react-pdf": "^7.7.1",
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
     "zod": "^3.23.8"

@@ -1,5 +1,5 @@
 import { Button, Input } from "@makify/ui";
-import { PdfData } from "@/components/pdf/pdf-viewer";
+import { PAGE_ZOOM_TYPE, PdfData } from "@/components/pdf/pdf-viewer";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -7,21 +7,25 @@ import {
   ZoomOutIcon,
   DotsVerticalIcon,
 } from "@radix-ui/react-icons";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { cn } from "@makify/ui/lib/utils";
 
 type Props = {
   className?: string;
   pdfData: PdfData;
   page: number;
+  zoom?: number;
   onPageChange?: (page: number) => void;
+  onZoomChange?: (zoomType: PAGE_ZOOM_TYPE) => void;
 };
 
 export function PdfToolbar({
   className,
   pdfData,
   page,
+  zoom = 1,
   onPageChange = () => null,
+  onZoomChange = (zoomScale: number) => null,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,6 +33,10 @@ export function PdfToolbar({
     if (newPage < 1 || newPage > pdfData.numPages) return;
     onPageChange(newPage);
     inputRef.current!.value = newPage.toString();
+  }
+
+  function handlePageZoom(zoomType: PAGE_ZOOM_TYPE) {
+    onZoomChange(zoomType);
   }
 
   return (
@@ -64,11 +72,23 @@ export function PdfToolbar({
             <ArrowRightIcon className="h-5 w-5" />
           </Button>
           {/* <Separator className="h-6" orientation="vertical" /> */}
-          <Button className="rounded-full" size="icon" variant="ghost">
-            <ZoomInIcon className="h-5 w-5" />
-          </Button>
-          <Button className="rounded-full" size="icon" variant="ghost">
+          <Button
+            className="rounded-full"
+            size="icon"
+            variant="ghost"
+            disabled={zoom === 0.25}
+            onClick={() => handlePageZoom(PAGE_ZOOM_TYPE.OUT)}
+          >
             <ZoomOutIcon className="h-5 w-5" />
+          </Button>
+          <Button
+            className="rounded-full"
+            size="icon"
+            variant="ghost"
+            disabled={zoom === 2}
+            onClick={() => handlePageZoom(PAGE_ZOOM_TYPE.IN)}
+          >
+            <ZoomInIcon className="h-5 w-5" />
           </Button>
         </div>
         <div className="flex items-center gap-2">

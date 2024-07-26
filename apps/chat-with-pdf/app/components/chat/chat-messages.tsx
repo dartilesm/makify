@@ -12,13 +12,7 @@ import {
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { Message, useChat } from "ai/react";
-import {
-  animate,
-  AnimatePresence,
-  inView,
-  motion,
-  useInView,
-} from "framer-motion";
+import { animate, inView, motion } from "framer-motion";
 import {
   ArrowDown,
   BookmarkIcon,
@@ -27,7 +21,7 @@ import {
   RefreshCcwIcon,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
 
 const enum QUICK_ACTIONS {
