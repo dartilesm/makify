@@ -1,5 +1,13 @@
 "use client";
 
+import { removeChatAndDependencies } from "@/app/actions/delete-chat";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  useToast,
+} from "@makify/ui";
 import { Button } from "@makify/ui/components/button";
 import {
   Command,
@@ -21,14 +29,12 @@ import {
   CheckIcon,
   ChevronsUpDownIcon,
   FileTextIcon,
+  PencilIcon,
   PlusCircleIcon,
-  TrashIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NewDocumentDialog } from "../new-document-dialog/new-document-dialog";
-import { removeChatAndDependencies } from "@/app/actions/delete-chat";
-import { useToast } from "@makify/ui";
 
 type DocumentSwitcherProps = {
   className?: string;
@@ -124,7 +130,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     }}
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
-                    <div className="flex flex-1 flex-row items-center gap-2">
+                    <div className="flex flex-1 flex-row items-center gap-2 truncate">
                       <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
                         {chat?.documentMetadata?.title}
@@ -160,9 +166,16 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      <Button onClick={deleteChat} size="icon" variant="ghost">
-        <TrashIcon className="h-4 w-4" />
-      </Button>
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={deleteChat} size="icon" variant="ghost">
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Edit document</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <NewDocumentDialog
         isOpen={showNewDocumentDialog}
         onOpenChange={setShowNewDocumentDialog}

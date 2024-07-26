@@ -1,16 +1,16 @@
 "use client";
 
+import { updateChatMessages } from "@/app/actions/update-chat-messages";
+import { ChatContext } from "@/app/context/chat-context";
 import { Skeleton } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { SyntheticEvent, useContext, useMemo, useRef, useState } from "react";
+import { PDFDocument } from "pdf-lib";
+import { useContext, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
 import { PdfToolbar } from "./pdf-toolbar";
-import { ChatContext } from "@/app/context/chat-context";
-import { updateChatMessages } from "@/app/actions/update-chat-messages";
-import { PDFDocument } from "pdf-lib";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `/api/pdf-helper?url=unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -34,27 +34,11 @@ export type PdfData = {
 
 export function PdfViewer({ className }: { className?: string }) {
   const pdfContainerRef = useRef<HTMLDivElement>(null);
-  const [pdfContainerWidth, setPdfContainerWidth] = useState<number>(0);
   const pdfPagesRef = useRef<HTMLDivElement[] | null[]>([]);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentZoom, setCurrentZoom] = useState<number>(1);
   const { chatData } = useContext(ChatContext);
-
-  const pdfPageNumbers = useMemo(() => {
-    const pages = new Array(pdfData?.numPages).fill(null);
-    const pageNumbers = pages.map((_, index) => index + 1);
-    return pageNumbers;
-  }, [pdfData?.numPages]);
-
-  function updatePdfContainerWidth() {
-    if (pdfContainerRef.current) {
-      const horizontalPadding = 16 * 2;
-      setPdfContainerWidth(
-        pdfContainerRef.current.offsetWidth - horizontalPadding,
-      );
-    }
-  }
 
   async function handlePdfData(pdf: DocumentCallback) {
     const pdfBytes = await pdf.getData();
@@ -86,19 +70,43 @@ export function PdfViewer({ className }: { className?: string }) {
     setPdfData(documentMetadata);
   }
 
-  function handlePdfScroll(event: SyntheticEvent) {
-    const { target } = event;
+  function handlePdfScroll(event: WheelEvent) {
+    const isControlPressed = event.ctrlKey;
 
-    const pageElement = (target as HTMLElement)?.closest("[data-page-number]");
+    const scrollDirection = event.deltaY > 0 ? "down" : "up";
 
-    const pageNumber = pageElement?.getAttribute("data-page-number");
-
-    const pageNumberInt = parseInt(pageNumber ?? "1", 10);
-
-    console.log(pageNumberInt);
-    if (pageNumberInt !== currentPage) {
-      setCurrentPage(pageNumberInt);
+    if (isControlPressed) {
+      handlePageZoomChange(
+        scrollDirection === "down" ? PAGE_ZOOM_TYPE.OUT : PAGE_ZOOM_TYPE.IN,
+      );
+      return;
     }
+
+    const pdfContainerEl = pdfContainerRef.current;
+
+    let isScrollAtBottom;
+
+    if (pdfContainerEl)
+      isScrollAtBottom =
+        Math.abs(
+          pdfContainerEl?.scrollHeight -
+            (pdfContainerEl?.scrollTop + pdfContainerEl?.clientHeight),
+        ) <= 1;
+
+    const isScrollAtTop = pdfContainerEl?.scrollTop === 0;
+
+    const canGoNextPage = scrollDirection === "down" && isScrollAtBottom;
+    const canGoPrevPage = scrollDirection === "up" && isScrollAtTop;
+
+    if (canGoNextPage || canGoPrevPage) {
+      const safeNextPage = Math.min(
+        pdfData?.numPages as number,
+        Math.max(1, currentPage + (scrollDirection === "down" ? 1 : -1)),
+      );
+      setCurrentPage(safeNextPage);
+    }
+
+    return null;
   }
 
   function handlePageNumberChange(pageNumber: number) {
@@ -155,7 +163,6 @@ export function PdfViewer({ className }: { className?: string }) {
             <Document
               options={documentOptions}
               file={`/api/pdf-helper?url=${chatData.documentUrl}`}
-              onSourceSuccess={updatePdfContainerWidth}
               onLoadSuccess={handlePdfData}
               onWheel={handlePdfScroll}
               loading={null}
@@ -163,18 +170,12 @@ export function PdfViewer({ className }: { className?: string }) {
               error={null}
               className="flex w-full flex-col items-center gap-4"
             >
-              {pdfPageNumbers.map((pageNumber, index) => (
-                <Page
-                  key={`page-${pageNumber}`}
-                  pageNumber={pageNumber}
-                  className="border-border max-w-max border-[1px] shadow-lg"
-                  scale={currentZoom}
-                  inputRef={(el) => {
-                    if (pdfPagesRef.current && el)
-                      pdfPagesRef.current[index] = el;
-                  }}
-                />
-              ))}
+              <Page
+                pageNumber={currentPage}
+                className="border-border max-w-max border-[1px] shadow-lg"
+                scale={currentZoom}
+              />
+              {/* <Thumbnail pageNumber={currentPage} /> */}
             </Document>
           </div>
         </div>
