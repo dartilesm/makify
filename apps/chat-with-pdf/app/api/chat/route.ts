@@ -1,11 +1,10 @@
 import { google } from "@ai-sdk/google";
-import { openai } from "@ai-sdk/openai";
-import { type CoreMessage, StreamingTextResponse, streamText } from "ai";
+import { streamText } from "ai";
 import { getContext } from "utils/context";
 
-export const revalidate = 0
-export const dynamic = "force-dynamic"
-export const maxDuration = 30
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const {
@@ -19,7 +18,6 @@ export async function POST(req: Request) {
   const messagesToAI = [
     ...messages.filter((message) => message?.role === "user"),
   ];
-  console.log({ messages, documentId, isInitialMessage, messagesToAI });
 
   const result = await streamText({
     model: google("models/gemini-1.5-pro-latest"),
@@ -33,11 +31,10 @@ export async function POST(req: Request) {
     ${documentContext}
     END OF DOCUMENT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
-    If the document does not provide the answer to question, the AI assistant will respond with a kind message along the lines of "The document does not provide the answer to that question."
-    AI must not answer questions that are not based on the document.
+    If the document does not provide the answer to question, will try to answer the question based on the document.
     AI assistant will not invent anything that is not drawn directly from the document.`,
   });
-  
+
   return result.toAIStreamResponse();
   // return new StreamingTextResponse(result.toAIStream());
 }

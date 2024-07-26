@@ -4,6 +4,7 @@ import { Chat } from "@prisma/client";
 import { Message, useChat } from "ai/react";
 import { createContext, useEffect, useState } from "react";
 import { getChatMessages } from "../actions/get-chat-messages";
+import { useParams } from "next/navigation";
 
 const EMPTY_CHAT_DATA: Partial<Chat> = {
   id: "",
@@ -26,8 +27,12 @@ export function ChatProvider({
 }) {
   const [chatData, setChatData] = useState<Partial<Chat>>(EMPTY_CHAT_DATA);
   const [isLoading, setIsLoading] = useState(true);
+  const params = useParams();
   const { setMessages } = useChat({
     id: documentId,
+    body: {
+      documentId: params.documentId as string,
+    },
   });
 
   useEffect(() => {

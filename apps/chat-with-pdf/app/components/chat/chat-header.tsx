@@ -125,7 +125,7 @@ export function ChatHeader() {
             <TooltipTrigger asChild>
               <Button
                 className="flex gap-2"
-                variant="outline"
+                variant="ghost"
                 size="default"
                 onClick={() => toPDF()}
               >
@@ -141,7 +141,7 @@ export function ChatHeader() {
             <TooltipTrigger asChild>
               <Button
                 className="flex gap-2"
-                variant="outline"
+                variant="ghost"
                 size="default"
                 onClick={() => toPDF()}
               >

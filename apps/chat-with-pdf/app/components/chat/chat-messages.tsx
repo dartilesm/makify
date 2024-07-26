@@ -12,7 +12,13 @@ import {
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { Message, useChat } from "ai/react";
-import { AnimatePresence, motion, useInView } from "framer-motion";
+import {
+  animate,
+  AnimatePresence,
+  inView,
+  motion,
+  useInView,
+} from "framer-motion";
 import {
   ArrowDown,
   BookmarkIcon,
@@ -36,6 +42,7 @@ const AnimatedButton = motion(Button);
 export function ChatMessages() {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const arrowButtonRef = useRef<HTMLButtonElement | null>(null);
   const [messageTooltipOpenIndex, setMessageTooltipOpenIndex] = useState<
     number | null
   >(null);
@@ -44,21 +51,37 @@ export function ChatMessages() {
 
   const { messages, reload } = useChat({
     id: params.documentId as string,
+    body: {
+      documentId: params.documentId,
+    },
   });
 
   useEffect(scrollToBottom, [messages.length]);
 
-  const isLastMessageInView = useInView(lastMessageRef, {
-    root: chatContainerRef.current as unknown as RefObject<HTMLDivElement>,
+  inView("[data-message-bubble]:last-child", toggleScrollBottomOnScroll, {
+    root: chatContainerRef.current as unknown as HTMLDivElement,
+    amount: 0.5,
   });
 
-  const filteredMessages = messages.filter((message) => !message.annotations);
+  function toggleScrollBottomOnScroll() {
+    /* animation config when scroll bottom appears */
+    animate(arrowButtonRef.current as unknown as HTMLDivElement, {
+      opacity: 0,
+      y: 100,
+      animationDuration: 0.3,
+    });
 
-  const isScrollHeightGreaterThanContainerHeight =
-    (chatContainerRef.current &&
-      chatContainerRef.current?.scrollHeight >
-        chatContainerRef.current?.clientHeight) ||
-    false;
+    /* animation config when scroll bottom disappears */
+    return () => {
+      animate(arrowButtonRef.current as unknown as HTMLDivElement, {
+        opacity: 1,
+        y: 0,
+        animationDuration: 0.3,
+      });
+    };
+  }
+
+  const filteredMessages = messages.filter((message) => !message.annotations);
 
   const messagesWithAnnotations = messages.filter(
     (message) => message.annotations,
@@ -132,7 +155,11 @@ export function ChatMessages() {
 
   return (
     <div className="relative flex-1 overflow-hidden" id="chat-messages">
-      <div className="flex h-full overflow-auto p-4" ref={chatContainerRef}>
+      <div
+        className="flex h-full overflow-auto p-4"
+        ref={chatContainerRef}
+        data-chat-messages-container
+      >
         <div className="flex h-fit flex-col gap-4">
           {filteredMessages.map((message, index) => {
             return (
@@ -150,6 +177,7 @@ export function ChatMessages() {
                         "justify-end": message.role === "user",
                         "mt-auto": index === 0, // TODO: Fix this to start from the bottom
                       })}
+                      data-message-bubble
                       ref={(el) => {
                         asignRefToLastMessage(el, index);
                       }}
@@ -249,23 +277,23 @@ export function ChatMessages() {
           })}
         </div>
       </div>
-      <AnimatePresence>
-        {isScrollHeightGreaterThanContainerHeight && !isLastMessageInView && (
-          <AnimatedButton
-            className="absolute bottom-4 left-2/4 -translate-x-2/4"
-            size="icon"
-            variant="outline"
-            onClick={scrollToBottom}
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ y: { type: "just" } }}
-            exit={{ opacity: 0, y: 100 }}
-          >
-            <ArrowDown className="h-4 w-4" />
-            <span className="sr-only">Scroll to bottom</span>
-          </AnimatedButton>
-        )}
-      </AnimatePresence>
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <AnimatedButton
+              className="absolute bottom-4 right-8 -translate-x-2/4 opacity-0"
+              ref={arrowButtonRef}
+              size="icon"
+              variant="outline"
+              onClick={scrollToBottom}
+            >
+              <ArrowDown className="h-4 w-4" />
+              <span className="sr-only">Scroll to bottom</span>
+            </AnimatedButton>
+          </TooltipTrigger>
+          <TooltipContent>Scroll to bottom</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }

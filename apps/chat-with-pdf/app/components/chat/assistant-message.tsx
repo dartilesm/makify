@@ -15,6 +15,9 @@ export function AssistantMessage({
 
   const { append } = useChat({
     id: params.documentId as string,
+    body: {
+      documentId: params.documentId,
+    },
   });
 
   function submitQuestion(question: string) {
@@ -32,18 +35,28 @@ export function AssistantMessage({
         ),
         ul: ({ children }) => (
           <ul
-            className={cn("list-inside pb-1", {
-              "list-disc": type !== "questions",
+            className={cn("list-outside py-1", {
+              "list-disc pl-4": type !== "questions",
               "flex flex-col gap-2 py-2": type === "questions",
             })}
           >
             {children}
           </ul>
         ),
+        ol: ({ children }) => (
+          <ol
+            className={cn("list-outside py-1", {
+              "list-decimal pl-4": type !== "questions",
+              "flex flex-col gap-2 py-2": type === "questions",
+            })}
+          >
+            {children}
+          </ol>
+        ),
         li: ({ children }) => (
           <li
             className={cn({
-              "pb-1": type !== "questions",
+              "pb-1 marker:font-semibold": type !== "questions",
             })}
           >
             {type === "questions" ? (

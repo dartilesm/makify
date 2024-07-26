@@ -22,10 +22,13 @@ import {
   ChevronsUpDownIcon,
   FileTextIcon,
   PlusCircleIcon,
+  TrashIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NewDocumentDialog } from "../new-document-dialog/new-document-dialog";
+import { removeChatAndDependencies } from "@/app/actions/delete-chat";
+import { useToast } from "@makify/ui";
 
 type DocumentSwitcherProps = {
   className?: string;
@@ -39,6 +42,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
+
+  const { toast } = useToast();
 
   useEffect(setPopoverWidth, []);
 
@@ -56,8 +61,23 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
     });
   }
 
+  async function deleteChat() {
+    const toastNotification = toast({
+      title: "Deleting chat...",
+      description: "This may take a few seconds.",
+      duration: Infinity,
+    });
+    await removeChatAndDependencies(params.documentId as string);
+    toastNotification.update({
+      id: toastNotification.id,
+      title: "Chat deleted",
+      description: "The chat has been deleted.",
+      duration: 5000,
+    });
+  }
+
   return (
-    <div className="flex w-3/4 max-w-96 flex-row items-center justify-center">
+    <div className="flex w-3/4 max-w-96 flex-row items-center justify-center gap-2">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -140,6 +160,9 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           </Command>
         </PopoverContent>
       </Popover>
+      <Button onClick={deleteChat} size="icon" variant="ghost">
+        <TrashIcon className="h-4 w-4" />
+      </Button>
       <NewDocumentDialog
         isOpen={showNewDocumentDialog}
         onOpenChange={setShowNewDocumentDialog}

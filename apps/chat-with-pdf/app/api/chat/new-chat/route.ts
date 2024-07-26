@@ -1,10 +1,7 @@
 import { INPUT_NAME } from "@/components/header/document-switcher/constants/input-names";
 import { chunkedUpsert } from "@/lib/chunked-upsert";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
-import {
-  getLoadingMessages,
-  resetLoadingMessages,
-} from "@/lib/get-loading-messages";
+import { getLoadingMessages } from "@/lib/get-loading-messages";
 import { getPdfData } from "@/lib/get-pdf-metadata";
 import { prisma } from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";

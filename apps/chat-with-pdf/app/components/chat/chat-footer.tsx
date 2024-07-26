@@ -3,16 +3,22 @@ import { cn } from "@makify/ui/lib/utils";
 import { useChat } from "ai/react";
 import { SendIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export function ChatFooter() {
   const params = useParams();
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
   const {
     input: inputValue,
     handleSubmit,
     handleInputChange,
-  } = useChat({ id: params.documentId as string });
+  } = useChat({
+    id: params.documentId as string,
+    body: {
+      documentId: params.documentId as string,
+    },
+  });
 
   function extractTextareaLineHeight(textarea: HTMLTextAreaElement) {
     const computedStyle = window.getComputedStyle(textarea);
@@ -50,7 +56,7 @@ export function ChatFooter() {
 
   return (
     <div className="z-10 px-4 pb-3">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={formRef}>
         <div
           className={cn(
             "bg-primary-foreground relative flex flex-row justify-between gap-1 rounded-md p-2 pl-4 pr-3",
