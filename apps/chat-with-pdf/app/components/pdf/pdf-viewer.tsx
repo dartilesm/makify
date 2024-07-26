@@ -54,14 +54,9 @@ export function PdfViewer({ className }: { className?: string }) {
   }
 
   return (
-    <div
-      className={cn(
-        "w-full bg-gray-100/40 lg:block dark:bg-gray-800/40",
-        className,
-      )}
-    >
-      <div className="flex h-full flex-col">
-        <header className="flex h-[60px] items-center justify-between border-b px-6 dark:border-gray-800">
+    <div className={cn("w-full lg:block", className)}>
+      <div className="dark:bg-primary-foreground relative flex h-full flex-col overflow-hidden border-l-2 border-gray-100 bg-white">
+        {/* <header className="flex h-[60px] items-center justify-between border-b px-6 dark:border-gray-800">
           <div className="w-full">
             {pdfData ? (
               <>
@@ -80,7 +75,7 @@ export function PdfViewer({ className }: { className?: string }) {
               </div>
             )}
           </div>
-        </header>
+        </header> */}
         {pdfData && (
           <PdfToolbar
             pdfData={pdfData}

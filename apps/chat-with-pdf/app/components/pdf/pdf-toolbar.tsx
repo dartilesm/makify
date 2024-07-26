@@ -32,12 +32,7 @@ export function PdfToolbar({
   }
 
   return (
-    <div
-      className={cn(
-        "border-t bg-gray-50 px-4 py-1 dark:border-gray-800 dark:bg-gray-950",
-        className,
-      )}
-    >
+    <div className={cn("border-b-[1px] border-gray-100 p-2", className)}>
       <div className="flex items-center justify-between">
         {/* Page pagination */}
         <div className="flex items-center gap-2">
