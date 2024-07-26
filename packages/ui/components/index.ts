@@ -10,6 +10,7 @@ export * from "./label";
 export * from "./skeleton";
 export * from "./pagination";
 export * from "./popover";
+export * from "./resizable";
 export * from "./separator";
 export * from "./select";
 export * from "./tabs";
