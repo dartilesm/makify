@@ -1,19 +1,24 @@
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { Chat } from "@prisma/client";
+import { CoreMessage, streamText } from "ai";
 import { getContext } from "utils/context";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
+type RequestBody = {
+  messages: CoreMessage[];
+  documentId: Chat["id"];
+};
+
 export async function POST(req: Request) {
-  const {
-    messages = [],
-    documentId,
-    isInitialMessage = false,
-  } = await req.json();
-  const documentContext =
-    (await getContext(messages.at(-1).content, documentId)) || "";
+  const { messages = [], documentId } = (await req.json()) as RequestBody;
+  const lastMessage = messages.at(-1);
+
+  const documentContext = lastMessage
+    ? await getContext(lastMessage.content as string, documentId)
+    : "";
 
   const messagesToAI = [
     ...messages.filter((message) => message?.role === "user"),
