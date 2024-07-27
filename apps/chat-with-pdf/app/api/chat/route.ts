@@ -40,6 +40,7 @@ export async function POST(req: Request) {
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
     If the document does not provide the answer to question, will try to answer the question based on the document.
     AI assistant will not invent anything that is not drawn directly from the document.`,
+    maxTokens: 3000,
     onFinish({
       text,
       toolCalls,

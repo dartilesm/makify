@@ -24,15 +24,37 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
 import { MESSAGE_TYPE } from "./constants/message-type";
-
-const enum QUICK_ACTIONS {
-  COPY = "copy",
-  REGENERATE = "regenerate",
-  BOOKMARK = "bookmark",
-  REPORT = "report",
-}
+import { QUICK_ACTIONS } from "./constants/message-quick-actions";
+import { MessageQuickActions } from "./message-quick-actions";
 
 const AnimatedButton = motion(Button);
+
+const quickActions = [
+  {
+    Icon: CopyIcon,
+    label: "Copy message",
+    value: QUICK_ACTIONS.COPY,
+    onlyLastMessage: false,
+  },
+  {
+    Icon: RefreshCcwIcon,
+    label: "Regenerate response",
+    value: QUICK_ACTIONS.REGENERATE,
+    onlyLastMessage: true,
+  },
+  {
+    Icon: BookmarkIcon,
+    label: "Bookmark response (not implemented)",
+    value: QUICK_ACTIONS.BOOKMARK,
+    onlyLastMessage: false,
+  },
+  {
+    Icon: FlagIcon,
+    label: "Report an issue (not implemented)",
+    value: QUICK_ACTIONS.REPORT,
+    onlyLastMessage: false,
+  },
+];
 
 export function ChatMessages() {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
@@ -42,9 +64,8 @@ export function ChatMessages() {
     number | null
   >(null);
   const params = useParams();
-  const { toast } = useToast();
 
-  const { messages, reload, data } = useChat({
+  const { messages } = useChat({
     id: params.documentId as string,
     body: {
       documentId: params.documentId,
@@ -77,56 +98,10 @@ export function ChatMessages() {
     };
   }
 
-  const quickActions = [
-    {
-      Icon: CopyIcon,
-      label: "Copy message",
-      value: QUICK_ACTIONS.COPY,
-      onlyLastMessage: false,
-    },
-    {
-      Icon: RefreshCcwIcon,
-      label: "Regenerate response",
-      value: QUICK_ACTIONS.REGENERATE,
-      onlyLastMessage: true,
-    },
-    {
-      Icon: BookmarkIcon,
-      label: "Bookmark response (not implemented)",
-      value: QUICK_ACTIONS.BOOKMARK,
-      onlyLastMessage: false,
-    },
-    {
-      Icon: FlagIcon,
-      label: "Report an issue (not implemented)",
-      value: QUICK_ACTIONS.REPORT,
-      onlyLastMessage: false,
-    },
-  ];
-
   // Controls the tooltip open state for each message, as it collides with the inner tooltip
   function updateMessageTooltipOpenIndex(index: number, isOpen?: boolean) {
     if (isOpen === undefined) return setMessageTooltipOpenIndex(index);
     setMessageTooltipOpenIndex(isOpen ? index : null);
-  }
-
-  function copyMessage(message: string) {
-    navigator.clipboard.writeText(message);
-  }
-
-  function handleToggleAction(action: QUICK_ACTIONS, message: Message) {
-    if (action === QUICK_ACTIONS.COPY) {
-      copyMessage(message.content);
-      toast({
-        title: "Message copied successfully!",
-      });
-    }
-    if (action === QUICK_ACTIONS.REGENERATE) {
-      reload();
-      toast({
-        title: "Regenerating response",
-      });
-    }
   }
 
   function scrollToBottom() {
@@ -188,7 +163,7 @@ export function ChatMessages() {
                         asignRefToLastMessage(el, index);
                       }}
                     >
-                      <div className="max-w-[70%] space-y-1.5">
+                      <div className="relative max-w-[70%] space-y-1.5">
                         <div
                           className={cn({
                             "rounded-md bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800":
@@ -205,72 +180,40 @@ export function ChatMessages() {
                               >
                                 {message.content}
                               </AssistantMessage>
-
-                              <TooltipContent
-                                align="start"
-                                side="bottom"
-                                className="rounded-md border-[1px] border-gray-200 bg-gray-50 p-1"
-                                sideOffset={-10}
-                                alignOffset={10}
-                                avoidCollisions={false}
-                              >
-                                <ToggleGroup
-                                  type="single"
-                                  size="xs"
-                                  className="z-10"
-                                  onValueChange={(action: QUICK_ACTIONS) =>
-                                    handleToggleAction(action, message)
-                                  }
+                              {index !== messages.length - 1 && (
+                                <TooltipContent
+                                  align="start"
+                                  side="bottom"
+                                  className="rounded-md border-[1px] border-gray-200 bg-gray-50 p-1"
+                                  sideOffset={-10}
+                                  alignOffset={10}
+                                  avoidCollisions={false}
                                 >
-                                  {quickActions.map(
-                                    ({
-                                      Icon,
-                                      label,
-                                      value,
-                                      onlyLastMessage,
-                                    }) => {
-                                      if (
-                                        onlyLastMessage &&
-                                        index !== messages.length - 1
-                                      ) {
-                                        return null;
-                                      }
-                                      return (
-                                        <Tooltip
-                                          delayDuration={0}
-                                          onOpenChange={() =>
-                                            updateMessageTooltipOpenIndex(index)
-                                          }
-                                        >
-                                          <TooltipTrigger asChild>
-                                            <ToggleGroupItem
-                                              value={value}
-                                              className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
-                                            >
-                                              <Icon className="text-primary h-4 w-4 text-opacity-70" />
-                                              <span className="sr-only">
-                                                {label}
-                                              </span>
-                                            </ToggleGroupItem>
-                                          </TooltipTrigger>
-                                          <TooltipContent
-                                            align="center"
-                                            side="top"
-                                            className="bg-primary rounded-md text-xs"
-                                            arrowPadding={2}
-                                            sideOffset={6}
-                                          >
-                                            {label}
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      );
-                                    },
-                                  )}
-                                </ToggleGroup>
-                              </TooltipContent>
+                                  <MessageQuickActions
+                                    quickActions={quickActions}
+                                    index={index}
+                                    onTooltipOpenChange={
+                                      updateMessageTooltipOpenIndex
+                                    }
+                                    message={message}
+                                  />
+                                </TooltipContent>
+                              )}
                             </>
                           )}
                         </div>
+                        {index === messages.length - 1 &&
+                          message.role === "assistant" && (
+                            <MessageQuickActions
+                              className="ml-4"
+                              quickActions={quickActions}
+                              index={index}
+                              message={message}
+                              onTooltipOpenChange={
+                                updateMessageTooltipOpenIndex
+                              }
+                            />
+                          )}
                       </div>
                     </div>
                   </TooltipTrigger>
