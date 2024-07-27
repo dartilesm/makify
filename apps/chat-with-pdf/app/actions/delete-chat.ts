@@ -3,23 +3,39 @@
 import { getPineconeClient } from "@/lib/pinecone.client";
 import { prisma } from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
+import { Chat } from "@prisma/client";
 import { redirect } from "next/navigation";
 
-export async function removeChatAndDependencies(documentId: string) {
-  await prisma.chat.delete({
+async function deleteChat(chat: Chat) {
+  return prisma.chat.delete({
     where: {
-      id: documentId,
+      id: chat.id,
     },
   });
+}
 
-  await supabase.storage.from("documents").remove([`${documentId}.pdf`]);
+async function deleteDocumentFile(chat: Chat) {
+  if (chat.documentUrl?.includes(process.env.SUPABASE_URL as string)) {
+    return supabase.storage.from("documents").remove([`${chat.id}.pdf`]);
+  }
+  return null;
+}
 
-  const pinecone = await getPineconeClient(documentId);
+async function deleteNamespace(chat: Chat) {
+  const pinecone = await getPineconeClient(chat.id);
 
-  await pinecone.deleteAll();
+  return pinecone.deleteAll();
+}
 
-  const chat = await prisma.chat.findFirst();
+export async function deleteChatAndDependencies(chat: Chat) {
+  await Promise.allSettled([
+    deleteChat(chat),
+    deleteDocumentFile(chat),
+    deleteNamespace(chat),
+  ]);
 
-  if (chat?.id) return redirect(`/chat/${chat.id}`);
+  const firstChat = await prisma.chat.findFirst();
+
+  if (firstChat?.id) return redirect(`/chat/${firstChat.id}`);
   redirect("/chat");
 }
