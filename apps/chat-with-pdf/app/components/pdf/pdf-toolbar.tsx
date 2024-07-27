@@ -2,7 +2,6 @@ import { PAGE_ZOOM_TYPE, PdfData } from "@/components/pdf/pdf-viewer";
 import {
   Button,
   Input,
-  Toggle,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -15,7 +14,6 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from "@radix-ui/react-icons";
-import { LayoutGridIcon } from "lucide-react";
 
 type Props = {
   className?: string;
@@ -71,7 +69,6 @@ export function PdfToolbar({
             <div className="text-muted-foreground flex flex-row items-center gap-2">
               <Input
                 className="h-8 w-16 appearance-none p-0 text-center"
-                defaultValue={page}
                 value={page}
                 type="number"
                 min={1}

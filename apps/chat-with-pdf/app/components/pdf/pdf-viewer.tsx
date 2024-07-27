@@ -26,10 +26,6 @@ export const enum PAGE_ZOOM_TYPE {
 export type PdfData = {
   numPages: number;
   title: string;
-  page: {
-    width: number;
-    height: number;
-  };
 };
 
 export function PdfViewer({ className }: { className?: string }) {
@@ -47,18 +43,11 @@ export function PdfViewer({ className }: { className?: string }) {
 
     const title = pdfDoc.getTitle() ?? "Untitled PDF";
     const numPages = pdfDoc.getPageCount();
-    const { width, height } = pdfDoc.getPage(0).getSize();
 
     const documentMetadata = {
       title,
       numPages,
-      page: {
-        width,
-        height,
-      },
     };
-
-    console.log({ width, height });
 
     if (!chatData.documentMetadata) {
       updateChatMessages({
@@ -125,26 +114,6 @@ export function PdfViewer({ className }: { className?: string }) {
   return (
     <div className={cn("h-full w-full lg:block", className)}>
       <div className="dark:bg-primary-foreground relative flex h-full flex-col overflow-hidden bg-white">
-        {/* <header className="flex h-[60px] items-center justify-between border-b px-6 dark:border-gray-800">
-          <div className="w-full">
-            {pdfData ? (
-              <>
-                <h3 className="text-sm font-medium">{pdfData?.title}</h3>
-                {pdfData ? (
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {pdfData?.numPages} page{pdfData?.numPages > 1 ? "s" : ""} -
-                    352 words
-                  </p>
-                ) : null}
-              </>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <Skeleton className="h-[15px] w-[30%] rounded-full" />
-                <Skeleton className="h-[15px] w-[100px] rounded-full" />
-              </div>
-            )}
-          </div>
-        </header> */}
         {pdfData && (
           <PdfToolbar
             pdfData={pdfData}
@@ -160,23 +129,24 @@ export function PdfViewer({ className }: { className?: string }) {
               <Skeleton className="absolute left-0 top-0 block h-full w-full" />
             )}
 
-            <Document
-              options={documentOptions}
-              file={`/api/pdf-helper?url=${chatData.documentUrl}`}
-              onLoadSuccess={handlePdfData}
-              onWheel={handlePdfScroll}
-              loading={null}
-              noData={null}
-              error={null}
-              className="flex w-full flex-col items-center gap-4"
-            >
-              <Page
-                pageNumber={currentPage}
-                className="border-border max-w-max border-[1px] shadow-lg"
-                scale={currentZoom}
-              />
-              {/* <Thumbnail pageNumber={currentPage} /> */}
-            </Document>
+            {chatData.documentUrl && (
+              <Document
+                options={documentOptions}
+                file={`/api/pdf-helper?url=${chatData.documentUrl}`}
+                onLoadSuccess={handlePdfData}
+                onWheel={handlePdfScroll}
+                loading={null}
+                noData={null}
+                error={null}
+                className="flex w-full flex-col items-center gap-4"
+              >
+                <Page
+                  pageNumber={currentPage}
+                  className="border-border max-w-max border-[1px] shadow-lg"
+                  scale={currentZoom}
+                />
+              </Document>
+            )}
           </div>
         </div>
       </div>

@@ -72,33 +72,39 @@ export function MessageQuickActions({
         handleToggleGroupChange(action, message)
       }
     >
-      {quickActions.map(({ Icon, label, value, onlyLastMessage }) => {
-        if (onlyLastMessage && index !== messages.length - 1) {
-          return null;
-        }
-        return (
-          <Tooltip delayDuration={0} onOpenChange={handleTooltipOpenChange}>
-            <TooltipTrigger asChild>
-              <ToggleGroupItem
-                value={value}
-                className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
-              >
-                <Icon className="text-primary h-4 w-4 text-opacity-70" />
-                <span className="sr-only">{label}</span>
-              </ToggleGroupItem>
-            </TooltipTrigger>
-            <TooltipContent
-              align="center"
-              side="top"
-              className="bg-primary rounded-md text-xs"
-              arrowPadding={2}
-              sideOffset={6}
+      {quickActions.map(
+        ({ Icon, label, value, onlyLastMessage }, quickActionIndex) => {
+          if (onlyLastMessage && index !== messages.length - 1) {
+            return null;
+          }
+          return (
+            <Tooltip
+              delayDuration={0}
+              onOpenChange={handleTooltipOpenChange}
+              key={`message-quick-action-${message.id}${quickActionIndex}`}
             >
-              {label}
-            </TooltipContent>
-          </Tooltip>
-        );
-      })}
+              <TooltipTrigger asChild>
+                <ToggleGroupItem
+                  value={value}
+                  className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
+                >
+                  <Icon className="text-primary h-4 w-4 text-opacity-70" />
+                  <span className="sr-only">{label}</span>
+                </ToggleGroupItem>
+              </TooltipTrigger>
+              <TooltipContent
+                align="center"
+                side="top"
+                className="bg-primary rounded-md text-xs"
+                arrowPadding={2}
+                sideOffset={6}
+              >
+                {label}
+              </TooltipContent>
+            </Tooltip>
+          );
+        },
+      )}
     </ToggleGroup>
   );
 }

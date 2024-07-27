@@ -2,13 +2,10 @@
 
 import {
   Button,
-  ToggleGroup,
-  ToggleGroupItem,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  useToast,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { Message, useChat } from "ai/react";
@@ -23,8 +20,8 @@ import {
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
-import { MESSAGE_TYPE } from "./constants/message-type";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
+import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
 
 const AnimatedButton = motion(Button);
@@ -73,14 +70,10 @@ export function ChatMessages() {
     keepLastMessageOnError: true,
   });
 
-  useEffect(scrollToBottom, [messages.length]);
-
-  inView("[data-message-bubble]:last-child", toggleScrollBottomOnScroll, {
-    root: chatContainerRef.current as unknown as HTMLDivElement,
-    amount: 0.5,
-  });
+  useEffect(onMessageChanges, [messages.length]);
 
   function toggleScrollBottomOnScroll() {
+    if (!arrowButtonRef.current) return;
     /* animation config when scroll bottom appears */
     animate(arrowButtonRef.current as unknown as HTMLDivElement, {
       opacity: 0,
@@ -90,6 +83,8 @@ export function ChatMessages() {
 
     /* animation config when scroll bottom disappears */
     return () => {
+      if (!arrowButtonRef.current) return;
+
       animate(arrowButtonRef.current as unknown as HTMLDivElement, {
         opacity: 1,
         y: 0,
@@ -102,6 +97,14 @@ export function ChatMessages() {
   function updateMessageTooltipOpenIndex(index: number, isOpen?: boolean) {
     if (isOpen === undefined) return setMessageTooltipOpenIndex(index);
     setMessageTooltipOpenIndex(isOpen ? index : null);
+  }
+
+  function onMessageChanges() {
+    scrollToBottom();
+    inView("[data-message-bubble]:last-child", toggleScrollBottomOnScroll, {
+      root: chatContainerRef.current as unknown as HTMLDivElement,
+      amount: 0.5,
+    });
   }
 
   function scrollToBottom() {
