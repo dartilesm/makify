@@ -1,8 +1,8 @@
-import { Button } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { useChat } from "ai/react";
 import { useParams } from "next/navigation";
 import Markdown from "react-markdown";
+import { MESSAGE_TYPE } from "./constants/message-type";
 
 export function AssistantMessage({
   children: message,
@@ -36,8 +36,9 @@ export function AssistantMessage({
         ul: ({ children }) => (
           <ul
             className={cn("list-outside py-1", {
-              "list-disc pl-4": type !== "questions",
-              "flex flex-col gap-2 py-2": type === "questions",
+              "list-disc pl-4": type !== MESSAGE_TYPE.SUGGESTION_MESSAGES,
+              "flex flex-col gap-2 py-2":
+                type === MESSAGE_TYPE.SUGGESTION_MESSAGES,
             })}
           >
             {children}
@@ -46,8 +47,9 @@ export function AssistantMessage({
         ol: ({ children }) => (
           <ol
             className={cn("list-outside py-1", {
-              "list-decimal pl-4": type !== "questions",
-              "flex flex-col gap-2 py-2": type === "questions",
+              "list-decimal pl-4": type !== MESSAGE_TYPE.SUGGESTION_MESSAGES,
+              "flex flex-col gap-2 py-2":
+                type === MESSAGE_TYPE.SUGGESTION_MESSAGES,
             })}
           >
             {children}
@@ -56,10 +58,11 @@ export function AssistantMessage({
         li: ({ children }) => (
           <li
             className={cn({
-              "pb-1 marker:font-semibold": type !== "questions",
+              "pb-1 marker:font-semibold":
+                type !== MESSAGE_TYPE.SUGGESTION_MESSAGES,
             })}
           >
-            {type === "questions" ? (
+            {type === MESSAGE_TYPE.SUGGESTION_MESSAGES ? (
               <button
                 className="z-10 box-border inline rounded-md border-[1px] border-gray-300 bg-gray-50 p-2 text-left transition-colors hover:bg-gray-200"
                 onClick={() => submitQuestion(children?.toString() as string)}

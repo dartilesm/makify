@@ -13,6 +13,7 @@ export function ChatFooter() {
     input: inputValue,
     handleSubmit,
     handleInputChange,
+    isLoading,
   } = useChat({
     id: params.documentId as string,
     body: {
@@ -78,7 +79,7 @@ export function ChatFooter() {
             type="submit"
             variant="ghost"
             size="icon"
-            disabled={!inputValue}
+            disabled={!inputValue || isLoading}
           >
             <SendIcon className="h-4 w-4" />
             <span className="sr-only">Send</span>

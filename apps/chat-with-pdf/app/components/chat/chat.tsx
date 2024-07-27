@@ -11,6 +11,7 @@ import { useContext, useEffect, useRef } from "react";
 import { ChatFooter } from "./chat-footer";
 import { ChatHeader } from "./chat-header";
 import { ChatMessages } from "./chat-messages";
+import { MESSAGE_TYPE } from "./constants/message-type";
 
 type ChatProps = {
   className?: string;
@@ -21,12 +22,12 @@ export function Chat({ className }: ChatProps) {
     {
       message:
         "Introduce yourself without mention your name and summarize the document.",
-      type: "introduction",
+      type: MESSAGE_TYPE.INTRODUCTION,
     },
     {
       message:
         "Give me a list of a few questions that I can ask someone to see if they have read the document. Give me the questions as a list. Say those question are suggestions to start and don't mention the questions are to see if they have read the document.",
-      type: "questions",
+      type: MESSAGE_TYPE.SUGGESTION_MESSAGES,
     },
   ]);
   const params = useParams();
@@ -35,7 +36,7 @@ export function Chat({ className }: ChatProps) {
   // Store the initial messages from the chat context
   const initialMessages = chatData.messages as unknown as Message[];
 
-  const { append, messages, isLoading } = useChat({
+  const { append, messages, isLoading, handleSubmit } = useChat({
     id: params.documentId as string,
     body: {
       documentId: params.documentId,
@@ -43,14 +44,46 @@ export function Chat({ className }: ChatProps) {
     onFinish: onChatFinishStream,
   });
 
-  useEffect(() => {
-    if (!isChatContextLoading && !initialMessages?.length)
-      sendPreloadedPrompts();
-    if (!isChatContextLoading && initialMessages?.length)
-      preloadPrompts.current = [];
-  }, [isChatContextLoading]);
+  useEffect(sendPreloadedPrompts, [isChatContextLoading]);
 
-  useEffect(() => {
+  useEffect(storeChatMessages, [messages, isLoading]);
+
+  function sendPreloadedPrompts() {
+    const preloadPromptsArr = preloadPrompts.current;
+
+    // If there are no prompts to send, return
+    if (!preloadPromptsArr.length) return;
+
+    if (isChatContextLoading) return;
+
+    // If the chat context is not loading and there are initial messages, return
+    if (!isChatContextLoading && initialMessages?.length) {
+      preloadPrompts.current = [];
+      return;
+    }
+
+    const firstMessage = preloadPrompts.current.at(0);
+
+    const message = firstMessage?.message as string;
+    const messageType = firstMessage?.type as string;
+
+    setTimeout(() => {
+      append({
+        role: "user",
+        content: message,
+        data: {
+          messageType,
+        },
+      });
+      // Remove the sent prompt from the array
+      preloadPrompts.current = preloadPromptsArr.slice(
+        preloadPromptsArr.length - preloadPromptsArr.length + 1,
+        preloadPromptsArr.length,
+      );
+    }, 200);
+  }
+
+  function storeChatMessages() {
     // Check if new messages have been added to the chat to not update the chat messages with the same messages
     const hasAddedMessages = initialMessages
       ? messages.length > initialMessages?.length
@@ -60,26 +93,6 @@ export function Chat({ className }: ChatProps) {
         documentId: params.documentId as string,
         messages: messages as unknown as ChatPrisma["messages"],
       });
-  }, [messages, isLoading]);
-
-  function sendPreloadedPrompts() {
-    const preloadPromptsArr = preloadPrompts.current;
-    const message = preloadPrompts.current.at(0)?.message as string;
-    const type = preloadPrompts.current.at(0)?.type as string;
-
-    if (preloadPrompts.current.length) {
-      setTimeout(() => {
-        append({
-          role: "user",
-          content: message,
-          annotations: [{ type }],
-        });
-        preloadPrompts.current = preloadPromptsArr.slice(
-          preloadPromptsArr.length - preloadPromptsArr.length + 1,
-          preloadPromptsArr.length,
-        );
-      }, 1000);
-    }
   }
 
   function onChatFinishStream() {

@@ -23,6 +23,7 @@ import {
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
+import { MESSAGE_TYPE } from "./constants/message-type";
 
 const enum QUICK_ACTIONS {
   COPY = "copy",
@@ -43,11 +44,12 @@ export function ChatMessages() {
   const params = useParams();
   const { toast } = useToast();
 
-  const { messages, reload } = useChat({
+  const { messages, reload, data } = useChat({
     id: params.documentId as string,
     body: {
       documentId: params.documentId,
     },
+    keepLastMessageOnError: true,
   });
 
   useEffect(scrollToBottom, [messages.length]);
@@ -74,12 +76,6 @@ export function ChatMessages() {
       });
     };
   }
-
-  const filteredMessages = messages.filter((message) => !message.annotations);
-
-  const messagesWithAnnotations = messages.filter(
-    (message) => message.annotations,
-  );
 
   const quickActions = [
     {
@@ -141,10 +137,25 @@ export function ChatMessages() {
   }
 
   function asignRefToLastMessage(el: HTMLDivElement | null, index: number) {
-    const isLastMessage = index === filteredMessages.length - 1;
+    const isLastMessage = index === messages.length - 1;
     if (el && isLastMessage) {
       lastMessageRef.current = el;
     }
+  }
+
+  function getMessageType(message: Message) {
+    return (message.data as Record<string, string>)
+      ?.messageType as MESSAGE_TYPE;
+  }
+
+  function isAHiddenMessage(message: Message) {
+    const isUserMessage = message.role === "user";
+    const isAnIntroductionMessage =
+      getMessageType(message) === MESSAGE_TYPE.INTRODUCTION;
+    const isASuggestionMessage =
+      getMessageType(message) === MESSAGE_TYPE.SUGGESTION_MESSAGES;
+
+    return isUserMessage && (isAnIntroductionMessage || isASuggestionMessage);
   }
 
   return (
@@ -155,7 +166,8 @@ export function ChatMessages() {
         data-chat-messages-container
       >
         <div className="flex h-fit flex-col gap-4">
-          {filteredMessages.map((message, index) => {
+          {messages.map((message, index) => {
+            if (isAHiddenMessage(message)) return null;
             return (
               <TooltipProvider key={message.id}>
                 <Tooltip
@@ -189,10 +201,7 @@ export function ChatMessages() {
                           {message.role === "assistant" && (
                             <>
                               <AssistantMessage
-                                type={
-                                  messagesWithAnnotations?.[index]
-                                    ?.annotations?.[0]?.type as string
-                                }
+                                type={getMessageType(messages[index - 1]!)}
                               >
                                 {message.content}
                               </AssistantMessage>
@@ -210,7 +219,7 @@ export function ChatMessages() {
                                   size="xs"
                                   className="z-10"
                                   onValueChange={(action: QUICK_ACTIONS) =>
-                                    handleToggleAction(action, message, index)
+                                    handleToggleAction(action, message)
                                   }
                                 >
                                   {quickActions.map(
@@ -222,7 +231,7 @@ export function ChatMessages() {
                                     }) => {
                                       if (
                                         onlyLastMessage &&
-                                        index !== filteredMessages.length - 1
+                                        index !== messages.length - 1
                                       ) {
                                         return null;
                                       }

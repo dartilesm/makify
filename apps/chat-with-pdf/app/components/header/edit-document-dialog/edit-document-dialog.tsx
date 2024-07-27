@@ -156,7 +156,9 @@ export function EditDocumentDialog({
                       className="flex gap-2"
                       disabled={
                         !editForm.formState.isValid ||
-                        editForm.formState.isSubmitting
+                        editForm.formState.isSubmitting ||
+                        chat.documentMetadata?.title ===
+                          editForm.getValues().title
                       }
                     >
                       {editForm.formState.isSubmitting && (
