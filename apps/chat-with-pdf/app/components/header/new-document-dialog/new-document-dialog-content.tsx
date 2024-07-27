@@ -21,7 +21,7 @@ import {
 } from "react-hook-form";
 import { INPUT_NAME } from "../document-switcher/constants/input-names";
 
-const enum DOCUMENT_SWITCHER_TAB {
+const enum NEW_DOCUMENT_TAB {
   LINK = "link",
   IMPORT = "import",
 }
@@ -41,8 +41,8 @@ type FileAttached = {
 
 export function NewDocumentDialogContent() {
   const [fileAttached, setFileAttached] = useState<FileAttached | null>(null);
-  const [tab, setTab] = useState<DOCUMENT_SWITCHER_TAB | string>(
-    DOCUMENT_SWITCHER_TAB.LINK,
+  const [tab, setTab] = useState<NEW_DOCUMENT_TAB | string>(
+    NEW_DOCUMENT_TAB.LINK,
   );
 
   useEffect(handleInputFileValueChange, [fileAttached, tab]);
@@ -71,7 +71,7 @@ export function NewDocumentDialogContent() {
   }
 
   function handleInputFileValueChange() {
-    const isOnImportTab = tab === DOCUMENT_SWITCHER_TAB.IMPORT;
+    const isOnImportTab = tab === NEW_DOCUMENT_TAB.IMPORT;
     const fileData = isOnImportTab ? fileAttached?.file : undefined;
 
     // Set the value of the input depending on the tab and validate
@@ -80,7 +80,7 @@ export function NewDocumentDialogContent() {
     });
   }
 
-  function handleTabChange(value: DOCUMENT_SWITCHER_TAB | string) {
+  function handleTabChange(value: NEW_DOCUMENT_TAB | string) {
     setTab(value);
   }
 
@@ -196,14 +196,14 @@ export function NewDocumentDialogContent() {
   return (
     <Tabs defaultValue={tab} onValueChange={handleTabChange}>
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value={DOCUMENT_SWITCHER_TAB.LINK}>
+        <TabsTrigger value={NEW_DOCUMENT_TAB.LINK}>
           Import from link
         </TabsTrigger>
-        <TabsTrigger value={DOCUMENT_SWITCHER_TAB.IMPORT}>
+        <TabsTrigger value={NEW_DOCUMENT_TAB.IMPORT}>
           From your computer
         </TabsTrigger>
       </TabsList>
-      <TabsContent value={DOCUMENT_SWITCHER_TAB.LINK}>
+      <TabsContent value={NEW_DOCUMENT_TAB.LINK}>
         <div className="h-48 space-y-4 py-2">
           <Label className="flex flex-col gap-2">
             Link to your pdf *
@@ -214,14 +214,14 @@ export function NewDocumentDialogContent() {
             <Input
               placeholder="https://mydomain.com/how-many-cups-did-argentina-win.pdf"
               {...register(INPUT_NAME.LINK, {
-                required: tab === DOCUMENT_SWITCHER_TAB.LINK,
-                disabled: tab !== DOCUMENT_SWITCHER_TAB.LINK,
+                required: tab === NEW_DOCUMENT_TAB.LINK,
+                disabled: tab !== NEW_DOCUMENT_TAB.LINK,
               })}
             />
           </Label>
         </div>
       </TabsContent>
-      <TabsContent value={DOCUMENT_SWITCHER_TAB.IMPORT}>
+      <TabsContent value={NEW_DOCUMENT_TAB.IMPORT}>
         <div className="h-48 space-y-4 py-2">
           {!fileAttached && (
             <Label
@@ -312,7 +312,7 @@ export function NewDocumentDialogContent() {
           <Controller
             control={control}
             name={INPUT_NAME.FILE}
-            disabled={tab !== DOCUMENT_SWITCHER_TAB.IMPORT}
+            disabled={tab !== NEW_DOCUMENT_TAB.IMPORT}
             rules={{
               required: true,
               validate: validateFile,

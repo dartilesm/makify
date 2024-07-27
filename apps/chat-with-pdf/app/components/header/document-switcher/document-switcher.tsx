@@ -1,6 +1,5 @@
 "use client";
 
-import { removeChatAndDependencies } from "@/app/actions/delete-chat";
 import {
   Tooltip,
   TooltipContent,
@@ -33,7 +32,8 @@ import {
   PlusCircleIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { EditDocumentDialog } from "../edit-document-dialog/edit-document-dialog";
 import { NewDocumentDialog } from "../new-document-dialog/new-document-dialog";
 
 type DocumentSwitcherProps = {
@@ -48,13 +48,17 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
+  const [showEditDocumentDialog, setShowEditDocumentDialog] = useState(false);
 
   const { toast } = useToast();
 
   useEffect(setPopoverWidth, []);
 
-  const selectedDocument =
-    chats.find((chat) => chat.id === params.documentId) || chats[0];
+  const selectedDocument = useMemo(
+    () =>
+      chats.find((chat) => chat.id === params.documentId) || (chats[0] as Chat),
+    [params.documentId, chats],
+  );
 
   function setPopoverWidth() {
     const buttonStyles = window.getComputedStyle(buttonRef.current as Element);
@@ -67,19 +71,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
     });
   }
 
-  async function deleteChat() {
-    const toastNotification = toast({
-      title: "Deleting chat...",
-      description: "This may take a few seconds.",
-      duration: Infinity,
-    });
-    await removeChatAndDependencies(params.documentId as string);
-    toastNotification.update({
-      id: toastNotification.id,
-      title: "Chat deleted",
-      description: "The chat has been deleted.",
-      duration: 5000,
-    });
+  function toggleEditDocumentDialog() {
+    setShowEditDocumentDialog((prev) => !prev);
   }
 
   return (
@@ -169,7 +162,11 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button onClick={deleteChat} size="icon" variant="ghost">
+            <Button
+              onClick={toggleEditDocumentDialog}
+              size="icon"
+              variant="ghost"
+            >
               <PencilIcon className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
@@ -179,6 +176,11 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       <NewDocumentDialog
         isOpen={showNewDocumentDialog}
         onOpenChange={setShowNewDocumentDialog}
+      />
+      <EditDocumentDialog
+        chat={selectedDocument}
+        isOpen={showEditDocumentDialog}
+        onOpenChange={toggleEditDocumentDialog}
       />
     </div>
   );
