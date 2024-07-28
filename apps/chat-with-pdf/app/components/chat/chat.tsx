@@ -9,7 +9,7 @@ import { useChat } from "ai/react";
 import { useParams } from "next/navigation";
 import { useContext, useEffect, useRef } from "react";
 import { ChatFooter } from "./chat-footer";
-import { ChatHeader } from "./chat-header";
+import { ChatHeader } from "./chat-header/chat-header";
 import { ChatMessages } from "./chat-messages";
 import { MESSAGE_TYPE } from "./constants/message-type";
 
