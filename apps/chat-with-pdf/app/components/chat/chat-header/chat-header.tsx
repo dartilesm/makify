@@ -1,6 +1,5 @@
 "use client";
 
-import { ChatContext } from "@/app/context/chat-context";
 import {
   Button,
   Tooltip,
@@ -12,14 +11,15 @@ import { usePDF } from "@react-pdf/renderer";
 import { DownloadIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { ChatPDF } from "./chat-pdf";
+import { useGlobalChat } from "hooks/use-global-chat";
 
 export function ChatHeader() {
   const params = useParams();
   const {
     useChatReturn: { messages },
-  } = useContext(ChatContext);
+  } = useGlobalChat();
 
   const [instance, updateInstance] = usePDF({
     document: (

@@ -1,9 +1,9 @@
-import { ChatContext } from "@/app/context/chat-context";
 import { Button, Textarea } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { SendIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export function ChatFooter() {
   const params = useParams();
@@ -17,7 +17,7 @@ export function ChatFooter() {
       handleInputChange,
       isLoading,
     },
-  } = useContext(ChatContext);
+  } = useGlobalChat();
 
   function extractTextareaLineHeight(textarea: HTMLTextAreaElement) {
     const computedStyle = window.getComputedStyle(textarea);

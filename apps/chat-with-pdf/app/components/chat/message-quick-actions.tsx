@@ -1,6 +1,5 @@
 "use client";
 
-import { ChatContext } from "@/app/context/chat-context";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -11,7 +10,7 @@ import {
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { Message } from "ai";
-import { useContext } from "react";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MessageActions } from "./types/message-actions";
 
@@ -32,7 +31,7 @@ export function MessageQuickActions({
 }: MessageQuickActionsProps) {
   const {
     useChatReturn: { messages, reload },
-  } = useContext(ChatContext);
+  } = useGlobalChat();
 
   const { toast } = useToast();
 

@@ -1,6 +1,5 @@
-import { ChatContext } from "@/app/context/chat-context";
 import { cn } from "@makify/ui/lib/utils";
-import { useContext } from "react";
+import { useGlobalChat } from "hooks/use-global-chat";
 import Markdown from "react-markdown";
 import { MESSAGE_TYPE } from "./constants/message-type";
 
@@ -13,7 +12,7 @@ export function AssistantMessage({
 }) {
   const {
     useChatReturn: { append },
-  } = useContext(ChatContext);
+  } = useGlobalChat();
 
   function submitQuestion(question: string) {
     append({ role: "user", content: question });

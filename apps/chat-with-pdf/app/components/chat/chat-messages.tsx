@@ -8,24 +8,22 @@ import {
   TooltipTrigger,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { Message, useChat } from "ai/react";
+import { Message } from "ai/react";
 import { animate, inView, motion } from "framer-motion";
+import { useGlobalChat } from "hooks/use-global-chat";
 import {
   ArrowDown,
   BookmarkIcon,
-  CheckIcon,
   CopyIcon,
   FlagIcon,
   RefreshCcwIcon,
 } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
 import { MessageActions } from "./types/message-actions";
-import { ChatContext } from "@/app/context/chat-context";
 
 const AnimatedButton = motion(Button);
 
@@ -66,7 +64,7 @@ export function ChatMessages() {
 
   const {
     useChatReturn: { messages },
-  } = useContext(ChatContext);
+  } = useGlobalChat();
 
   useEffect(onMessageChanges, [messages.length]);
 

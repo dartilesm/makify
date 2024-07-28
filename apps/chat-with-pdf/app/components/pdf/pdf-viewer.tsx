@@ -1,7 +1,6 @@
 "use client";
 
 import { updateChatMessages } from "@/app/actions/update-chat-messages";
-import { ChatContext } from "@/app/context/chat-context";
 import {
   Button,
   Popover,
@@ -10,11 +9,10 @@ import {
   Skeleton,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { useChat } from "ai/react";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { MessageSquareQuoteIcon } from "lucide-react";
-import { useParams } from "next/navigation";
 import { PDFDocument } from "pdf-lib";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -52,8 +50,9 @@ export function PdfViewer({ className }: { className?: string }) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
   const {
+    globalContext: { chatData },
     useChatReturn: { setInput },
-  } = useContext(ChatContext);
+  } = useGlobalChat();
   useOnClickOutside(popoverRef, () => setSelectedTextOptions(null));
   /* Tools */
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -64,8 +63,6 @@ export function PdfViewer({ className }: { className?: string }) {
   /* PDF actions */
   const [selectedTextOptions, setSelectedTextOptions] =
     useState<SelectedTextOptions | null>(null);
-
-  const { chatData } = useContext(ChatContext);
 
   async function handlePdfData(pdf: DocumentCallback) {
     const pdfBytes = await pdf.getData();
