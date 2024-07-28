@@ -50,8 +50,7 @@ export function PdfViewer({ className }: { className?: string }) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
   const {
-    globalContext: { chatData },
-    useChatReturn: { setInput },
+    globalContext: { chatData, setQuotedText },
   } = useGlobalChat();
   useOnClickOutside(popoverRef, () => setSelectedTextOptions(null));
   /* Tools */
@@ -164,11 +163,11 @@ export function PdfViewer({ className }: { className?: string }) {
   }
 
   function handleAskAssistant() {
-    setInput(selectedTextOptions?.selectedText as string);
     // remove text selection
     window.getSelection()?.removeAllRanges();
     // close popover
     setSelectedTextOptions(null);
+    setQuotedText(selectedTextOptions?.selectedText as string);
   }
 
   return (

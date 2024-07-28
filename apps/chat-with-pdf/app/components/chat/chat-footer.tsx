@@ -1,21 +1,28 @@
-import { Button, Textarea } from "@makify/ui";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  Textarea,
+} from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
+import { ChatRequestOptions } from "ai";
 import { useGlobalChat } from "hooks/use-global-chat";
-import { SendIcon } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { SendIcon, XIcon } from "lucide-react";
+import { FormEvent, useRef, useState, useTransition } from "react";
 
 export function ChatFooter() {
-  const params = useParams();
   const formRef = useRef<HTMLFormElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
 
   const {
+    globalContext: { quotedText, setQuotedText },
     useChatReturn: {
       input: inputValue,
       handleSubmit,
       handleInputChange,
       isLoading,
+      messages,
     },
   } = useGlobalChat();
 
@@ -53,10 +60,35 @@ export function ChatFooter() {
     }
   }
 
-  console.log({ inputValue });
+  function removeQuotedText() {
+    setQuotedText(null);
+  }
+
+  function handleOnSubmit(event: FormEvent<HTMLFormElement>) {
+    handleSubmit(event, { data: { quotedText } });
+  }
+
+  console.log(messages);
+
   return (
-    <div className="z-10 px-4 pb-3">
-      <form onSubmit={handleSubmit} ref={formRef}>
+    <div className="border-border z-10 flex flex-col gap-2 border-t-[1px] p-3">
+      {quotedText && (
+        <div>
+          <Alert className="flex max-h-24 flex-row items-center justify-between gap-2">
+            <div>
+              <AlertTitle>Quoted text</AlertTitle>
+              <AlertDescription className="line-clamp-3">
+                {quotedText}
+              </AlertDescription>
+            </div>
+            <Button variant="ghost" size="icon" onClick={removeQuotedText}>
+              <XIcon className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </Alert>
+        </div>
+      )}
+      <form onSubmit={handleOnSubmit} ref={formRef}>
         <div
           className={cn(
             "bg-primary-foreground relative flex flex-row justify-between gap-1 rounded-md p-2 pl-4 pr-3",

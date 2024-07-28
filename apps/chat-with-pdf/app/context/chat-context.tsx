@@ -3,7 +3,14 @@
 import { Chat } from "@prisma/client";
 import { Message, useChat, UseChatOptions } from "ai/react";
 import { useParams } from "next/navigation";
-import { createContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { getChatMessages } from "../actions/get-chat-messages";
 import { MESSAGE_TYPE } from "@/components/chat/constants/message-type";
 import { updateChatMessages } from "../actions/update-chat-messages";
@@ -19,6 +26,8 @@ export const ChatContext = createContext({
   globalContext: {
     chatData: EMPTY_CHAT_DATA,
     isLoading: false,
+    quotedText: null as string | null,
+    setQuotedText: (() => null) as Dispatch<SetStateAction<string | null>>,
   },
   initOptions: {} as UseChatOptions,
   useChatReturn: {} as ReturnType<typeof useChat>,
@@ -33,6 +42,7 @@ export function ChatProvider({
 }) {
   const [chatData, setChatData] = useState<Partial<Chat>>(EMPTY_CHAT_DATA);
   const [isLoading, setIsLoading] = useState(true);
+  const [quotedText, setQuotedText] = useState<string | null>(null);
   const params = useParams();
   const initOptions = {
     id: documentId,
@@ -131,7 +141,7 @@ export function ChatProvider({
   return (
     <ChatContext.Provider
       value={{
-        globalContext: { chatData, isLoading },
+        globalContext: { chatData, isLoading, quotedText, setQuotedText },
         useChatReturn,
         initOptions,
       }}

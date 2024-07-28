@@ -127,7 +127,7 @@ export function PdfToolbar({
           </div>
           <div className="flex items-center gap-2">
             <Tooltip>
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <Toggle
                   className="hover:text-primary flex-shrink-0"
                   onPressedChange={onChangePageOnScroll}

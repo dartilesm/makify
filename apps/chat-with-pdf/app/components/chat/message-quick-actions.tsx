@@ -78,7 +78,7 @@ export function MessageQuickActions({
               onOpenChange={handleTooltipOpenChange}
               key={`message-quick-action-${message.id}${quickActionIndex}`}
             >
-              <TooltipTrigger>
+              <TooltipTrigger asChild>
                 <ToggleGroupItem
                   value={value}
                   onClick={(e) => e.stopPropagation()}
