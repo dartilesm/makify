@@ -1,25 +1,23 @@
+import { ChatContext } from "@/app/context/chat-context";
 import { Button, Textarea } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { useChat } from "ai/react";
 import { SendIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 
 export function ChatFooter() {
   const params = useParams();
   const formRef = useRef<HTMLFormElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
+
   const {
-    input: inputValue,
-    handleSubmit,
-    handleInputChange,
-    isLoading,
-  } = useChat({
-    id: params.documentId as string,
-    body: {
-      documentId: params.documentId as string,
+    useChatReturn: {
+      input: inputValue,
+      handleSubmit,
+      handleInputChange,
+      isLoading,
     },
-  });
+  } = useContext(ChatContext);
 
   function extractTextareaLineHeight(textarea: HTMLTextAreaElement) {
     const computedStyle = window.getComputedStyle(textarea);
@@ -55,6 +53,7 @@ export function ChatFooter() {
     }
   }
 
+  console.log({ inputValue });
   return (
     <div className="z-10 px-4 pb-3">
       <form onSubmit={handleSubmit} ref={formRef}>

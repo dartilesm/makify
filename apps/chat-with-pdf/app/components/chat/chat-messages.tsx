@@ -19,12 +19,13 @@ import {
   RefreshCcwIcon,
 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AssistantMessage } from "./assistant-message";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
 import { MessageActions } from "./types/message-actions";
+import { ChatContext } from "@/app/context/chat-context";
 
 const AnimatedButton = motion(Button);
 
@@ -62,15 +63,10 @@ export function ChatMessages() {
   const [messageTooltipOpenIndex, setMessageTooltipOpenIndex] = useState<
     number | null
   >(null);
-  const params = useParams();
 
-  const { messages } = useChat({
-    id: params.documentId as string,
-    body: {
-      documentId: params.documentId,
-    },
-    keepLastMessageOnError: true,
-  });
+  const {
+    useChatReturn: { messages },
+  } = useContext(ChatContext);
 
   useEffect(onMessageChanges, [messages.length]);
 

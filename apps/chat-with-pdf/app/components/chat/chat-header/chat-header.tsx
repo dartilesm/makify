@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatContext } from "@/app/context/chat-context";
 import {
   Button,
   Tooltip,
@@ -8,18 +9,17 @@ import {
   TooltipTrigger,
 } from "@makify/ui";
 import { usePDF } from "@react-pdf/renderer";
-import { useChat } from "ai/react";
 import { DownloadIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { ChatPDF } from "./chat-pdf";
 
 export function ChatHeader() {
   const params = useParams();
-  const { messages } = useChat({
-    id: params.documentId as string,
-  });
+  const {
+    useChatReturn: { messages },
+  } = useContext(ChatContext);
 
   const [instance, updateInstance] = usePDF({
     document: (

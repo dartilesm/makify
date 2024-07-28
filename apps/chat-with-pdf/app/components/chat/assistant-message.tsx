@@ -1,6 +1,6 @@
+import { ChatContext } from "@/app/context/chat-context";
 import { cn } from "@makify/ui/lib/utils";
-import { useChat } from "ai/react";
-import { useParams } from "next/navigation";
+import { useContext } from "react";
 import Markdown from "react-markdown";
 import { MESSAGE_TYPE } from "./constants/message-type";
 
@@ -11,14 +11,9 @@ export function AssistantMessage({
   children: string;
   type: string;
 }) {
-  const params = useParams();
-
-  const { append } = useChat({
-    id: params.documentId as string,
-    body: {
-      documentId: params.documentId,
-    },
-  });
+  const {
+    useChatReturn: { append },
+  } = useContext(ChatContext);
 
   function submitQuestion(question: string) {
     append({ role: "user", content: question });

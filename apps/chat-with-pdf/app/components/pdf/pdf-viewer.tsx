@@ -2,14 +2,24 @@
 
 import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import { ChatContext } from "@/app/context/chat-context";
-import { Skeleton } from "@makify/ui";
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverPortal,
+  Skeleton,
+} from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
+import { useChat } from "ai/react";
+import { MessageSquareQuoteIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import { PDFDocument } from "pdf-lib";
 import { useContext, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
+import { useOnClickOutside } from "usehooks-ts";
 import { PdfToolbar } from "./pdf-toolbar";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `/api/pdf-helper?url=unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -23,6 +33,14 @@ export const enum PAGE_ZOOM_TYPE {
   OUT,
 }
 
+type SelectedTextOptions = {
+  selectedText: string;
+  coordinates: {
+    top: number;
+    left: number;
+  };
+};
+
 export type PdfData = {
   numPages: number;
   title: string;
@@ -31,12 +49,21 @@ export type PdfData = {
 export function PdfViewer({ className }: { className?: string }) {
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const pdfPagesRef = useRef<HTMLDivElement[] | null[]>([]);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
+  const {
+    useChatReturn: { setInput },
+  } = useContext(ChatContext);
+  useOnClickOutside(popoverRef, () => setSelectedTextOptions(null));
   /* Tools */
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentZoom, setCurrentZoom] = useState<number>(1);
   const [enableChangePageOnScroll, setEnableChangePageOnScroll] =
     useState<boolean>(true);
+
+  /* PDF actions */
+  const [selectedTextOptions, setSelectedTextOptions] =
+    useState<SelectedTextOptions | null>(null);
 
   const { chatData } = useContext(ChatContext);
 
@@ -117,20 +144,48 @@ export function PdfViewer({ className }: { className?: string }) {
     setCurrentZoom(limitedZoom);
   }
 
+  function handleTextSelection() {
+    const selection = window.getSelection();
+    // Get the selected text
+    const selectedText = selection?.toString();
+
+    // Get selection coordinates
+    const range = selection?.getRangeAt(0);
+    const rect = range?.getBoundingClientRect();
+
+    const textOptions = selectedText
+      ? {
+          selectedText: selectedText as string,
+          coordinates: {
+            top: (rect?.top as number) - 50,
+            left: rect?.left as number,
+          },
+        }
+      : null;
+
+    setSelectedTextOptions(textOptions);
+  }
+
+  function handleAskAssistant() {
+    setInput(selectedTextOptions?.selectedText as string);
+    // remove text selection
+    window.getSelection()?.removeAllRanges();
+    // close popover
+    setSelectedTextOptions(null);
+  }
+
   return (
     <div className={cn("h-full w-full lg:block", className)}>
-      <div className="dark:bg-primary-foreground relative flex h-full flex-col overflow-hidden bg-white">
-        {pdfData && (
-          <PdfToolbar
-            pdfData={pdfData}
-            zoom={currentZoom}
-            page={currentPage}
-            changePageOnScroll={enableChangePageOnScroll}
-            onPageChange={handlePageNumberChange}
-            onZoomChange={handlePageZoomChange}
-            onChangePageOnScroll={setEnableChangePageOnScroll}
-          />
-        )}
+      <div className="dark:bg-primary-foreground flex h-full flex-col overflow-hidden bg-white">
+        <PdfToolbar
+          pdfData={pdfData as PdfData}
+          zoom={currentZoom}
+          page={currentPage}
+          changePageOnScroll={enableChangePageOnScroll}
+          onPageChange={handlePageNumberChange}
+          onZoomChange={handlePageZoomChange}
+          onChangePageOnScroll={setEnableChangePageOnScroll}
+        />
         <div className="flex-1 overflow-auto p-4" ref={pdfContainerRef}>
           <div className="relative flex h-full gap-4">
             {!pdfData && (
@@ -148,11 +203,32 @@ export function PdfViewer({ className }: { className?: string }) {
                 error={null}
                 className="flex w-full flex-col items-center gap-4"
               >
-                <Page
-                  pageNumber={currentPage}
-                  className="border-border max-w-max border-[1px] shadow-lg"
-                  scale={currentZoom}
-                />
+                <Popover open={!!selectedTextOptions}>
+                  <Page
+                    pageNumber={currentPage}
+                    className="border-border max-w-max border-[1px] shadow-lg"
+                    scale={currentZoom}
+                    onMouseUp={handleTextSelection}
+                  />
+                  <PopoverPortal>
+                    <PopoverContent
+                      className="absolute z-20 w-fit p-1"
+                      onOpenAutoFocus={(e) => e.preventDefault()}
+                      style={{ ...(selectedTextOptions?.coordinates || {}) }}
+                      ref={popoverRef}
+                    >
+                      <Button
+                        className="z-30 flex gap-2"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleAskAssistant}
+                      >
+                        <MessageSquareQuoteIcon className="h-4 w-4" />
+                        Ask the assistant
+                      </Button>
+                    </PopoverContent>
+                  </PopoverPortal>
+                </Popover>
               </Document>
             )}
           </div>

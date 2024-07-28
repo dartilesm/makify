@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatContext } from "@/app/context/chat-context";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -8,12 +9,11 @@ import {
   TooltipTrigger,
   useToast,
 } from "@makify/ui";
-import { QUICK_ACTIONS } from "./constants/message-quick-actions";
-import { Message } from "ai";
-import { MessageActions } from "./types/message-actions";
-import { useChat } from "ai/react";
-import { useParams } from "next/navigation";
 import { cn } from "@makify/ui/lib/utils";
+import { Message } from "ai";
+import { useContext } from "react";
+import { QUICK_ACTIONS } from "./constants/message-quick-actions";
+import { MessageActions } from "./types/message-actions";
 
 type MessageQuickActionsProps = {
   quickActions: MessageActions[];
@@ -30,14 +30,9 @@ export function MessageQuickActions({
   className,
   onTooltipOpenChange = () => null,
 }: MessageQuickActionsProps) {
-  const params = useParams();
-
-  const { messages, reload } = useChat({
-    id: params.documentId as string,
-    body: {
-      documentId: params.documentId,
-    },
-  });
+  const {
+    useChatReturn: { messages, reload },
+  } = useContext(ChatContext);
 
   const { toast } = useToast();
 

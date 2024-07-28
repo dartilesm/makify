@@ -15,7 +15,8 @@ const EMPTY_CHAT_DATA: Partial<Chat> = {
 
 export const ChatContext = createContext({
   chatData: EMPTY_CHAT_DATA,
-  isLoading: true,
+  isLoading: false,
+  useChatReturn: {} as ReturnType<typeof useChat>,
 });
 
 export function ChatProvider({
@@ -28,7 +29,7 @@ export function ChatProvider({
   const [chatData, setChatData] = useState<Partial<Chat>>(EMPTY_CHAT_DATA);
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
-  const { setMessages } = useChat({
+  const { ...useChatReturn } = useChat({
     id: documentId,
     body: {
       documentId: params.documentId as string,
@@ -46,11 +47,11 @@ export function ChatProvider({
     setIsLoading(false);
 
     // restore messages from db
-    setMessages(chatData?.messages as unknown as Message[]);
+    useChatReturn.setMessages(chatData?.messages as unknown as Message[]);
   }
 
   return (
-    <ChatContext.Provider value={{ chatData, isLoading }}>
+    <ChatContext.Provider value={{ chatData, isLoading, useChatReturn }}>
       {children}
     </ChatContext.Provider>
   );

@@ -36,7 +36,8 @@ export function Chat({ className }: ChatProps) {
   // Store the initial messages from the chat context
   const initialMessages = chatData.messages as unknown as Message[];
 
-  const { append, messages, isLoading, handleSubmit } = useChat({
+  /* const { useChatReturn: {append, messages, isLoading} } = useContext(ChatContext); */
+  const { append, messages, isLoading } = useChat({
     id: params.documentId as string,
     body: {
       documentId: params.documentId,
