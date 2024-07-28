@@ -13,6 +13,7 @@ import { animate, inView, motion } from "framer-motion";
 import {
   ArrowDown,
   BookmarkIcon,
+  CheckIcon,
   CopyIcon,
   FlagIcon,
   RefreshCcwIcon,
@@ -23,10 +24,11 @@ import { AssistantMessage } from "./assistant-message";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
+import { MessageActions } from "./types/message-actions";
 
 const AnimatedButton = motion(Button);
 
-const quickActions = [
+const quickActions: MessageActions[] = [
   {
     Icon: CopyIcon,
     label: "Copy message",

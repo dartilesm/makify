@@ -68,6 +68,7 @@ export function MessageQuickActions({
       type="single"
       size="xs"
       className={cn("z-10 justify-start", className)}
+      onClick={(e) => e.stopPropagation()}
       onValueChange={(action: QUICK_ACTIONS) =>
         handleToggleGroupChange(action, message)
       }
@@ -83,10 +84,11 @@ export function MessageQuickActions({
               onOpenChange={handleTooltipOpenChange}
               key={`message-quick-action-${message.id}${quickActionIndex}`}
             >
-              <TooltipTrigger asChild>
+              <TooltipTrigger>
                 <ToggleGroupItem
                   value={value}
-                  className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200 data-[state=on]:bg-transparent hover:data-[state=on]:bg-gray-200"
                 >
                   <Icon className="text-primary h-4 w-4 text-opacity-70" />
                   <span className="sr-only">{label}</span>

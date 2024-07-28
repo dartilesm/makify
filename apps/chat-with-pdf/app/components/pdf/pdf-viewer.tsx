@@ -32,8 +32,12 @@ export function PdfViewer({ className }: { className?: string }) {
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const pdfPagesRef = useRef<HTMLDivElement[] | null[]>([]);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
+  /* Tools */
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentZoom, setCurrentZoom] = useState<number>(1);
+  const [enableChangePageOnScroll, setEnableChangePageOnScroll] =
+    useState<boolean>(true);
+
   const { chatData } = useContext(ChatContext);
 
   async function handlePdfData(pdf: DocumentCallback) {
@@ -70,6 +74,8 @@ export function PdfViewer({ className }: { className?: string }) {
       );
       return;
     }
+
+    if (!enableChangePageOnScroll) return;
 
     const pdfContainerEl = pdfContainerRef.current;
 
@@ -118,9 +124,11 @@ export function PdfViewer({ className }: { className?: string }) {
           <PdfToolbar
             pdfData={pdfData}
             zoom={currentZoom}
+            page={currentPage}
+            changePageOnScroll={enableChangePageOnScroll}
             onPageChange={handlePageNumberChange}
             onZoomChange={handlePageZoomChange}
-            page={currentPage}
+            onChangePageOnScroll={setEnableChangePageOnScroll}
           />
         )}
         <div className="flex-1 overflow-auto p-4" ref={pdfContainerRef}>

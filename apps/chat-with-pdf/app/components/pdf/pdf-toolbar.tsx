@@ -2,6 +2,7 @@ import { PAGE_ZOOM_TYPE, PdfData } from "@/components/pdf/pdf-viewer";
 import {
   Button,
   Input,
+  Toggle,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -14,16 +15,17 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
 } from "@radix-ui/react-icons";
+import { UnfoldVerticalIcon } from "lucide-react";
 
 type Props = {
   className?: string;
   pdfData: PdfData;
   page: number;
   zoom?: number;
-  thumbnail?: boolean;
+  changePageOnScroll?: boolean;
   onPageChange?: (page: number) => void;
   onZoomChange?: (zoomType: PAGE_ZOOM_TYPE) => void;
-  onThumbnaiClick?: () => void;
+  onChangePageOnScroll?: (enabled: boolean) => void;
 };
 
 export function PdfToolbar({
@@ -31,10 +33,10 @@ export function PdfToolbar({
   pdfData,
   page,
   zoom = 1,
-  thumbnail = false,
+  changePageOnScroll = false,
   onPageChange = () => null,
   onZoomChange = (zoomScale: number) => null,
-  onThumbnaiClick = () => null,
+  onChangePageOnScroll = () => null,
 }: Props) {
   const zoomFormatted = `${zoom * 100}%`;
 
@@ -46,6 +48,11 @@ export function PdfToolbar({
   function handlePageZoom(zoomType: PAGE_ZOOM_TYPE) {
     onZoomChange(zoomType);
   }
+
+  console.log({
+    changePageOnScroll,
+    onChangePageOnScroll,
+  });
 
   return (
     <div className={cn("border-b-[1px] border-gray-100 p-2", className)}>
@@ -123,14 +130,20 @@ export function PdfToolbar({
             </Tooltip>
           </div>
           <div className="flex items-center gap-2">
-            {/*             <Tooltip>
-              <TooltipTrigger asChild>
-                <Toggle className="flex-shrink-0" disabled>
-                  <LayoutGridIcon className="h-5 w-5" />
+            <Tooltip>
+              <TooltipTrigger>
+                <Toggle
+                  className="hover:text-primary flex-shrink-0"
+                  onPressedChange={onChangePageOnScroll}
+                  pressed={changePageOnScroll}
+                >
+                  <UnfoldVerticalIcon className="h-5 w-5" />
                 </Toggle>
               </TooltipTrigger>
-              <TooltipContent side="bottom">Thumbnail view</TooltipContent>
-            </Tooltip> */}
+              <TooltipContent side="bottom">
+                Change page on scroll
+              </TooltipContent>
+            </Tooltip>
           </div>
         </TooltipProvider>
       </div>
