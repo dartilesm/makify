@@ -26,8 +26,10 @@ export const ChatContext = createContext({
   globalContext: {
     chatData: EMPTY_CHAT_DATA,
     isLoading: false,
-    quotedText: null as string | null,
-    setQuotedText: (() => null) as Dispatch<SetStateAction<string | null>>,
+    extraData: {} as Record<string, unknown>,
+    setExtraData: (() => null) as Dispatch<
+      SetStateAction<Record<string, unknown>>
+    >,
   },
   initOptions: {} as UseChatOptions,
   useChatReturn: {} as ReturnType<typeof useChat>,
@@ -42,7 +44,7 @@ export function ChatProvider({
 }) {
   const [chatData, setChatData] = useState<Partial<Chat>>(EMPTY_CHAT_DATA);
   const [isLoading, setIsLoading] = useState(true);
-  const [quotedText, setQuotedText] = useState<string | null>(null);
+  const [extraData, setExtraData] = useState<Record<string, unknown>>({});
   const params = useParams();
   const initOptions = {
     id: documentId,
@@ -127,6 +129,9 @@ export function ChatProvider({
   }
 
   function storeChatMessages() {
+    console.log({
+      dataFromServer: useChatReturn.data,
+    });
     // Check if new messages have been added to the chat to not update the chat messages with the same messages
     const hasAddedMessages = initialMessages
       ? useChatReturn.messages.length > initialMessages?.length
@@ -141,7 +146,12 @@ export function ChatProvider({
   return (
     <ChatContext.Provider
       value={{
-        globalContext: { chatData, isLoading, quotedText, setQuotedText },
+        globalContext: {
+          chatData,
+          isLoading,
+          extraData,
+          setExtraData,
+        },
         useChatReturn,
         initOptions,
       }}

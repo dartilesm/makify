@@ -10,26 +10,33 @@ export const maxDuration = 30;
 type RequestBody = {
   messages: Message[];
   documentId: Chat["id"];
+  data: {
+    quotedText?: string;
+    [key: string]: any;
+  };
 };
 
 export async function POST(req: Request) {
-  const { messages = [], documentId } = (await req.json()) as RequestBody;
+  const {
+    messages = [],
+    documentId,
+    data: messageData = {},
+  } = (await req.json()) as RequestBody;
   const lastMessage = messages.at(-1) as Message;
+  const userMessage = parsedUserMessage(
+    lastMessage,
+    messageData.quotedText as string,
+  );
 
   const documentContext = lastMessage
-    ? await getContext(lastMessage.content as string, documentId)
+    ? await getContext(userMessage, documentId)
     : "";
 
   const messagesToAI = [
     ...messages.filter((message) => message?.role === "user"),
   ];
 
-  const data = new StreamData();
-
-  const result = await streamText({
-    model: google("models/gemini-1.5-pro-latest"),
-    messages: messagesToAI as CoreMessage[],
-    system: `AI assistant is a brand new, powerful, human-like artificial intelligence.
+  const systemInstructions = `AI assistant is a brand new, powerful, human-like artificial intelligence.
     The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
     AI is a well-behaved and well-mannered individual.
     AI is always friendly, kind, and inspiring, and he is eager to provide vivid and thoughtful responses to the user.
@@ -37,9 +44,21 @@ export async function POST(req: Request) {
     START DOCUMENT BLOCK
     ${documentContext}
     END OF DOCUMENT BLOCK
+    START QUOTED TEXT BLOCK
+    ${messageData?.quotedText || ""}
+    END OF QUOTED TEXT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
     If the document does not provide the answer to question, will try to answer the question based on the document.
-    AI assistant will not invent anything that is not drawn directly from the document.`,
+    The QUOTED TEXT BLOCK will be used to provide context to the AI assistant.
+    AI assistant will not invent anything that is not drawn directly from the document.`;
+
+  const data = new StreamData();
+  data.append(messageData);
+
+  const result = await streamText({
+    model: google("models/gemini-1.5-pro-latest"),
+    messages: messagesToAI as CoreMessage[],
+    system: systemInstructions,
     maxTokens: 3000,
     onFinish({
       text,
@@ -63,5 +82,15 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toAIStreamResponse({ data });
+  return result.toAIStreamResponse({ data: data });
+}
+
+function parsedUserMessage(lastMessage: Message, quotedText: string) {
+  if (quotedText) {
+    return `Given this text extracted from the document: 
+      "${quotedText}" 
+    Answer this:
+    ${lastMessage.content}`;
+  }
+  return lastMessage.content;
 }

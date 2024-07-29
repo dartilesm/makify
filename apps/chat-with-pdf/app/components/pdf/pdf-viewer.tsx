@@ -50,7 +50,7 @@ export function PdfViewer({ className }: { className?: string }) {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
   const {
-    globalContext: { chatData, setQuotedText },
+    globalContext: { chatData, setExtraData },
   } = useGlobalChat();
   useOnClickOutside(popoverRef, () => setSelectedTextOptions(null));
   /* Tools */
@@ -167,7 +167,10 @@ export function PdfViewer({ className }: { className?: string }) {
     window.getSelection()?.removeAllRanges();
     // close popover
     setSelectedTextOptions(null);
-    setQuotedText(selectedTextOptions?.selectedText as string);
+    setExtraData({
+      quotedText: selectedTextOptions?.selectedText,
+      page: currentPage,
+    });
   }
 
   return (

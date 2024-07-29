@@ -6,20 +6,21 @@ import {
   Textarea,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { ChatRequestOptions } from "ai";
+import { Message } from "ai";
 import { useGlobalChat } from "hooks/use-global-chat";
 import { SendIcon, XIcon } from "lucide-react";
-import { FormEvent, useRef, useState, useTransition } from "react";
+import { FormEvent, KeyboardEvent, useRef, useState } from "react";
 
 export function ChatFooter() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
 
   const {
-    globalContext: { quotedText, setQuotedText },
+    globalContext: { extraData, setExtraData },
     useChatReturn: {
       input: inputValue,
-      handleSubmit,
+      setInput,
+      append,
       handleInputChange,
       isLoading,
       messages,
@@ -51,34 +52,43 @@ export function ChatFooter() {
     handleInputChange(event);
   }
 
-  function handleTextareaKeyDown(
-    event: React.KeyboardEvent<HTMLTextAreaElement>,
-  ) {
+  function handleTextareaKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      handleSubmit();
+      handleOnSubmit(event);
     }
   }
 
   function removeQuotedText() {
-    setQuotedText(null);
+    setExtraData({});
+    setInput("");
   }
 
-  function handleOnSubmit(event: FormEvent<HTMLFormElement>) {
-    handleSubmit(event, { data: { quotedText } });
+  function handleOnSubmit(
+    event: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>,
+  ) {
+    event.preventDefault();
+    append({
+      role: "user",
+      content: inputValue,
+      data: (extraData as Message["data"]) || {},
+    });
+    removeQuotedText();
   }
 
-  console.log(messages);
+  console.log({ messages, extraData });
 
   return (
     <div className="border-border z-10 flex flex-col gap-2 border-t-[1px] p-3">
-      {quotedText && (
+      {(extraData?.quotedText as string) && (
         <div>
           <Alert className="flex max-h-24 flex-row items-center justify-between gap-2">
             <div>
-              <AlertTitle>Quoted text</AlertTitle>
+              <AlertTitle>
+                Quoted text from page {extraData?.page as string}
+              </AlertTitle>
               <AlertDescription className="line-clamp-3">
-                {quotedText}
+                {extraData?.quotedText as string}
               </AlertDescription>
             </div>
             <Button variant="ghost" size="icon" onClick={removeQuotedText}>

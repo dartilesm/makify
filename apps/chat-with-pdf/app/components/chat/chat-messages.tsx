@@ -24,6 +24,7 @@ import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
 import { MessageActions } from "./types/message-actions";
+import { UserMessage } from "./user-message";
 
 const AnimatedButton = motion(Button);
 
@@ -167,11 +168,13 @@ export function ChatMessages() {
                           className={cn({
                             "rounded-md bg-gray-100 px-4 py-3 text-sm dark:bg-gray-800":
                               message.role === "assistant",
-                            "bg-primary rounded-md px-4 py-3 text-sm text-white":
+                            "bg-primary text-primary-foreground rounded-md bg-opacity-20 px-4 py-3 text-sm":
                               message.role === "user",
                           })}
                         >
-                          {message.role === "user" && <p>{message.content}</p>}
+                          {message.role === "user" && (
+                            <UserMessage message={message} />
+                          )}
                           {message.role === "assistant" && (
                             <>
                               <AssistantMessage
