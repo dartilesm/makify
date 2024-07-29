@@ -7,6 +7,7 @@ import {
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { Message } from "ai";
+import { AnimatePresence, motion } from "framer-motion";
 import { useGlobalChat } from "hooks/use-global-chat";
 import { SendIcon, XIcon } from "lucide-react";
 import { FormEvent, KeyboardEvent, useRef, useState } from "react";
@@ -76,28 +77,37 @@ export function ChatFooter() {
     removeQuotedText();
   }
 
-  console.log({ messages, extraData });
-
   return (
     <div className="border-border z-10 flex flex-col gap-2 border-t-[1px] p-3">
-      {(extraData?.quotedText as string) && (
-        <div>
-          <Alert className="flex max-h-24 flex-row items-center justify-between gap-2">
-            <div>
-              <AlertTitle>
-                Quoted text from page {extraData?.page as string}
-              </AlertTitle>
-              <AlertDescription className="line-clamp-3">
-                {extraData?.quotedText as string}
-              </AlertDescription>
-            </div>
-            <Button variant="ghost" size="icon" onClick={removeQuotedText}>
-              <XIcon className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
-          </Alert>
-        </div>
-      )}
+      <AnimatePresence>
+        {(extraData?.quotedText as string) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <Alert className="flex max-h-24 flex-row items-center justify-between gap-2">
+              <div>
+                <AlertTitle>
+                  Quoted text from page {extraData?.page as string}
+                </AlertTitle>
+                <AlertDescription className="line-clamp-3">
+                  {extraData?.quotedText as string}
+                </AlertDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={removeQuotedText}
+                className="flex-shrink-0"
+              >
+                <XIcon className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <form onSubmit={handleOnSubmit} ref={formRef}>
         <div
           className={cn(

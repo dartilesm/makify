@@ -140,7 +140,7 @@ export function ChatMessages() {
         ref={chatContainerRef}
         data-chat-messages-container
       >
-        <div className="flex h-fit flex-col gap-4">
+        <div className="flex h-fit max-w-full flex-col gap-4">
           {messages.map((message, index) => {
             if (isAHiddenMessage(message)) return null;
             return (

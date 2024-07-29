@@ -129,7 +129,7 @@ export function PdfToolbar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Toggle
-                  className="hover:text-primary flex-shrink-0"
+                  className="hover:text-primary aria-[pressed=true]:bg-accent aria-[pressed=true]:text-accent-foreground flex-shrink-0"
                   onPressedChange={onChangePageOnScroll}
                   pressed={changePageOnScroll}
                   disabled={!pdfData}

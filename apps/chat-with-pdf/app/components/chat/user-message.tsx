@@ -12,11 +12,11 @@ export function UserMessage({ className, message }: UserMessageProps) {
   return (
     <div className="flex flex-col gap-2">
       {(messageData?.quotedText as string) && (
-        <Alert className="text-muted-foreground flex max-h-24 flex-col justify-between gap-2 bg-gray-100">
+        <Alert className="bg-primary flex max-h-24 flex-col justify-between gap-2 border-slate-600 text-[#b5b5b5]">
           <AlertTitle>
             Quoted text from page {messageData?.page as string}
           </AlertTitle>
-          <AlertDescription className="line-clamp-3">
+          <AlertDescription className="line-clamp-2 text-ellipsis">
             {messageData?.quotedText as string}
           </AlertDescription>
         </Alert>
