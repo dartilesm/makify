@@ -35,19 +35,17 @@ export const ChatContext = createContext({
   useChatReturn: {} as ReturnType<typeof useChat>,
 });
 
-export function ChatProvider({
-  children,
-  documentId,
-}: {
+type ChatProviderProps = {
   children: React.ReactNode;
-  documentId: string;
-}) {
-  const [chatData, setChatData] = useState<Partial<Chat>>(EMPTY_CHAT_DATA);
+  chatData: Partial<Chat>;
+};
+
+export function ChatProvider({ children, chatData }: ChatProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [extraData, setExtraData] = useState<Record<string, unknown>>({});
   const params = useParams();
   const initOptions = {
-    id: documentId,
+    id: chatData.id,
     body: {
       documentId: params.documentId as string,
     },
@@ -84,9 +82,6 @@ export function ChatProvider({
   const initialMessages = chatData.messages as unknown as Message[];
 
   async function fetchChatData() {
-    const chatData = await getChatMessages(documentId);
-
-    setChatData(chatData as Chat);
     setIsLoading(false);
 
     // restore messages from db
