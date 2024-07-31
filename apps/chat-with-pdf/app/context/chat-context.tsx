@@ -129,9 +129,6 @@ export function ChatProvider({
   }
 
   function storeChatMessages() {
-    console.log({
-      dataFromServer: useChatReturn.data,
-    });
     // Check if new messages have been added to the chat to not update the chat messages with the same messages
     const hasAddedMessages = initialMessages
       ? useChatReturn.messages.length > initialMessages?.length
