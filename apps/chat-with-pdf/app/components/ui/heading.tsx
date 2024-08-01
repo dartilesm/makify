@@ -1,9 +1,10 @@
-import { Button } from "@makify/ui";
+import { Button, Skeleton } from "@makify/ui";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ReactElement } from "react";
 
 interface HeadingProps {
+  loading?: boolean;
   title: string;
   description?: string;
   actionButton?: ReactElement;
@@ -11,6 +12,7 @@ interface HeadingProps {
 }
 
 export function Heading({
+  loading,
   title,
   description,
   actionButton,
@@ -20,7 +22,7 @@ export function Heading({
     <div className="flex flex-row items-center justify-between gap-4">
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
-          {backButton && (
+          {!loading && backButton && (
             <Button
               asChild
               variant="ghost"
@@ -32,13 +34,19 @@ export function Heading({
               </Link>
             </Button>
           )}
-          <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+          {loading && backButton && <Skeleton className="h-7 w-7" />}
+          {!loading && title && (
+            <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+          )}
+          {loading && <Skeleton className="h-8 w-32" />}
         </div>
-        {description && (
+        {!loading && description && (
           <p className="text-muted-foreground text-sm">{description}</p>
         )}
+        {loading && <Skeleton className="h-4 w-72" />}
       </div>
-      {actionButton}
+      {!loading && actionButton}
+      {loading && <Skeleton className="h-10 w-32" />}
     </div>
   );
 }

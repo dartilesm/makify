@@ -1,4 +1,4 @@
-import { NewChat } from "@/components/chat/new-chat";
+import { ChatsContainer } from "@/components/pages-containers/chats-container";
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 
@@ -12,5 +12,5 @@ async function getChats() {
 export default async function Page() {
   const chats = await getCachedChats();
 
-  return <NewChat chats={chats} />;
+  return <ChatsContainer chats={chats} />;
 }

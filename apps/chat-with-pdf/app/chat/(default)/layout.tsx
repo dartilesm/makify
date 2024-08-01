@@ -8,7 +8,7 @@ export default async function ChatLayout({
   return (
     <div className="flex h-screen flex-col">
       <Header chats={[]} />
-      <div className="flex-1 space-y-4 p-4">{children}</div>
+      <div className="flex-1 p-4">{children}</div>
     </div>
   );
 }
