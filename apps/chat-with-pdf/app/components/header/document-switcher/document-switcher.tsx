@@ -5,7 +5,6 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  useToast,
 } from "@makify/ui";
 import { Button } from "@makify/ui/components/button";
 import {
@@ -50,13 +49,10 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
   const [showEditDocumentDialog, setShowEditDocumentDialog] = useState(false);
 
-  const { toast } = useToast();
-
   useEffect(setPopoverWidth, []);
 
   const selectedDocument = useMemo(
-    () =>
-      chats.find((chat) => chat.id === params.documentId) || (chats[0] as Chat),
+    () => chats.find((chat) => chat.id === params.documentId),
     [params.documentId, chats],
   );
 
@@ -159,29 +155,33 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={toggleEditDocumentDialog}
-              size="icon"
-              variant="ghost"
-            >
-              <PencilIcon className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">Edit document</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      {selectedDocument && (
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={toggleEditDocumentDialog}
+                size="icon"
+                variant="ghost"
+              >
+                <PencilIcon className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Edit document</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
       <NewDocumentDialog
         isOpen={showNewDocumentDialog}
         onOpenChange={setShowNewDocumentDialog}
       />
-      <EditDocumentDialog
-        chat={selectedDocument}
-        isOpen={showEditDocumentDialog}
-        onOpenChange={toggleEditDocumentDialog}
-      />
+      {selectedDocument && (
+        <EditDocumentDialog
+          chat={selectedDocument}
+          isOpen={showEditDocumentDialog}
+          onOpenChange={toggleEditDocumentDialog}
+        />
+      )}
     </div>
   );
 }

@@ -1,28 +1,20 @@
-import { cache } from "react";
+import { Chat } from "@prisma/client";
 import { DocumentSwitcher } from "./header/document-switcher/document-switcher";
 import { UserNav } from "./header/user-nav";
-import { prisma } from "@/lib/prisma";
 
-const getCachedChats = cache(getChats);
+type HeaderProps = {
+  chats: Chat[];
+};
 
-async function getChats() {
-  const chats = await prisma.chat.findMany();
-  return chats;
-}
-
-export async function Header() {
-  const chats = await getCachedChats();
-
+export async function Header({ chats = [] }: HeaderProps) {
   return (
     <header className="border-b">
       <div className="flex h-20 flex-row items-center justify-evenly px-4">
         <div className="text-sm">Chat with PDF</div>
         <div className="flex flex-1 justify-center">
-          <DocumentSwitcher chats={chats} />
+          {!!chats.length && <DocumentSwitcher chats={chats} />}
         </div>
-        <div>
-          <UserNav />
-        </div>
+        <div></div>
       </div>
     </header>
   );

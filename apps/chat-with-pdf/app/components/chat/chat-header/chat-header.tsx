@@ -56,8 +56,8 @@ export function ChatHeader() {
                         download={`chat conversation - ${params.documentId}.pdf`}
                         target="_blank"
                       >
-                        <span>Download chat</span>
                         <DownloadIcon className="h-4 w-4" />
+                        <span>Download chat</span>
                       </Link>
                     </Button>
                   </TooltipTrigger>

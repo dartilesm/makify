@@ -208,8 +208,8 @@ export function NewDocumentDialogContent() {
           <Label className="flex flex-col gap-2">
             Link to your pdf *
             <p className="text-muted-foreground text-sm">
-              Make sure the link ends with .pdf, otherwise, download the
-              document and upload it manually.
+              Make sure the link ends with .pdf or it is a valid pdf link,
+              otherwise, download the document and upload it manually.
             </p>
             <Input
               placeholder="https://mydomain.com/how-many-cups-did-argentina-win.pdf"
