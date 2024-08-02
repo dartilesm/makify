@@ -45,7 +45,9 @@ export function ChatPDF({ documentId, messages }: ChatPDFProps) {
           Document id: {documentId}
         </Text>
         {messages
-          .filter((message) => !message.data?.messageType)
+          .filter(
+            (message) => !(message.data as Record<string, any>)?.messageType,
+          )
           .map((message, index) => {
             return (
               <View key={index}>

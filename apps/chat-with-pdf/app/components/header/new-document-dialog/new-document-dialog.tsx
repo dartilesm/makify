@@ -63,7 +63,9 @@ export function NewDocumentDialog({
     const decoder = new TextDecoder();
 
     async function read() {
-      const { done, value } = await reader?.read();
+      const { done, value } = await (reader?.read() as Promise<
+        ReadableStreamReadResult<Uint8Array>
+      >);
 
       if (done) {
         console.log("it is done", value);
@@ -75,7 +77,7 @@ export function NewDocumentDialog({
       console.log({ parsedLoadingMessages });
 
       const filteredLoadingMessages = parsedLoadingMessages.filter(
-        (message) => message.text,
+        (message: { text: any }) => message.text,
       );
       setLoadingMessages(filteredLoadingMessages);
 

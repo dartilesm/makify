@@ -89,11 +89,19 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
               <span className="truncate">
-                {selectedDocument?.documentMetadata?.title}
+                {
+                  (selectedDocument?.documentMetadata as Record<string, any>)
+                    ?.title
+                }
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {selectedDocument?.documentMetadata?.numPages} page
-                {selectedDocument?.documentMetadata?.numPages > 1
+                {
+                  (selectedDocument?.documentMetadata as Record<string, any>)
+                    ?.numPages
+                }{" "}
+                page
+                {(selectedDocument?.documentMetadata as Record<string, any>)
+                  ?.numPages > 1
                   ? "s"
                   : ""}{" "}
               </span>
@@ -122,7 +130,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
                       <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
-                        {chat?.documentMetadata?.title}
+                        {(chat?.documentMetadata as Record<string, any>)?.title}
                       </span>
                     </div>
                     <CheckIcon

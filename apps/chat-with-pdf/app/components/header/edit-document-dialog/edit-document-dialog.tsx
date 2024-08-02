@@ -63,10 +63,10 @@ export function EditDocumentDialog({
     resolver: zodResolver(EditFormSchema),
     mode: "all",
     defaultValues: {
-      title: chat.documentMetadata?.title,
+      title: (chat.documentMetadata as Record<string, any>)?.title,
     },
     values: {
-      title: chat.documentMetadata?.title,
+      title: (chat.documentMetadata as Record<string, any>)?.title,
     },
   });
 
@@ -101,7 +101,9 @@ export function EditDocumentDialog({
     <Dialog open={isOpen} onOpenChange={handleDialogToggle}>
       <DialogContent className="flex h-[360px] flex-col">
         <DialogHeader>
-          <DialogTitle>{chat.documentMetadata?.title}</DialogTitle>
+          <DialogTitle>
+            {(chat.documentMetadata as Record<string, any>)?.title}
+          </DialogTitle>
           <DialogDescription>
             Edit the title or delete the document.
           </DialogDescription>
@@ -157,8 +159,8 @@ export function EditDocumentDialog({
                       disabled={
                         !editForm.formState.isValid ||
                         editForm.formState.isSubmitting ||
-                        chat.documentMetadata?.title ===
-                          editForm.getValues().title
+                        (chat.documentMetadata as Record<string, any>)
+                          ?.title === editForm.getValues().title
                       }
                     >
                       {editForm.formState.isSubmitting && (

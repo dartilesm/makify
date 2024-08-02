@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Chat } from "@prisma/client";
+import { Chat, Prisma } from "@prisma/client";
 
 export async function editChat(chat: Chat, title: string) {
   return await prisma.chat.update({
@@ -10,7 +10,7 @@ export async function editChat(chat: Chat, title: string) {
     },
     data: {
       documentMetadata: {
-        ...chat.documentMetadata,
+        ...(chat.documentMetadata as Prisma.JsonObject),
         title,
       },
     },

@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Chat } from "@prisma/client";
+import { Chat, Prisma } from "@prisma/client";
 
 type UpdateChatMessagesParams = {
   documentId: string;
@@ -20,7 +20,7 @@ export async function updateChatMessages({
     },
     data: {
       messages: messages as unknown as Chat["messages"][],
-      documentMetadata: documentMetadata as unknown as Chat["documentMetadata"],
+      documentMetadata: documentMetadata as Prisma.JsonObject,
     },
   });
   return chat;

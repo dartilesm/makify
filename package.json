@@ -6,8 +6,7 @@
     "dev": "turbo dev --env-mode=loose",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "commit": "sui-mono commit",
-    "prepare-data": "tsx --env-file=.env.local ./apps/chat-with-pdf/scripts/pinecone-embed-docs.ts"
+    "commit": "sui-mono commit"
   },
   "devDependencies": {
     "@makify/eslint-config": "workspace:*",

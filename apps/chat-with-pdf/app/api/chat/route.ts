@@ -52,6 +52,8 @@ export async function POST(req: Request) {
     The QUOTED TEXT BLOCK will be used to provide context to the AI assistant.
     AI assistant will not invent anything that is not drawn directly from the document.`;
 
+  console.log({ systemInstructions, userMessage, messageData });
+
   const data = new StreamData();
   data.append(messageData);
 

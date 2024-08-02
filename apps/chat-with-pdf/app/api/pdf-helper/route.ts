@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     return new Response(JSON.stringify({ error: "Failed to parse response" }), {
       status: 500,
     });
-  } catch (error) {
+  } catch (error: any) {
     return new Response(
       JSON.stringify({
         error: "Internal server error",

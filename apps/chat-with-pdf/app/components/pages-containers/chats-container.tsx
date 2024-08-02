@@ -64,23 +64,36 @@ export function ChatsContainer({
         <Card className="col-span-4 h-full hover:shadow-none">
           <CardContent className="flex flex-col gap-4 p-4">
             {!loading &&
-              chats.map((chat) => (
+              chats?.map((chat) => (
                 <Card className="flex flex-row items-center justify-between p-4">
                   <div className="flex flex-row items-center gap-4">
                     <FileTextIcon className="h-6 w-6" />
                     <div className="flex flex-col gap-2">
                       <CardHeader className="p-0">
-                        <CardTitle>{chat.documentMetadata?.title}</CardTitle>
+                        <CardTitle>
+                          {
+                            (chat?.documentMetadata as Record<string, any>)
+                              ?.title
+                          }
+                        </CardTitle>
                       </CardHeader>
                       <CardContent className="text-muted-foreground flex gap-2 p-0">
                         <span>
-                          {chat?.documentMetadata?.numPages} page
-                          {chat?.documentMetadata?.numPages > 1 ? "s" : ""}{" "}
+                          {
+                            (chat?.documentMetadata as Record<string, any>)
+                              ?.numPages
+                          }{" "}
+                          page
+                          {(chat?.documentMetadata as Record<string, any>)
+                            ?.numPages > 1
+                            ? "s"
+                            : ""}{" "}
                         </span>
                         <span>
-                          {chat?.documentMetadata?.size.mb > 1
-                            ? `${chat?.documentMetadata?.size.mb} MB`
-                            : `${chat?.documentMetadata?.size.kb} KB`}
+                          {(chat?.documentMetadata as Record<string, any>)?.size
+                            .mb > 1
+                            ? `${(chat?.documentMetadata as Record<string, any>)?.size.mb} MB`
+                            : `${(chat?.documentMetadata as Record<string, any>)?.size.kb} KB`}
                         </span>
                       </CardContent>
                     </div>

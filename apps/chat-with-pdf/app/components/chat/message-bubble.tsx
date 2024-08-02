@@ -49,7 +49,10 @@ export function MessageBubble({
   }
 
   function isAHiddenMessage() {
+    if (!message) return null;
+
     const isUserMessage = message?.role === "user";
+
     const isAnIntroductionMessage =
       getMessageType(message) === MESSAGE_TYPE.INTRODUCTION;
     const isASuggestionMessage =
@@ -72,7 +75,7 @@ export function MessageBubble({
         <TooltipProvider>
           <Tooltip
             delayDuration={0}
-            onOpenChange={() => onTooltipOpenChange(index)}
+            onOpenChange={() => onTooltipOpenChange(!isTyping ? index : -1)}
             open={tooltipOpen}
           >
             <TooltipTrigger asChild>
@@ -93,8 +96,10 @@ export function MessageBubble({
                     </div>
                   </div>
                 )}
-                {message?.role === "user" && <UserMessage message={message} />}
-                {message?.role === "assistant" && (
+                {!isTyping && message?.role === "user" && (
+                  <UserMessage message={message} />
+                )}
+                {!isTyping && message?.role === "assistant" && (
                   <>
                     <AssistantMessage
                       type={getMessageType(messages[index - 1]!)}

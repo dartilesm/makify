@@ -6,6 +6,7 @@ import { getPdfData } from "@/lib/get-pdf-metadata";
 import { prisma } from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
+import { PineconeRecord } from "@pinecone-database/pinecone";
 import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 0;
@@ -76,7 +77,7 @@ async function* createNewChat({
         documentMetadata: pdfData?.metadata,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
@@ -104,7 +105,7 @@ async function* createNewChat({
         where: { id: chat.id },
         data: { documentUrl },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
@@ -126,7 +127,7 @@ async function* createNewChat({
   try {
     const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
     pages = await loader.load();
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
@@ -144,7 +145,7 @@ async function* createNewChat({
     documents = await Promise.all(
       pages.map((page) => prepareDocument(page, chat.id)),
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
@@ -163,8 +164,10 @@ async function* createNewChat({
   await new Promise((resolve) => setTimeout(resolve, 10));
   let vectors;
   try {
-    vectors = await Promise.all(documents.flat().map(embedDocument));
-  } catch (error) {
+    vectors = (await Promise.all(
+      documents.flat().map(embedDocument),
+    )) as PineconeRecord[];
+  } catch (error: any) {
     console.error(error);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
@@ -183,7 +186,7 @@ async function* createNewChat({
   await new Promise((resolve) => setTimeout(resolve, 10));
   try {
     await chunkedUpsert(vectors, chat.id);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
@@ -224,7 +227,7 @@ async function* createNewChatMocked({
     await new Promise((resolve, reject) =>
       setTimeout(() => reject("weird error oh my god"), 1000),
     );
-  } catch (error) {
+  } catch (error: any) {
     console.log("We got an error:");
     return getLoadingMessages({
       isViaLink: !!documentUrl,

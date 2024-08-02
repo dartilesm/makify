@@ -4,6 +4,7 @@ import { chunkedUpsert } from "@/lib/chunked-upsert";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
 import { prisma } from "@/lib/prisma";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
+import { PineconeRecord } from "@pinecone-database/pinecone";
 import { Chat } from "@prisma/client";
 import { redirect } from "next/navigation";
 
@@ -37,11 +38,13 @@ export async function createNewChat(formData: FormData) {
 
     // Vectorize the documents
     console.log("Embedding documents");
-    const vectors = await Promise.all(documents.flat().map(embedDocument));
+    const vectors = (await Promise.all(
+      documents.flat().map(embedDocument),
+    )) as PineconeRecord[];
 
     // Store the vectors in Pinecone
     console.log("Storing vectors in Pinecone");
-    await chunkedUpsert(vectors, chat.id)
+    await chunkedUpsert(vectors, chat.id);
   } catch (error) {
     console.log("Error creating new chat: ", error);
     throw new Error(`Error creating new chat ${error}`);
