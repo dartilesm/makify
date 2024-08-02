@@ -106,37 +106,6 @@ export function ChatMessages() {
         ref={chatContainerRef}
         data-chat-messages-container
       >
-        {messages?.length === 0 && (
-          <div className="flex w-full flex-col gap-4">
-            {fakeMessagesLoading.map((_, index) => (
-              <div
-                key={index}
-                className={cn("flex w-full", {
-                  "justify-end": index % 2 === 0,
-                })}
-              >
-                {index % 2 !== 0 && (
-                  <Skeleton
-                    className={cn("w-[70%]", {
-                      "h-20": index === 1,
-                      "h-48": index === 3,
-                      "h-96": index === 5,
-                    })}
-                  />
-                )}
-                {index % 2 === 0 && (
-                  <Skeleton
-                    className={cn("w-[70%]", {
-                      "h-20": index === 0 || index === 2,
-                      "h-10": index === 4,
-                    })}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
         <div className="flex h-fit max-w-full flex-col gap-4">
           {messages.map((message, index) => {
             return (

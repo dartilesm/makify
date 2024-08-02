@@ -7,12 +7,6 @@ export async function getChatMessages(documentId: string) {
     where: {
       id: documentId,
     },
-    select: {
-      messages: true,
-      id: true,
-      documentMetadata: true,
-      documentUrl: true,
-    },
   });
 
   return chatData;

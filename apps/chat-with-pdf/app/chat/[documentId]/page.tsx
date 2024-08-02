@@ -1,7 +1,5 @@
 import { getChatMessages } from "@/app/actions/get-chat-messages";
-import { ChatProvider } from "@/app/context/chat-context";
-import { ChatScreen } from "@/components/chat/chat-screen";
-import { Chat } from "@prisma/client";
+import { ChatIdContainer } from "@/components/pages-containers/chat-id-container";
 import { redirect } from "next/navigation";
 
 export default async function Page({
@@ -9,13 +7,9 @@ export default async function Page({
 }: {
   params: { documentId: string };
 }) {
-  const chatData = (await getChatMessages(params.documentId)) as Partial<Chat>;
+  const chatData = await getChatMessages(params.documentId);
 
   if (!chatData) redirect("/chat");
 
-  return (
-    <ChatProvider chatData={chatData}>
-      <ChatScreen documentId={params.documentId} />
-    </ChatProvider>
-  );
+  return <ChatIdContainer chatData={chatData} />;
 }

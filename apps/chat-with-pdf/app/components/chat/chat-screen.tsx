@@ -1,4 +1,3 @@
-import { ChatProvider } from "@/app/context/chat-context";
 import { Chat } from "@/components/chat/chat";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
 import {
@@ -6,8 +5,14 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@makify/ui";
+import { ChatLoading } from "./loading/chat-loading";
+import { PDFLoading } from "./loading/pdf-loading";
 
-export async function ChatScreen({ documentId }: { documentId: string }) {
+type ChatScreenProps = {
+  loading?: boolean;
+};
+
+export async function ChatScreen({ loading }: ChatScreenProps) {
   return (
     <div className="flex w-full flex-1 overflow-hidden">
       <ResizablePanelGroup
@@ -15,11 +20,13 @@ export async function ChatScreen({ documentId }: { documentId: string }) {
         direction="horizontal"
       >
         <ResizablePanel minSize={35} defaultSize={50}>
-          <Chat className="flex-1" />
+          {!loading && <Chat className="flex-1" />}
+          {loading && <ChatLoading />}
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={35} defaultSize={50}>
-          <PdfViewer className="flex-1" />
+          {!loading && <PdfViewer className="flex-1" />}
+          {loading && <PDFLoading />}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
