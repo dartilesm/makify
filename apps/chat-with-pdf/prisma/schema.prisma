@@ -12,7 +12,6 @@ model Chat {
     id               String   @id @unique @default(uuid())
     documentMetadata Json?
     documentUrl      String?
-    documentFile     Bytes?
     messages         Json?
     createdAt        DateTime @default(now())
     updatedAt        DateTime @updatedAt
