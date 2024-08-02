@@ -11,6 +11,12 @@
       "outputs": [
         ".next/**",
         "!.next/cache/**"
+      ],
+      "env": [
+        "SUPABASE_URL",
+        "SUPABASE_API_KEY",
+        "DATABASE_URL",
+        "DIRECT_URL"
       ]
     },
     "lint": {
