@@ -100,9 +100,7 @@ export function ChatsContainer({
                     </div>
                   </div>
                   <Button className="flex-shrink-0" variant="outline" asChild>
-                    <Link href={`/chat/${chat.id}`}>
-                      Open the chat and let the adventure begin
-                    </Link>
+                    <Link href={`/chat/${chat.id}`}>Open chat</Link>
                   </Button>
                 </Card>
               ))}
