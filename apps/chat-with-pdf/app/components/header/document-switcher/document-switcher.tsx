@@ -67,8 +67,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
     });
   }
 
-  function toggleEditDocumentDialog() {
-    setShowEditDocumentDialog((prev) => !prev);
+  function toggleEditDocumentDialog(isOpen: boolean) {
+    setShowEditDocumentDialog(isOpen);
   }
 
   return (
