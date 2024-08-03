@@ -4,6 +4,7 @@ import { embedDocument, prepareDocument } from "@/lib/embed-document";
 import { getLoadingMessages } from "@/lib/get-loading-messages";
 import { getPdfData } from "@/lib/get-pdf-metadata";
 import { prisma } from "@/lib/prisma";
+import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { supabase } from "@/lib/supabase";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { PineconeRecord } from "@pinecone-database/pinecone";
@@ -13,43 +14,62 @@ export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const formData = await request.formData();
+  // Protect the route with rate limiting
+  const { success, headers } = await rateLimitRequests(request);
 
-  const documentUrl = formData.get(INPUT_NAME.LINK) as string;
-  const documentFile = formData.get(INPUT_NAME.FILE) as File;
+  if (!success) {
+    return new Response("Rate limit exceeded", {
+      status: 429,
+      headers,
+    });
+  }
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      /* for await (const loadingMessages of createNewChatMocked({
-        documentUrl,
-        documentFile,
-      })) {
-        const messageArrayToString = JSON.stringify(loadingMessages);
-        const encodedMessages = new TextEncoder().encode(messageArrayToString);
-        controller.enqueue(encodedMessages);
-      } */
+  try {
+    const formData = await request.formData();
 
-      const loadingMessagesGenerator = createNewChat({
-        documentUrl,
-        documentFile,
-      });
-      async function retrieveLoadingMessages() {
-        const { value: loadingMessages, done } =
-          await loadingMessagesGenerator.next();
+    const documentUrl = formData.get(INPUT_NAME.LINK) as string;
+    const documentFile = formData.get(INPUT_NAME.FILE) as File;
 
-        const loadingMessagesToString = JSON.stringify(loadingMessages);
-        const encodedLoadingMessages = new TextEncoder().encode(
-          loadingMessagesToString,
-        );
-        controller.enqueue(encodedLoadingMessages);
+    const stream = new ReadableStream({
+      async start(controller) {
+        /* for await (const loadingMessages of createNewChatMocked({
+          documentUrl,
+          documentFile,
+        })) {
+          const messageArrayToString = JSON.stringify(loadingMessages);
+          const encodedMessages = new TextEncoder().encode(messageArrayToString);
+          controller.enqueue(encodedMessages);
+        } */
 
-        if (!done) return retrieveLoadingMessages();
-      }
-      await retrieveLoadingMessages();
-      controller.close();
-    },
-  });
-  return new NextResponse(stream);
+        const loadingMessagesGenerator = createNewChat({
+          documentUrl,
+          documentFile,
+        });
+        async function retrieveLoadingMessages() {
+          const { value: loadingMessages, done } =
+            await loadingMessagesGenerator.next();
+
+          const loadingMessagesToString = JSON.stringify(loadingMessages);
+          const encodedLoadingMessages = new TextEncoder().encode(
+            loadingMessagesToString,
+          );
+          controller.enqueue(encodedLoadingMessages);
+
+          if (!done) return retrieveLoadingMessages();
+        }
+        await retrieveLoadingMessages();
+        controller.close();
+      },
+    });
+
+    return new NextResponse(stream, {
+      headers,
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error?.message }), {
+      status: 500,
+    });
+  }
 }
 
 async function* createNewChat({

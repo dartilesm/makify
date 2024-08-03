@@ -1,3 +1,4 @@
+import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { google } from "@ai-sdk/google";
 import { Chat } from "@prisma/client";
 import { CoreMessage, Message, StreamData, streamText } from "ai";
@@ -17,6 +18,16 @@ type RequestBody = {
 };
 
 export async function POST(req: Request) {
+  // Protect the route with rate limiting
+  const { success, headers } = await rateLimitRequests(req);
+
+  if (!success) {
+    return new Response("Rate limit exceeded", {
+      status: 429,
+      headers,
+    });
+  }
+
   const {
     messages = [],
     documentId,
@@ -84,7 +95,7 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toAIStreamResponse({ data: data });
+  return result.toAIStreamResponse({ data: data, headers });
 }
 
 function parsedUserMessage(lastMessage: Message, quotedText: string) {

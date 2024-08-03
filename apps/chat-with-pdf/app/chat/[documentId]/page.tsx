@@ -7,6 +7,7 @@ export default async function Page({
 }: {
   params: { documentId: string };
 }) {
+  console.log("I am executed on the server side");
   const chatData = await getChatMessages(params.documentId);
 
   if (!chatData) redirect("/chat");
