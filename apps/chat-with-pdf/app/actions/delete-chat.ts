@@ -4,6 +4,7 @@ import { getPineconeClient } from "@/lib/pinecone.client";
 import { prisma } from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
 import { Chat } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 async function deleteChat(chat: Chat) {
@@ -35,6 +36,8 @@ export async function deleteChatAndDependencies(chat: Chat) {
   ]);
 
   const firstChat = await prisma.chat.findFirst();
+
+  revalidatePath("/chat");
 
   if (firstChat?.id) return redirect(`/chat/${firstChat.id}`);
   redirect("/chat");
