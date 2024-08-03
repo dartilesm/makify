@@ -1,5 +1,6 @@
 "use client";
 
+import { MESSAGE_TYPE } from "@/components/chat/constants/message-type";
 import { Chat } from "@prisma/client";
 import { Message, useChat, UseChatOptions } from "ai/react";
 import { useParams } from "next/navigation";
@@ -11,8 +12,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { getChatMessages } from "../actions/get-chat-messages";
-import { MESSAGE_TYPE } from "@/components/chat/constants/message-type";
 import { updateChatMessages } from "../actions/update-chat-messages";
 
 const EMPTY_CHAT_DATA: Partial<Chat> = {
