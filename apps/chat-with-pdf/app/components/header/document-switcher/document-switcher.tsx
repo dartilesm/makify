@@ -168,7 +168,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={toggleEditDocumentDialog}
+                onClick={() => toggleEditDocumentDialog(true)}
                 size="icon"
                 variant="ghost"
               >
