@@ -128,7 +128,7 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
     const hasAddedMessages = initialMessages
       ? useChatReturn.messages.length > initialMessages?.length
       : useChatReturn.messages.length > 0;
-    if (hasAddedMessages && !isLoading)
+    if (hasAddedMessages && !useChatReturn.isLoading)
       updateChatMessages({
         documentId: params.documentId as string,
         messages: useChatReturn.messages as unknown as Chat["messages"],
