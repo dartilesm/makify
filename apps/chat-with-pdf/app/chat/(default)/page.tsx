@@ -2,6 +2,8 @@ import { ChatsContainer } from "@/components/pages-containers/chats-container";
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
 
+export const dynamic = "force-dynamic";
+
 const getCachedChats = cache(getChats);
 
 async function getChats() {
