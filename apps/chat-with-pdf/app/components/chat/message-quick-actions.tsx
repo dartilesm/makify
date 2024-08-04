@@ -26,7 +26,7 @@ type MessageQuickActionsProps = {
   onTooltipOpenChange?: (index: number) => void;
 };
 
-function MessageQuickActionsComp({
+export function MessageQuickActions({
   quickActions = [] as MessageActions[],
   message,
   index,
@@ -164,5 +164,3 @@ function MessageQuickActionsComp({
     </ToggleGroup>
   );
 }
-
-export const MessageQuickActions = memo(MessageQuickActionsComp, () => true);
