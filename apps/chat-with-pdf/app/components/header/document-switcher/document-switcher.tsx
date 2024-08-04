@@ -72,7 +72,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   }
 
   return (
-    <div className="flex w-3/4 max-w-96 flex-row items-center justify-center gap-2">
+    <div className="flex max-w-96 flex-1 flex-row items-center justify-center gap-2 max-sm:max-w-full max-sm:justify-start sm:w-3/4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -110,7 +110,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="z-10 w-2/4 max-w-96 p-0"
+          className="z-10 max-w-96 p-0 max-sm:max-w-full sm:w-2/4"
           style={popoverDynamicStyles}
         >
           <Command>

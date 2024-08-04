@@ -18,7 +18,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  console.log("I am executed on the server side");
   const chatData = await getCachedChatMessages(params.documentId);
 
   if (!chatData) redirect("/chat");
