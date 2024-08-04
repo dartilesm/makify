@@ -71,7 +71,7 @@ const quickActions: MessageActions[] = [
   },
   {
     Icon: FlagIcon,
-    getLabel: () => "Report message",
+    getLabel: () => "Report message (coming soon)",
     value: QUICK_ACTIONS.REPORT,
     onlyLastMessage: false,
   },
