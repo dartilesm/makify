@@ -42,16 +42,32 @@ function MessageQuickActionsComp({
 
   const { toast } = useToast();
 
-  function copyMessage(message: string) {
-    navigator.clipboard.writeText(message);
+  async function copyMessage(message: string) {
+    let response: { success: boolean; error: unknown } = {
+      success: false,
+      error: null,
+    };
+    try {
+      await navigator.clipboard.writeText(message);
+      response.success = true;
+    } catch (error) {
+      response.error = error;
+    }
+
+    return response;
   }
 
-  function handleToggleGroupChange(action: QUICK_ACTIONS, message: Message) {
+  async function handleToggleGroupChange(
+    action: QUICK_ACTIONS,
+    message: Message,
+  ) {
     if (action === QUICK_ACTIONS.COPY) {
-      copyMessage(message.content);
+      const { success } = await copyMessage(message.content);
       setShowSuccessIcon((prev) => ({ ...prev, [QUICK_ACTIONS.COPY]: true }));
       const toastNotifitcation = toast({
-        title: "Message copied successfully!",
+        title: success
+          ? "Message copied successfully!"
+          : "Failed to copy message",
         duration: Infinity,
       });
       setTimeout(() => {
