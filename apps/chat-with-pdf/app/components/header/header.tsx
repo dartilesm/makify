@@ -1,5 +1,8 @@
+import { Button } from "@makify/ui";
 import { Chat } from "@prisma/client";
-import { DocumentSwitcher } from "./header/document-switcher/document-switcher";
+import { MessageSquareIcon } from "lucide-react";
+import { DocumentSwitcher } from "./document-switcher/document-switcher";
+import { FeedbackDialog } from "./feedback-dialog/feedback-dialog";
 
 type HeaderProps = {
   chats: Chat[];
@@ -17,6 +20,20 @@ export async function Header({ chats = [] }: HeaderProps) {
         </div>
         <div className="flex flex-1 justify-center overflow-hidden">
           {!!chats.length && <DocumentSwitcher chats={chats} />}
+        </div>
+        <div className="max-sm:hidden">
+          <FeedbackDialog
+            triggerEl={
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex flex-row gap-2"
+              >
+                <MessageSquareIcon className="h-4 w-4" />
+                Feedback
+              </Button>
+            }
+          />
         </div>
       </div>
     </header>

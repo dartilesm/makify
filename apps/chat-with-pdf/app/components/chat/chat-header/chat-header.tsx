@@ -7,7 +7,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  ScrollArea,
   Tooltip,
   TooltipContent,
   TooltipProvider,
