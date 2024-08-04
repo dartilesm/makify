@@ -15,6 +15,7 @@ export * from "./popover";
 export * from "./resizable";
 export * from "./separator";
 export * from "./select";
+export * from "./switch";
 export * from "./tabs";
 export * from "./textarea";
 export * from "./toast";
