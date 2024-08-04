@@ -1,5 +1,7 @@
 "use client";
 
+import { submitFeedback } from "@/app/actions/submit-feedback";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
   Dialog,
@@ -22,12 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
+  useToast,
 } from "@makify/ui";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useState } from "react";
 import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const FeedbackSchema = z.object({
   type: z.union([
@@ -56,10 +58,15 @@ type FeedbackDialogProps = {
 };
 
 export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const feedbackForm = useForm<z.infer<typeof FeedbackSchema>>({
     resolver: zodResolver(FeedbackSchema),
     mode: "onBlur",
+    defaultValues: {
+      type: "Improvement",
+    },
   });
+  const { toast } = useToast();
 
   // TODO: Abstract this function to a utility function
   function resizeTextarea(event: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -69,14 +76,34 @@ export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
   }
 
   function handleOnOpenChange(isOpen: boolean) {
-    if (!isOpen) {
+    setIsDialogOpen(isOpen);
+    feedbackForm.reset();
+    feedbackForm.clearErrors();
+  }
+
+  async function sendFeedback(values: z.infer<typeof FeedbackSchema>) {
+    try {
+      await submitFeedback(values);
+      toast({
+        title: "Feedback sent successfully!",
+        description: "Thank you for sharing your thoughts with us.",
+        duration: 5000,
+      });
       feedbackForm.reset();
       feedbackForm.clearErrors();
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast({
+        title: "Failed to send feedback",
+        description:
+          "An error occurred while sending your feedback. Please try again later.",
+        duration: 5000,
+      });
     }
   }
 
   return (
-    <Dialog onOpenChange={handleOnOpenChange}>
+    <Dialog open={isDialogOpen} onOpenChange={handleOnOpenChange}>
       <DialogTrigger asChild>{triggerEl}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -88,13 +115,13 @@ export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
         </DialogHeader>
         <div>
           <Form {...feedbackForm}>
-            <form>
+            <form onSubmit={feedbackForm.handleSubmit(sendFeedback)}>
               <FormField
                 control={feedbackForm.control}
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>Type *</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -130,7 +157,7 @@ export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
                 name="message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message</FormLabel>
+                    <FormLabel>Message *</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
