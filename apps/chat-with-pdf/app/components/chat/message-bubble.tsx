@@ -11,6 +11,7 @@ import { AssistantMessage } from "./assistant-message";
 import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
 import { UserMessage } from "./user-message";
+import { useEffect } from "react";
 
 type MessageBubbleProps =
   | {
@@ -36,8 +37,11 @@ export function MessageBubble({
   isTyping,
 }: MessageBubbleProps) {
   const {
+    globalContext: { extraData, setExtraData },
     useChatReturn: { messages },
   } = useGlobalChat();
+
+  useEffect(onScrollMessageId, [extraData?.messageScrollId]);
 
   function getMessageType(message: Message) {
     return (message?.data as Record<string, string>)
@@ -57,11 +61,23 @@ export function MessageBubble({
     return isUserMessage && (isAnIntroductionMessage || isASuggestionMessage);
   }
 
+  function onScrollMessageId() {
+    if (extraData?.messageScrollId) {
+      setTimeout(() => {
+        setExtraData({
+          ...extraData,
+          messageScrollId: undefined,
+        });
+      }, 4000);
+    }
+  }
+
   if (isAHiddenMessage()) return null;
 
   return (
     <div
-      className={cn("flex w-full text-left", {
+      id={`message-${message?.id}`}
+      className={cn("relative flex w-full overflow-hidden text-left", {
         "justify-end": message?.role === "user",
         "mt-auto": index === 0, // TODO: Fix this to start from the bottom
       })}
@@ -79,8 +95,9 @@ export function MessageBubble({
                 className={cn("w-fit rounded-md px-4 py-3 text-sm", {
                   "bg-gray-100 dark:bg-gray-800":
                     message?.role === "assistant" || isTyping,
-                  "bg-primary text-primary-foreground bg-opacity-20 ":
+                  "bg-primary text-primary-foreground bg-opacity-20":
                     message?.role === "user",
+                  "animate-pulse": extraData?.messageScrollId === message?.id,
                 })}
               >
                 {isTyping && (
