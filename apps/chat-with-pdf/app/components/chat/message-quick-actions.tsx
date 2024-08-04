@@ -1,5 +1,6 @@
 "use client";
 
+import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -10,29 +11,79 @@ import {
   useToast,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
+import { Chat } from "@prisma/client";
 import { Message } from "ai";
+import { AnimatePresence, CustomDomComponent, motion } from "framer-motion";
 import { useGlobalChat } from "hooks/use-global-chat";
-import { memo, RefAttributes, useState } from "react";
+import {
+  BookmarkIcon,
+  CheckIcon,
+  CopyIcon,
+  FlagIcon,
+  LucideProps,
+  RefreshCcwIcon,
+} from "lucide-react";
+import { useParams } from "next/navigation";
+import { forwardRef, RefAttributes, useState } from "react";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MessageActions } from "./types/message-actions";
-import { AnimatePresence, CustomDomComponent, motion } from "framer-motion";
-import { LucideProps } from "lucide-react";
 
 type MessageQuickActionsProps = {
-  quickActions: MessageActions[];
   message: Message;
   index: number;
   className?: string;
   onTooltipOpenChange?: (index: number) => void;
 };
 
+const quickActions: MessageActions[] = [
+  {
+    Icon: CopyIcon,
+    SucessIcon: CheckIcon,
+    getLabel: () => "Copy message",
+    value: QUICK_ACTIONS.COPY,
+    onlyLastMessage: false,
+  },
+  {
+    Icon: RefreshCcwIcon,
+    getLabel: () => "Regenerate response",
+    value: QUICK_ACTIONS.REGENERATE,
+    onlyLastMessage: true,
+  },
+  {
+    Icon: BookmarkIcon,
+    active: {
+      Icon: forwardRef((props, ref) => (
+        <BookmarkIcon ref={ref} className="fill-primary h-4 w-4" />
+      )),
+      condition: (message: Message) => {
+        const messageData = (message?.data as Record<string, any>) || {};
+        return messageData?.bookmarked;
+      },
+    },
+    getLabel: (message: Message) => {
+      const messageData = (message?.data as Record<string, any>) || {};
+      return messageData?.bookmarked
+        ? "Unbookmark message"
+        : "Bookmark message";
+    },
+    value: QUICK_ACTIONS.BOOKMARK,
+    onlyLastMessage: false,
+  },
+  {
+    Icon: FlagIcon,
+    getLabel: () => "Report message",
+    value: QUICK_ACTIONS.REPORT,
+    onlyLastMessage: false,
+  },
+];
+
 export function MessageQuickActions({
-  quickActions = [] as MessageActions[],
   message,
   index,
   className,
   onTooltipOpenChange = () => null,
 }: MessageQuickActionsProps) {
+  const params = useParams();
   const [showSuccessIcon, setShowSuccessIcon] = useState<
     Record<MessageActions["value"], boolean>
   >({});
@@ -84,6 +135,25 @@ export function MessageQuickActions({
         title: "Regenerating response",
       });
     }
+    if (action === QUICK_ACTIONS.BOOKMARK) {
+      if (typeof messages[index] === "object") {
+        const messageData = (messages[index].data as Record<string, any>) || {};
+        messages[index].data = {
+          ...messageData,
+          bookmarked: !messageData?.bookmarked,
+        };
+        await updateChatMessages({
+          documentId: params?.documentId as string,
+          messages: messages as unknown as Chat["messages"],
+        });
+        toast({
+          title: messageData?.bookmarked
+            ? "Message unbookmarked"
+            : "Message bookmarked",
+          duration: 3000,
+        });
+      }
+    }
   }
 
   function handleTooltipOpenChange() {
@@ -103,13 +173,14 @@ export function MessageQuickActions({
       <TooltipProvider delayDuration={0}>
         {quickActions.map(
           (
-            { Icon, SucessIcon, label, value, onlyLastMessage },
+            { Icon, SucessIcon, active, getLabel, value, onlyLastMessage },
             quickActionIndex,
           ) => {
             const AnimatedIcon = motion(Icon);
             const AnimatedSucessIcon = (
               SucessIcon ? motion(SucessIcon) : SucessIcon
             ) as CustomDomComponent<LucideProps & RefAttributes<SVGSVGElement>>;
+            const ActiveIcon = active?.Icon;
             if (onlyLastMessage && index !== messages.length - 1) {
               return null;
             }
@@ -122,29 +193,37 @@ export function MessageQuickActions({
                 <TooltipTrigger asChild>
                   <ToggleGroupItem
                     value={value}
-                    className="flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200 data-[state=on]:bg-transparent hover:data-[state=on]:bg-gray-200"
+                    className="hover:text-primary text-primary group flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200 data-[state=on]:bg-transparent hover:data-[state=on]:bg-gray-200"
                   >
                     <AnimatePresence mode="wait">
-                      {!showSuccessIcon[value] && (
-                        <AnimatedIcon
-                          className="text-primary h-4 w-4 text-opacity-70"
-                          key={`message-quick-action-icon-${message.id}${quickActionIndex}`}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          transition={{ duration: 0.3 }}
-                        />
+                      {ActiveIcon && active.condition(message) && (
+                        <ActiveIcon className="h-4 w-4" stroke="currentColor" />
                       )}
-                      {showSuccessIcon[value] && SucessIcon && (
-                        <AnimatedSucessIcon
-                          className="text-primary h-4 w-4"
-                          key={`message-quick-action-sucess-icon-${message.id}${quickActionIndex}`}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                        />
-                      )}
+                      {!active?.condition?.(message) &&
+                        !showSuccessIcon[value] && (
+                          <AnimatedIcon
+                            className="h-4 w-4 text-opacity-70"
+                            stroke="currentColor"
+                            key={`message-quick-action-icon-${message.id}${quickActionIndex}`}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        )}
+                      {!active?.condition?.(message) &&
+                        showSuccessIcon[value] &&
+                        SucessIcon && (
+                          <AnimatedSucessIcon
+                            className="h-4 w-4"
+                            stroke="currentColor"
+                            key={`message-quick-action-sucess-icon-${message.id}${quickActionIndex}`}
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0 }}
+                          />
+                        )}
                     </AnimatePresence>
-                    <span className="sr-only">{label}</span>
+                    <span className="sr-only">{getLabel(message)}</span>
                   </ToggleGroupItem>
                 </TooltipTrigger>
                 <TooltipContent
@@ -154,7 +233,7 @@ export function MessageQuickActions({
                   arrowPadding={2}
                   sideOffset={6}
                 >
-                  {label}
+                  {getLabel(message)}
                 </TooltipContent>
               </Tooltip>
             );
@@ -163,4 +242,12 @@ export function MessageQuickActions({
       </TooltipProvider>
     </ToggleGroup>
   );
+}
+
+function QuickActionButton({ Icon, SucessIcon, active }: MessageActions) {
+  const AnimatedIcon = motion(Icon);
+  const AnimatedSucessIcon = (
+    SucessIcon ? motion(SucessIcon) : SucessIcon
+  ) as CustomDomComponent<LucideProps & RefAttributes<SVGSVGElement>>;
+  const ActiveIcon = active?.Icon;
 }

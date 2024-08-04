@@ -1,17 +1,16 @@
-import { Message } from "ai";
-import { MESSAGE_TYPE } from "./constants/message-type";
-import { cn } from "@makify/ui/lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@makify/ui";
-import { UserMessage } from "./user-message";
-import { AssistantMessage } from "./assistant-message";
+import { cn } from "@makify/ui/lib/utils";
+import { Message } from "ai";
 import { useGlobalChat } from "hooks/use-global-chat";
+import { AssistantMessage } from "./assistant-message";
+import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
-import { MessageActions } from "./types/message-actions";
+import { UserMessage } from "./user-message";
 
 type MessageBubbleProps =
   | {
@@ -19,7 +18,6 @@ type MessageBubbleProps =
       index: number;
       onTooltipOpenChange: (index: number) => void;
       tooltipOpen: boolean;
-      quickActions: MessageActions[];
       isTyping?: boolean;
     }
   | {
@@ -27,7 +25,6 @@ type MessageBubbleProps =
       index?: never;
       onTooltipOpenChange?: never;
       tooltipOpen?: never;
-      quickActions?: never;
       message?: never;
     };
 
@@ -36,7 +33,6 @@ export function MessageBubble({
   index,
   onTooltipOpenChange = () => null,
   tooltipOpen,
-  quickActions,
   isTyping,
 }: MessageBubbleProps) {
   const {
@@ -116,7 +112,6 @@ export function MessageBubble({
                         avoidCollisions={false}
                       >
                         <MessageQuickActions
-                          quickActions={quickActions}
                           index={index}
                           onTooltipOpenChange={onTooltipOpenChange}
                           message={message}
@@ -132,7 +127,6 @@ export function MessageBubble({
         {index === messages.length - 1 && message?.role === "assistant" && (
           <MessageQuickActions
             className="ml-4"
-            quickActions={quickActions}
             index={index}
             message={message}
             onTooltipOpenChange={onTooltipOpenChange}

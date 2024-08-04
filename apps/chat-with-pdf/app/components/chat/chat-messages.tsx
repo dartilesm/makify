@@ -2,57 +2,19 @@
 
 import {
   Button,
-  Skeleton,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@makify/ui";
-import { animate, AnimatePresence, inView, motion } from "framer-motion";
-import { useGlobalChat } from "hooks/use-global-chat";
-import {
-  ArrowDown,
-  BookmarkIcon,
-  CheckIcon,
-  CopyIcon,
-  FlagIcon,
-  RefreshCcwIcon,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { QUICK_ACTIONS } from "./constants/message-quick-actions";
-import { MessageBubble } from "./message-bubble";
-import { MessageActions } from "./types/message-actions";
 import { cn } from "@makify/ui/lib/utils";
+import { AnimatePresence, inView, motion } from "framer-motion";
+import { useGlobalChat } from "hooks/use-global-chat";
+import { ArrowDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MessageBubble } from "./message-bubble";
 
 const AnimatedButton = motion(Button);
-
-const quickActions: MessageActions[] = [
-  {
-    Icon: CopyIcon,
-    SucessIcon: CheckIcon,
-    label: "Copy message",
-    value: QUICK_ACTIONS.COPY,
-    onlyLastMessage: false,
-  },
-  {
-    Icon: RefreshCcwIcon,
-    label: "Regenerate response",
-    value: QUICK_ACTIONS.REGENERATE,
-    onlyLastMessage: true,
-  },
-  {
-    Icon: BookmarkIcon,
-    label: "Bookmark response (not implemented)",
-    value: QUICK_ACTIONS.BOOKMARK,
-    onlyLastMessage: false,
-  },
-  {
-    Icon: FlagIcon,
-    label: "Report an issue (not implemented)",
-    value: QUICK_ACTIONS.REPORT,
-    onlyLastMessage: false,
-  },
-];
 
 export function ChatMessages() {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
@@ -64,8 +26,6 @@ export function ChatMessages() {
   const {
     useChatReturn: { messages, isLoading },
   } = useGlobalChat();
-
-  const fakeMessagesLoading = Array.from({ length: 6 }, () => null);
 
   useEffect(onMessageChanges, [messages.length]);
 
@@ -115,7 +75,6 @@ export function ChatMessages() {
                 index={index}
                 onTooltipOpenChange={() => updateMessageTooltipOpenIndex(index)}
                 tooltipOpen={index === messageTooltipOpenIndex}
-                quickActions={quickActions}
               />
             );
           })}
