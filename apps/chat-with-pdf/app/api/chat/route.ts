@@ -12,7 +12,6 @@ type RequestBody = {
   messages: Message[];
   documentId: Chat["id"];
   data: {
-    quotedText?: string;
     [key: string]: any;
   };
 };
@@ -31,21 +30,23 @@ export async function POST(req: Request) {
   const {
     messages = [],
     documentId,
-    data: messageData = {},
+    data: messageData,
   } = (await req.json()) as RequestBody;
   const lastMessage = messages.at(-1) as Message;
   const userMessage = parsedUserMessage(
     lastMessage,
-    messageData.quotedText as string,
+    (lastMessage.data as Record<string, unknown>)?.quotedText as string,
   );
 
   const documentContext = lastMessage
     ? await getContext(userMessage, documentId)
     : "";
 
-  const messagesToAI = [
-    ...messages.filter((message) => message?.role === "user"),
-  ];
+  const userMessages = messages.filter((message) => message?.role === "user");
+
+  userMessages[userMessages.length - 1]!.content = userMessage;
+
+  const messagesToAI = [...userMessages];
 
   const systemInstructions = `AI assistant is a brand new, powerful, human-like artificial intelligence.
     The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
@@ -55,15 +56,9 @@ export async function POST(req: Request) {
     START DOCUMENT BLOCK
     ${documentContext}
     END OF DOCUMENT BLOCK
-    START QUOTED TEXT BLOCK
-    ${messageData?.quotedText || ""}
-    END OF QUOTED TEXT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
     If the document does not provide the answer to question, will try to answer the question based on the document.
-    The QUOTED TEXT BLOCK will be used to provide context to the AI assistant.
     AI assistant will not invent anything that is not drawn directly from the document.`;
-
-  console.log({ systemInstructions, userMessage, messageData });
 
   const data = new StreamData();
   data.append(messageData);
