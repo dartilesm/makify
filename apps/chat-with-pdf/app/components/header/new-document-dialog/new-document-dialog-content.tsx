@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   Input,
   Label,
@@ -184,15 +187,6 @@ export function NewDocumentDialogContent() {
     return mergedInputProps;
   }
 
-  console.log({
-    currentTab: tab,
-    fileAttached,
-    inputValues: {
-      file: inputFile,
-    },
-    formState,
-  });
-
   return (
     <Tabs defaultValue={tab} onValueChange={handleTabChange}>
       <TabsList className="grid w-full grid-cols-2">
@@ -209,7 +203,8 @@ export function NewDocumentDialogContent() {
             Link to your pdf *
             <p className="text-muted-foreground text-sm">
               Make sure the link ends with .pdf or it is a valid pdf link,
-              otherwise, download the document and upload it manually.
+              otherwise, download the document and upload it manually. The
+              document should be up to 5 pages.
             </p>
             <Input
               placeholder="https://mydomain.com/how-many-cups-did-argentina-win.pdf"

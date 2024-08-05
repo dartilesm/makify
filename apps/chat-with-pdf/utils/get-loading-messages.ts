@@ -17,14 +17,16 @@ type GetLoadingMessagesProps = {
   isViaLink: boolean;
   chatId: string | null;
   errorMessage?: string;
+  friendlyError?: string;
 };
 
 export function getLoadingMessages({
   isViaLink,
   chatId,
   errorMessage,
+  friendlyError = "",
 }: GetLoadingMessagesProps) {
-  if (errorMessage) {
+  if (errorMessage || friendlyError) {
     const isLoadingMessagesCopyEmpty = loadingMessagesCopy.length === 0;
     const loadingMessagesToClone = isLoadingMessagesCopyEmpty
       ? isViaLink
@@ -32,7 +34,9 @@ export function getLoadingMessages({
         : loadingPdfFileMessages
       : loadingMessagesCopy;
     const loadingMessagesNewCopy = structuredClone(loadingMessagesToClone);
-    loadingMessagesNewCopy[currentActiveIndex]!.error = errorMessage;
+    loadingMessagesNewCopy[currentActiveIndex]!.error =
+      errorMessage || friendlyError;
+    loadingMessagesNewCopy[currentActiveIndex]!.friendlyError = friendlyError;
     resetLoadingMessages();
     return loadingMessagesNewCopy;
   }

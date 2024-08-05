@@ -150,6 +150,16 @@ async function* createNewChat({
   try {
     const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
     pages = await loader.load();
+    if (pages.length > 5) {
+      await deleteChatAndDependencies(chat, false);
+      return getLoadingMessages({
+        isViaLink: !!documentUrl,
+        chatId: chat.id,
+        errorMessage: "The document is too large. Please upload a smaller one",
+        friendlyError:
+          "The document is too large. Please upload a smaller one. The maximum number of pages is 5",
+      });
+    }
   } catch (error: any) {
     console.error(error);
     await deleteChatAndDependencies(chat, false);
