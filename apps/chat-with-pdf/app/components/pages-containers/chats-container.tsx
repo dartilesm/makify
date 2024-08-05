@@ -8,6 +8,10 @@ import {
   CardTitle,
   Separator,
   Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@makify/ui";
 import { Chat } from "@prisma/client";
 import { FileTextIcon, PlusCircleIcon } from "lucide-react";
@@ -49,13 +53,25 @@ export function ChatsContainer({
             title="Chats"
             description="All your conversations with your documents"
             actionButton={
-              <Button
-                className="flex gap-2"
-                onClick={handleNewChatDialogToggle}
-              >
-                <PlusCircleIcon className="h-4 w-4" />
-                Start a new chat
-              </Button>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip disableHoverableContent>
+                  <TooltipTrigger asChild>
+                    <Button
+                      disabled={chats?.length === 5}
+                      className="flex gap-2"
+                      onClick={handleNewChatDialogToggle}
+                    >
+                      <PlusCircleIcon className="h-4 w-4" />
+                      Start a new chat
+                    </Button>
+                  </TooltipTrigger>
+                  {chats?.length === 5 && (
+                    <TooltipContent>
+                      You have reached the maximum number of documents.
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             }
           />
         </Container>

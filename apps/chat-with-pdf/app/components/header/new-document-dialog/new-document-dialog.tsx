@@ -142,7 +142,7 @@ export function NewDocumentDialog({
                   </li>
                   <li>
                     <a
-                      href="https://www.europhysicsnews.org/articles/epn/pdf/2019/05/epn2019505-6p41.pdf"
+                      href="https://www.onetz.de/sites/default/files/flipbook/insert/3138327/bavarian_times_november2020_klein__S35.pdf"
                       className="text-blue-600 underline"
                       target="_blank"
                     >

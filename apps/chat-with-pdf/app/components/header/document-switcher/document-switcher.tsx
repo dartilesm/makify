@@ -148,18 +148,30 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             </CommandList>
             <CommandSeparator />
             <CommandList>
-              <CommandGroup>
-                <CommandItem
-                  className="h-10 cursor-pointer"
-                  onSelect={() => {
-                    setOpen(false);
-                    setShowNewDocumentDialog(true);
-                  }}
-                >
-                  <PlusCircleIcon className="mr-2 h-5 w-5" />
-                  Chat with new document
-                </CommandItem>
-              </CommandGroup>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip disableHoverableContent>
+                  <TooltipTrigger asChild>
+                    <CommandGroup>
+                      <CommandItem
+                        disabled={chats.length === 5}
+                        className="h-10 cursor-pointer"
+                        onSelect={() => {
+                          setOpen(false);
+                          setShowNewDocumentDialog(true);
+                        }}
+                      >
+                        <PlusCircleIcon className="mr-2 h-5 w-5" />
+                        Chat with new document
+                      </CommandItem>
+                    </CommandGroup>
+                  </TooltipTrigger>
+                  {chats.length === 5 && (
+                    <TooltipContent>
+                      You have reached the maximum number of documents.
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </CommandList>
           </Command>
         </PopoverContent>
