@@ -35,7 +35,8 @@ export async function getContext(query: string, documentId: string) {
 
   const textContent = qualifiedMatches.reduce((acc, match) => {
     const { metadata } = match;
-    const { pageNumber, text } = metadata;
+    const pageNumber = metadata?.pageNumber;
+    const text = metadata?.text;
     // Return the accumulator in this format:
     // START PAGE 1 BLOCK
     // Text extracted from page 1
