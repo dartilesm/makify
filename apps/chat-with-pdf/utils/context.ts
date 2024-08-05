@@ -1,7 +1,7 @@
 import { getPineconeClient } from "./pinecone.client";
 import { getEmbeddings } from "./vector-store";
 
-export async function getMatchesFromEmbeddings(
+async function getMatchesFromEmbeddings(
   embeddings: number[],
   documentId: string,
 ) {
@@ -33,7 +33,32 @@ export async function getContext(query: string, documentId: string) {
 
   const qualifiedMatches = matches.filter((match) => match?.score ?? 0 > 0.7);
 
-  const docs = qualifiedMatches.map((match) => match.metadata?.text);
+  const textContent = qualifiedMatches.reduce((acc, match) => {
+    const { metadata } = match;
+    const { pageNumber, text } = metadata;
+    // Return the accumulator in this format:
+    // START PAGE 1 BLOCK
+    // Text extracted from page 1
 
-  return docs.join("\n").substring(0, 3000);
+    if (!acc.includes(`START PAGE ${pageNumber} BLOCK`)) {
+      acc += `START PAGE ${pageNumber} BLOCK\n`;
+    }
+    acc += `${text}\n`;
+
+    return acc;
+  }, "");
+
+  const docs = qualifiedMatches.map((match) => match.metadata?.text);
+  const pageNumbers = qualifiedMatches
+    .map((match) => match.metadata?.pageNumber)
+    .filter((pageNumber, index, self) => self.indexOf(pageNumber) === index);
+
+  const context = {
+    text: docs.join("\n").substring(0, 3000),
+    pageNumbers,
+  };
+
+  // Limit the block text to 3000 characters
+
+  return textContent.substring(0, 3000);
 }

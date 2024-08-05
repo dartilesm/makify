@@ -24,8 +24,7 @@ export async function prepareDocument(
       pageContent,
       metadata: {
         chatId,
-        documentName: metadata.loc.title,
-        pageNumer: metadata.loc.pageNumber,
+        pageNumber: metadata?.loc?.pageNumber,
         text: truncateStringByBytes(pageContent, 36000),
       },
     }),
@@ -44,7 +43,6 @@ export async function embedDocument(doc: Document<Record<string, any>>) {
       values: embeddings,
       metadata: {
         chatId: doc.metadata.chatId,
-        documentName: doc.metadata.documentName,
         text: doc.metadata.text,
         pageNumber: doc.metadata.pageNumber,
       },

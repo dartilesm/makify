@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     ${documentContext}
     END OF DOCUMENT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
-    The DOCUMENT BLOCK includes a START PAGE {page number} BLOCK, AI will use the {page number} in the response to inform the user where the information was found, the page number should have this format [[{page number}]].
+    The DOCUMENT BLOCK includes a START PAGE {page number} BLOCK, AI will use the {page number} in the response to inform the user where the information was found, the page number should have this format :page[{page number}].
     If the document does not provide the answer to question, will try to answer the question based on the document.
     AI assistant will not invent anything that is not drawn directly from the document.`;
 
