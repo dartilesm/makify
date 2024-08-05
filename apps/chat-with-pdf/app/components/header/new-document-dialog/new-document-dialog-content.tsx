@@ -55,10 +55,7 @@ export function NewDocumentDialogContent() {
     setValue: setInputValue,
     trigger: triggerInputValidation,
     control,
-    formState,
   } = useFormContext();
-
-  const inputFile = useWatch({ name: INPUT_NAME.FILE });
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: loadFile,

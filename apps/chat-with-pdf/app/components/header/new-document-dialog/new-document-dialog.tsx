@@ -81,6 +81,11 @@ export function NewDocumentDialog({
       setLoadingMessages(filteredLoadingMessages);
 
       const lastLoadingMessage = parsedLoadingMessages.at(-1);
+      console.log({
+        lastLoadingMessage,
+        chatId: lastLoadingMessage.chatId,
+        parsedLoadingMessages,
+      });
       if (lastLoadingMessage.chatId) {
         handleDialogToggle(false);
         methods.reset();
