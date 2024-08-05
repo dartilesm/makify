@@ -1,4 +1,7 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   Dialog,
   DialogContent,
@@ -7,15 +10,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@makify/ui";
-import { FieldValues, FormProvider, useForm } from "react-hook-form";
-import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
 } from "../document-switcher/constants/loading-messages";
+import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { NewDocumentLoadingState } from "./new-document-loading-state";
 
 type NewDocumentDialogProps = {
@@ -76,11 +79,7 @@ export function NewDocumentDialog({
       setLoadingMessages(filteredLoadingMessages);
 
       const lastLoadingMessage = parsedLoadingMessages.at(-1);
-      console.log({
-        lastLoadingMessage,
-        chatId: lastLoadingMessage.chatId,
-        parsedLoadingMessages,
-      });
+
       if (lastLoadingMessage.chatId) {
         handleDialogToggle(false);
         methods.reset();
@@ -105,7 +104,7 @@ export function NewDocumentDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogToggle}>
-      <DialogContent className="flex h-[400px] flex-col">
+      <DialogContent className="flex h-[600px] flex-col">
         <DialogHeader>
           <DialogTitle>Start chatting with a new document</DialogTitle>
           <DialogDescription>
@@ -113,34 +112,80 @@ export function NewDocumentDialog({
           </DialogDescription>
         </DialogHeader>
         {!loadingMessages.length && (
-          <FormProvider {...methods}>
-            <form
-              className="flex flex-1 flex-col justify-between gap-2"
-              onSubmit={methods.handleSubmit(formAction)}
-            >
-              <NewDocumentDialogContent />
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => handleDialogToggle(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={
-                    !methods.formState.isValid || methods.formState.isSubmitting
-                  }
-                  className="flex flex-row gap-2"
-                >
-                  {methods.formState.isSubmitting && (
-                    <Loader2Icon className="h-4 w-4 animate-spin" />
-                  )}
-                  Import
-                </Button>
-              </DialogFooter>
-            </form>
-          </FormProvider>
+          <div className="flex flex-1 flex-col gap-4">
+            <Alert className="border-yellow-500 text-yellow-600">
+              <AlertTitle>Hackathon notice</AlertTitle>
+              <AlertDescription>
+                <span>
+                  At the moment, this app only processes text in PDF files (we
+                  are working on processing other types of content). As a
+                  demonstration, here are some examples for you to try:
+                </span>
+                <ul className="list-inside list-disc truncate break-words">
+                  <li>
+                    <a
+                      href="https://www.uh.edu/ussc/launch/services/handouts/Handouts/Tips-On-Studying-A-Foreign-Language.pdf"
+                      className="text-blue-600 underline"
+                      target="_blank"
+                    >
+                      Tips on studying a foreign language
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://theorganicmarketing.com/wp-content/uploads/2023/08/Twitter-has-been-replaced-by-X.pdf"
+                      className="text-blue-600 underline"
+                      target="_blank"
+                    >
+                      Twitter has been replaced by X
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.europhysicsnews.org/articles/epn/pdf/2019/05/epn2019505-6p41.pdf"
+                      className="text-blue-600 underline"
+                      target="_blank"
+                    >
+                      Twelve strange christmas traditions from around the world
+                    </a>
+                  </li>
+                </ul>
+                <span className="italic">
+                  Copy and paste the link in the input field on the{" "}
+                  <strong>import from link.</strong>
+                </span>
+              </AlertDescription>
+            </Alert>
+            <FormProvider {...methods}>
+              <form
+                className="flex flex-1 flex-col justify-between gap-2"
+                onSubmit={methods.handleSubmit(formAction)}
+              >
+                <NewDocumentDialogContent />
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleDialogToggle(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={
+                      !methods.formState.isValid ||
+                      methods.formState.isSubmitting
+                    }
+                    className="flex flex-row gap-2"
+                  >
+                    {methods.formState.isSubmitting && (
+                      <Loader2Icon className="h-4 w-4 animate-spin" />
+                    )}
+                    Import
+                  </Button>
+                </DialogFooter>
+              </form>
+            </FormProvider>
+          </div>
         )}
         {!!loadingMessages.length && (
           <div className="flex flex-1 flex-col justify-between gap-2">

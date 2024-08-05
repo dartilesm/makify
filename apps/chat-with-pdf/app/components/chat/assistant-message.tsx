@@ -83,7 +83,7 @@ export function AssistantMessage({
           page: ({ children }: { children: ReactNode }) => (
             <TooltipProvider delayDuration={0}>
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger asChild>
                   <sup className="top-0 mx-[2px] rounded-md border-[1px] border-slate-300 bg-slate-200 px-1">
                     {children}
                   </sup>

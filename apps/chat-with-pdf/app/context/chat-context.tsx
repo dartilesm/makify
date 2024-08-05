@@ -62,7 +62,7 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
     },
     {
       message:
-        "Give me a list of a few questions that I can ask someone to see if they have read the document. Give me the questions as a list. Say those question are suggestions to start and don't mention the questions are to see if they have read the document.",
+        "Give me a list of a few questions that are already answered by the document content. Give me the questions as a list. Say those questions are suggestions to start and don't mention the questions are already answered by the document content.",
       type: MESSAGE_TYPE.SUGGESTION_MESSAGES,
     },
   ]);

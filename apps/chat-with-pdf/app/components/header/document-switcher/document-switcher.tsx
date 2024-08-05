@@ -120,6 +120,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
               <CommandGroup>
                 {chats.map((chat) => (
                   <CommandItem
+                    value={chat.id}
                     key={chat.id}
                     onSelect={() => {
                       setOpen(false);
