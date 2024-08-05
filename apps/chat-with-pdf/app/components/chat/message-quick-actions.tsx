@@ -137,8 +137,9 @@ export function MessageQuickActions({
     }
     if (action === QUICK_ACTIONS.BOOKMARK) {
       if (typeof messages[index] === "object") {
-        const messageData = (messages[index].data as Record<string, any>) || {};
-        messages[index].data = {
+        const messageData =
+          (messages[index]!.data as Record<string, any>) || {};
+        messages[index]!.data = {
           ...messageData,
           bookmarked: !messageData?.bookmarked,
         };
