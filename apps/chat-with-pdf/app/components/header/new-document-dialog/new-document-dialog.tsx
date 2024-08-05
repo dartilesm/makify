@@ -67,11 +67,6 @@ export function NewDocumentDialog({
         ReadableStreamReadResult<Uint8Array>
       >);
 
-      if (done) {
-        console.log("it is done", value);
-        return null;
-      }
-
       const chunk = decoder.decode(value, { stream: true });
       const parsedLoadingMessages = JSON.parse(chunk);
 
@@ -94,6 +89,12 @@ export function NewDocumentDialog({
           1000,
         );
       }
+
+      if (done) {
+        console.log("it is done", value);
+        return null;
+      }
+
       return read();
     }
 
