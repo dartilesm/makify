@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 export async function POST(request: NextRequest) {
   // Protect the route with rate limiting
