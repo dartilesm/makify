@@ -1,3 +1,5 @@
+const { withPlausibleProxy } = require('next-plausible')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     webpack: function (config) {
@@ -16,7 +18,7 @@ const nextConfig = {
     },
     transpilePackages: ['@makify/ui'],
     reactStrictMode: false,
-    swcMinify: true,
+    swcMinify: true
 };
 
-module.exports = nextConfig;
+module.exports = withPlausibleProxy()(nextConfig);

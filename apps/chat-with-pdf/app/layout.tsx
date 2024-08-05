@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "@makify/ui/globals.css";
 import { Toaster } from "@makify/ui";
+import PlausibleProvider from "next-plausible";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <PlausibleProvider domain="makify-chat-with-pdf.vercel.app" />
+      </head>
       <body className={inter.className}>
         {children}
         <Toaster />
