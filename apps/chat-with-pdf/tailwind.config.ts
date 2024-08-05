@@ -16,6 +16,27 @@ const config: TailwindConfig = {
   ],
   theme: {
     ...uiTailwindConfig.theme,
+    extend: {
+      ...uiTailwindConfig.theme.extend,
+      keyframes: {
+        ...uiTailwindConfig.theme.extend.keyframes,
+        shake: {
+          "0%, 100%": {
+            transform: "translateX(0)",
+          },
+          "10%, 30%, 50%, 70%, 90%": {
+            transform: "translateX(-10px)",
+          },
+          "20%, 40%, 60%, 80%": {
+            transform: "translateX(10px)",
+          },
+        },
+      },
+      animation: {
+        ...uiTailwindConfig.theme.extend.animation,
+        shake: "shake 0.6s ease-in-out 0.25s 1",
+      },
+    },
   },
   plugins: [...uiTailwindConfig.plugins],
 };

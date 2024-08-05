@@ -97,7 +97,7 @@ export function MessageBubble({
                     message?.role === "assistant" || isTyping,
                   "bg-primary text-primary-foreground bg-opacity-20":
                     message?.role === "user",
-                  "animate-pulse": extraData?.messageScrollId === message?.id,
+                  "animate-shake": extraData?.messageScrollId === message?.id,
                 })}
               >
                 {isTyping && (
