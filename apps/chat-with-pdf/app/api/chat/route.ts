@@ -1,7 +1,7 @@
 import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { google } from "@ai-sdk/google";
 import { Chat } from "@prisma/client";
-import { CoreMessage, Message, StreamData, streamText } from "ai";
+import { CoreMessage, JSONValue, Message, StreamData, streamText } from "ai";
 import { getContext } from "utils/context";
 
 export const revalidate = 0;
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   const {
     messages = [],
     documentId,
-    data: messageData,
+    data: messageData = {},
   } = (await req.json()) as RequestBody;
   const lastMessage = messages.at(-1) as Message;
   const userMessage = parsedUserMessage(
@@ -40,12 +40,12 @@ export async function POST(req: Request) {
 
   const documentContext = lastMessage
     ? await getContext(userMessage, documentId)
-    : "";
+    : { page1: "" };
 
   const userMessages = messages.filter((message) => message?.role === "user");
 
   userMessages[userMessages.length - 1]!.content = userMessage;
-
+  console.log(documentContext);
   const messagesToAI = [...userMessages];
 
   const systemInstructions = `AI assistant is a brand new, powerful, human-like artificial intelligence.
@@ -57,6 +57,7 @@ export async function POST(req: Request) {
     ${documentContext}
     END OF DOCUMENT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
+    The DOCUMENT BLOCK includes a START PAGE {page number} BLOCK, AI will use the {page number} in the response to inform the user where the information was found, the page number should have this format [[{page number}]].
     If the document does not provide the answer to question, will try to answer the question based on the document.
     AI assistant will not invent anything that is not drawn directly from the document.`;
 
