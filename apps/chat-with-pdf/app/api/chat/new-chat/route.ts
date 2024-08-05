@@ -1,3 +1,4 @@
+import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
 import { INPUT_NAME } from "@/components/header/document-switcher/constants/input-names";
 import { chunkedUpsert } from "@/lib/chunked-upsert";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
@@ -112,6 +113,7 @@ async function* createNewChat({
       .upload(`${chat.id}.pdf`, documentFile!);
     if (error) {
       console.error(error);
+      await deleteChatAndDependencies(chat, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -127,6 +129,7 @@ async function* createNewChat({
       });
     } catch (error: any) {
       console.error(error);
+      await deleteChatAndDependencies(chat, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -149,6 +152,7 @@ async function* createNewChat({
     pages = await loader.load();
   } catch (error: any) {
     console.error(error);
+    await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -167,6 +171,7 @@ async function* createNewChat({
     );
   } catch (error: any) {
     console.error(error);
+    await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -189,6 +194,7 @@ async function* createNewChat({
     )) as PineconeRecord[];
   } catch (error: any) {
     console.error(error);
+    await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -208,6 +214,7 @@ async function* createNewChat({
     await chunkedUpsert(vectors, chat.id);
   } catch (error: any) {
     console.error(error);
+    await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,

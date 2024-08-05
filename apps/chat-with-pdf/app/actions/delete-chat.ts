@@ -28,16 +28,21 @@ async function deleteNamespace(chat: Chat) {
   return pinecone.deleteAll();
 }
 
-export async function deleteChatAndDependencies(chat: Chat) {
+export async function deleteChatAndDependencies(
+  chat: Chat,
+  shouldRedirect = true,
+) {
   await Promise.allSettled([
     deleteChat(chat),
     deleteDocumentFile(chat),
     deleteNamespace(chat),
   ]);
 
-  const firstChat = await prisma.chat.findFirst();
-
   revalidatePath("/chat");
+
+  if (!shouldRedirect) return;
+
+  const firstChat = await prisma.chat.findFirst();
 
   if (firstChat?.id) return redirect(`/chat/${firstChat.id}`);
   redirect("/chat");
