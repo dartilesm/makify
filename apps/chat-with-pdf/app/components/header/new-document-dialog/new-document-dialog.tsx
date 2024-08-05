@@ -74,7 +74,6 @@ export function NewDocumentDialog({
 
       const chunk = decoder.decode(value, { stream: true });
       const parsedLoadingMessages = JSON.parse(chunk);
-      console.log({ parsedLoadingMessages });
 
       const filteredLoadingMessages = parsedLoadingMessages.filter(
         (message: { text: any }) => message.text,
