@@ -20,7 +20,7 @@ To get started with Makify, follow these steps:
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/makify.git
+   git clone https://github.com/dartilesm/makify.git
    cd makify
    ```
 2. **Install Dependencies**:
