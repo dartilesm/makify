@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![image](https://github.com/user-attachments/assets/eefcf1ae-6b1a-4b38-9185-0fcb8bf3758c)
 
-## Getting Started
+# Chat with PDF
 
-First, run the development server:
+Chat with PDF is a Next.js application that allows users to interact with PDF documents using natural language processing. By leveraging advanced AI technologies, users can upload PDF files and query them in a conversational manner, extracting information quickly and efficiently.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Upload or Import PDF Documents**: Easily upload PDF files from your device or import them from external sources to start interacting with your documents.
+- **Download Chat History**: Save your conversations with the PDF to your device for future reference or sharing with others.
+- **Bookmark Favorite Messages**: Mark important messages in your chat history to quickly revisit key information without scrolling through the entire conversation.
+- **Contextual Queries**: Highlight specific text within your PDF and ask the assistant targeted questions about the highlighted content for more precise and relevant responses.
+- **Page Number References**: Each AI-generated response includes the page number where the relevant information is found, making it easy to locate the original source within the document.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technologies Used
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **[Next.js](https://nextjs.org/docs/getting-started/installation)**: A React framework for server-rendered applications and static websites.
+- **[Pinecone](https://www.pinecone.io/)**: A vector database for efficient similarity search and retrieval.
+- **[Supabase](https://supabase.com/)**: An open-source Firebase alternative for database and authentication services.
+- **[Vercel AI SDK](https://sdk.vercel.ai/)**: Tools and utilities for integrating AI functionalities.
+- **[Vercel KV](https://vercel.com/docs/storage/vercel-kv)**: A key-value store for managing application state and caching.
+- **[Shadcn](https://ui.shadcn.com/)**: A modern UI library for building user interfaces with ease.

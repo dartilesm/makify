@@ -21,7 +21,7 @@
         "app/*"
       ],
       "@/lib/*": [
-        "lib/*"
+        "utils/*"
       ],
       "@/styles/*": [
         "styles/*"
