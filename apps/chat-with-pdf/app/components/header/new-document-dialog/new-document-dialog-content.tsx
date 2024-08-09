@@ -1,7 +1,4 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Button,
   Input,
   Label,
@@ -20,7 +17,6 @@ import {
   ControllerRenderProps,
   FieldValues,
   useFormContext,
-  useWatch,
 } from "react-hook-form";
 import { INPUT_NAME } from "../document-switcher/constants/input-names";
 

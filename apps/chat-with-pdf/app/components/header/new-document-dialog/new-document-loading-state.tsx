@@ -52,7 +52,7 @@ export function NewDocumentLoadingState({
 
   return (
     <motion.div
-      className="flex h-full flex-col items-center justify-center gap-4"
+      className="flex flex-1 flex-col items-center justify-center gap-4"
       layout
     >
       <div className="relative h-16 w-16">
