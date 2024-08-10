@@ -11,5 +11,11 @@
     },
     "[prisma]": {
         "editor.defaultFormatter": "Prisma.prisma"
+    },
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+        "strings": "on"
     }
 }
