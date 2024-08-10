@@ -31,6 +31,7 @@ export function AssistantMessage({
   return (
     <Markdown
       remarkPlugins={[remarkGfm, remarkDirective, remarkDirectiveRehype]}
+      className="px-4 py-3"
       components={
         {
           p: ({ children }) => <p className="text-sm">{children}</p>,
@@ -70,7 +71,15 @@ export function AssistantMessage({
             >
               {type === MESSAGE_TYPE.SUGGESTION_MESSAGES ? (
                 <button
-                  className="z-10 box-border inline rounded-md border-[1px] border-gray-300 bg-white p-2 text-left transition-colors hover:bg-gray-50"
+                  className={cn(
+                    "z-10 box-border inline rounded-md border p-2 text-left transition-colors",
+                    [
+                      // Light mode
+                      "bg-background hover:bg-gray-50",
+                      // Dark mode
+                      "dark:hover:border-boder dark:bg-gray-900 dark:hover:bg-gray-950",
+                    ],
+                  )}
                   onClick={() => submitQuestion(children?.toString() as string)}
                 >
                   {children}
@@ -84,7 +93,7 @@ export function AssistantMessage({
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <sup className="top-0 mx-[2px] rounded-md border-[1px] border-slate-300 bg-slate-200 px-1">
+                  <sup className="bg-background dark:border-muted-foreground top-0 mx-[2px] rounded-sm border-2 px-[6px] py-[1px] dark:border">
                     {children}
                   </sup>
                 </TooltipTrigger>

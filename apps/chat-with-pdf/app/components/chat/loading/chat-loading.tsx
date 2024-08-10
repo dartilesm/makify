@@ -6,7 +6,7 @@ export function ChatLoading() {
 
   return (
     <div className="dark:bg-primary-foreground relative flex h-full flex-col bg-white">
-      <div className="flex h-[53px] items-center border-b-[1px] border-gray-100 p-2" />
+      <div className="border-border flex h-[53px] items-center border-b-[1px] p-2" />
       <div className="relative flex-1 overflow-hidden" id="chat-messages">
         <div
           className="flex h-full overflow-hidden p-4"

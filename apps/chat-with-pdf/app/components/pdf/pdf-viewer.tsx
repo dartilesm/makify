@@ -175,7 +175,7 @@ export function PdfViewer({ className }: { className?: string }) {
 
   return (
     <div className={cn("h-full w-full lg:block", className)}>
-      <div className="dark:bg-primary-foreground flex h-full flex-col overflow-hidden bg-white">
+      <div className="flex h-full flex-col overflow-hidden">
         <PdfToolbar
           pdfData={pdfData as PdfData}
           zoom={currentZoom}
@@ -205,7 +205,7 @@ export function PdfViewer({ className }: { className?: string }) {
                 <Popover open={!!selectedTextOptions}>
                   <Page
                     pageNumber={currentPage}
-                    className="border-border max-w-max border-[1px] shadow-lg"
+                    className="border-border max-w-max border shadow-lg"
                     scale={currentZoom}
                     onMouseUp={handleTextSelection}
                   />

@@ -115,7 +115,7 @@ export function ChatsContainer({
                       </CardContent>
                     </div>
                   </div>
-                  <Button className="flex-shrink-0" variant="outline" asChild>
+                  <Button className="flex-shrink-0" variant="secondary" asChild>
                     <Link href={`/chat/${chat.id}`}>Open chat</Link>
                   </Button>
                 </Card>

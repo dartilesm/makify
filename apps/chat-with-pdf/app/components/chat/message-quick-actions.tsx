@@ -53,7 +53,7 @@ const quickActions: MessageActions[] = [
     Icon: BookmarkIcon,
     active: {
       Icon: forwardRef((props, ref) => (
-        <BookmarkIcon ref={ref} className="fill-primary h-4 w-4" />
+        <BookmarkIcon ref={ref} className="h-4 w-4 fill-current" />
       )),
       condition: (message: Message) => {
         const messageData = (message?.data as Record<string, any>) || {};
@@ -194,7 +194,7 @@ export function MessageQuickActions({
                 <TooltipTrigger asChild>
                   <ToggleGroupItem
                     value={value}
-                    className="hover:text-primary text-primary group flex aspect-square h-[30px] w-[30px] items-center justify-center rounded-md hover:bg-gray-200 data-[state=on]:bg-transparent hover:data-[state=on]:bg-gray-200"
+                    className="hover:text-secondary-foreground text-secondary-foreground group flex aspect-square h-[30px] w-[30px] items-center justify-center data-[state=on]:bg-transparent"
                   >
                     <AnimatePresence mode="wait">
                       {ActiveIcon && active.condition(message) && (
@@ -230,7 +230,7 @@ export function MessageQuickActions({
                 <TooltipContent
                   align="center"
                   side="top"
-                  className="bg-primary rounded-md text-xs"
+                  className="rounded-md text-xs"
                   arrowPadding={2}
                   sideOffset={6}
                 >

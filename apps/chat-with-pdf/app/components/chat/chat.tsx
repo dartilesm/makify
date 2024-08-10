@@ -11,12 +11,7 @@ type ChatProps = {
 
 export function Chat({ className }: ChatProps) {
   return (
-    <div
-      className={cn(
-        "dark:bg-primary-foreground relative flex h-full flex-col bg-white",
-        className,
-      )}
-    >
+    <div className={cn("relative flex h-full flex-col", className)}>
       <ChatHeader />
       <ChatMessages />
       <ChatFooter />
