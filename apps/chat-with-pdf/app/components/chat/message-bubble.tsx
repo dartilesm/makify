@@ -92,9 +92,8 @@ export function MessageBubble({
           >
             <TooltipTrigger asChild>
               <div
-                className={cn("w-fit rounded-md px-4 py-3 text-sm", {
-                  "bg-gray-100 dark:bg-gray-800":
-                    message?.role === "assistant" || isTyping,
+                className={cn("w-fit rounded-md text-sm", {
+                  "bg-secondary": message?.role === "assistant" || isTyping,
                   "bg-primary text-primary-foreground bg-opacity-20":
                     message?.role === "user",
                   "animate-shake":
@@ -103,7 +102,7 @@ export function MessageBubble({
                 })}
               >
                 {isTyping && (
-                  <div className="flex h-5 items-center gap-2">
+                  <div className="flex h-11 items-center gap-2 px-4 py-3">
                     <div className="flex gap-1">
                       <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
                       <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_0.5s_ease-in-out_infinite] dark:bg-slate-300"></span>
@@ -125,7 +124,7 @@ export function MessageBubble({
                       <TooltipContent
                         align="start"
                         side="bottom"
-                        className="rounded-md border-[1px] border-gray-200 bg-gray-50 p-1"
+                        className="bg-background rounded-md border p-1 dark:border-2"
                         sideOffset={-10}
                         alignOffset={10}
                         avoidCollisions={false}

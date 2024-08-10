@@ -17,7 +17,7 @@ import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
-} from "../document-switcher/constants/loading-messages";
+} from "../constants/loading-messages";
 import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { NewDocumentLoadingState } from "./new-document-loading-state";
 

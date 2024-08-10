@@ -17,10 +17,10 @@ import { Chat } from "@prisma/client";
 import { FileTextIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { NewDocumentDialog } from "../header/new-document-dialog/new-document-dialog";
 import { Container } from "../ui/container";
 import { Heading } from "../ui/heading";
 import { SadFaceIcon } from "icons/sad-face";
+import { NewDocumentDialog } from "../header/document-switcher/new-document-dialog/new-document-dialog";
 
 type ChatsContainerProps =
   | {
@@ -115,7 +115,7 @@ export function ChatsContainer({
                       </CardContent>
                     </div>
                   </div>
-                  <Button className="flex-shrink-0" variant="outline" asChild>
+                  <Button className="flex-shrink-0" variant="secondary" asChild>
                     <Link href={`/chat/${chat.id}`}>Open chat</Link>
                   </Button>
                 </Card>

@@ -43,7 +43,7 @@ export function ChatFooter() {
 
     const hasGrown = textarea.scrollHeight > textareaLineHeight;
 
-    if (hasGrown !== hasTextareaGrown) {
+    if (!hasGrown && hasGrown !== hasTextareaGrown) {
       setHasTextareaGrown(hasGrown);
     }
   }
@@ -111,7 +111,7 @@ export function ChatFooter() {
       <form onSubmit={handleOnSubmit} ref={formRef}>
         <div
           className={cn(
-            "bg-primary-foreground relative flex flex-row justify-between gap-1 rounded-md p-2 pl-4 pr-3",
+            "bg-secondary relative flex flex-row justify-between gap-1 rounded-md p-2 pl-4 pr-3",
             {
               "items-center": !hasTextareaGrown,
               "items-end": hasTextareaGrown,

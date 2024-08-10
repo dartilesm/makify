@@ -50,7 +50,7 @@ export function PdfToolbar({
   }
 
   return (
-    <div className={cn("border-b-[1px] border-gray-100 p-2", className)}>
+    <div className={cn("border-border border-b-[1px] p-2", className)}>
       <div className="flex items-center justify-between">
         <TooltipProvider delayDuration={0}>
           <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ export function PdfToolbar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Toggle
-                  className="hover:text-primary aria-[pressed=true]:bg-accent aria-[pressed=true]:text-accent-foreground flex-shrink-0"
+                  className="aria-[pressed=true]:bg-accent aria-[pressed=true]:text-accent-foreground flex-shrink-0 hover:text-current"
                   onPressedChange={onChangePageOnScroll}
                   pressed={changePageOnScroll}
                   disabled={!pdfData}

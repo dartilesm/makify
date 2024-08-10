@@ -18,7 +18,7 @@ import {
   FieldValues,
   useFormContext,
 } from "react-hook-form";
-import { INPUT_NAME } from "../document-switcher/constants/input-names";
+import { INPUT_NAME } from "../constants/input-names";
 
 const enum NEW_DOCUMENT_TAB {
   LINK = "link",
@@ -219,7 +219,7 @@ export function NewDocumentDialogContent() {
               Upload your pdf *
               <div
                 className={cn(
-                  "flex flex-1 shrink-0 items-center justify-center rounded-md border border-dashed",
+                  "flex flex-1 shrink-0 items-center justify-center rounded-md border border-dashed dark:border-2",
                   {
                     "cursor-pointer": !fileAttached,
                   },
@@ -266,7 +266,7 @@ export function NewDocumentDialogContent() {
           {fileAttached && (
             <div className="flex h-full flex-col gap-2">
               Upload your pdf *
-              <div className="z-10 flex flex-row items-center justify-between gap-2 rounded-md border-2 border-gray-100 p-4">
+              <div className="border-border z-10 flex flex-row items-center justify-between gap-2 rounded-md border-2 p-4">
                 <div className="flex shrink flex-row items-center gap-2 truncate">
                   <div className="flex flex-col gap-1 truncate text-left">
                     <span className="truncate">

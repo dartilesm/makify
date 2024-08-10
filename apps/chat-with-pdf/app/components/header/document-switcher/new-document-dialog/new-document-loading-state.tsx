@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
-} from "../document-switcher/constants/loading-messages";
+} from "../constants/loading-messages";
 
 const SparkleIconAnimated = motion(SparkleIcon);
 const SadFaceIconAnimated = motion(SadFaceIcon);

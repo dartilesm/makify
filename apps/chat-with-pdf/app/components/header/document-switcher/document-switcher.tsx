@@ -32,8 +32,8 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { EditDocumentDialog } from "../edit-document-dialog/edit-document-dialog";
-import { NewDocumentDialog } from "../new-document-dialog/new-document-dialog";
+import { EditDocumentDialog } from "./edit-document-dialog/edit-document-dialog";
+import { NewDocumentDialog } from "./new-document-dialog/new-document-dialog";
 
 type DocumentSwitcherProps = {
   className?: string;
