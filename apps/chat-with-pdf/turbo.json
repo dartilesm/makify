@@ -13,9 +13,7 @@
             ]
         },
         "prisma:generate": {
-            "inputs": [
-                "prisma/schema.prisma"
-            ]
+            "cache": false
         }
     }
 }
