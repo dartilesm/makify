@@ -8,6 +8,10 @@
                 "prisma:generate"
             ]
         },
-        "prisma:generate": {}
+        "prisma:generate": {
+            "inputs": [
+                "prisma/schema.prisma"
+            ]
+        }
     }
 }
