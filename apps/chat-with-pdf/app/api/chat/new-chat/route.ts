@@ -9,6 +9,7 @@ import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { supabase } from "@/lib/supabase";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { PineconeRecord } from "@pinecone-database/pinecone";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 0;
@@ -89,7 +90,7 @@ async function* createNewChat({
   // TODO: How to remove this delay?
   // It doesn't work well without it, the data seems to arrive appended to the fronted
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  let chat;
+  let chat: any;
   let pdfData;
   try {
     pdfData = await getPdfData({ documentUrl, documentFile });

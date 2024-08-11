@@ -46,8 +46,8 @@
     "@makify/typescript-config": "workspace:*",
     "@pinecone-database/pinecone": "2.2.2",
     "@types/node": "20",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
+    "@types/react": "18.2.61",
+    "@types/react-dom": "18.2.19",
     "ai": "3.2.37",
     "autoprefixer": "10.0.1",
     "js-md5": "0.8.3",
@@ -57,7 +57,7 @@
     "prisma": "5.16.2",
     "react-markdown": "9.0.1",
     "tailwindcss": "3.3.0",
-    "typescript": "5",
+    "typescript": "5.3.3",
     "zod": "3.23.8"
   }
 }
