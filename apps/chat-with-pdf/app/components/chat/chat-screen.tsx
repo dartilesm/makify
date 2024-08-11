@@ -9,8 +9,8 @@ import {
   TabsTrigger,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { ChatLoading } from "./loading/chat-loading";
-import { PDFLoading } from "./loading/pdf-loading";
+import { ChatLoading } from "./loading/chat.loading";
+import { PDFLoading } from "./loading/pdf.loading";
 
 type ChatScreenProps = {
   loading?: boolean;
