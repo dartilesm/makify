@@ -11,7 +11,7 @@
     ".": "./index.ts"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint .",
     "generate:component": "turbo gen react-component"
   },
   "devDependencies": {
