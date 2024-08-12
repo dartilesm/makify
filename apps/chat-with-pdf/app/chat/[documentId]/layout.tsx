@@ -16,7 +16,7 @@ export default async function ChatLayout({
 }) {
   const chats = await getCachedChats();
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="flex h-[100dvh] max-h-[100dvh] flex-col">
       <Header chats={chats} />
       {children}
     </div>
