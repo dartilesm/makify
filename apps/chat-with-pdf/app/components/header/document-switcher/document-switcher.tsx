@@ -72,7 +72,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   }
 
   return (
-    <div className="flex max-w-96 flex-1 flex-row items-center justify-center gap-2 max-sm:max-w-full max-sm:justify-start sm:w-3/4">
+    <div className="flex max-w-sm flex-1 flex-row items-center justify-center gap-2 max-sm:max-w-full max-sm:justify-start sm:w-3/4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -86,7 +86,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
               className,
             )}
           >
-            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
+            <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
               <span className="truncate">
                 {
@@ -110,7 +110,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="z-10 max-w-96 p-0 max-sm:max-w-full sm:w-2/4"
+          className="z-10 max-w-sm p-0 max-sm:max-w-full sm:w-2/4"
           style={popoverDynamicStyles}
         >
           <Command>
@@ -129,14 +129,14 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
-                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
+                      <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
                         {(chat?.documentMetadata as Record<string, any>)?.title}
                       </span>
                     </div>
                     <CheckIcon
                       className={cn(
-                        "h-4 min-h-4 w-4 shrink-0",
+                        "min-h-4 h-4 w-4 shrink-0",
                         params.documentId === chat.id
                           ? "opacity-100"
                           : "opacity-0",

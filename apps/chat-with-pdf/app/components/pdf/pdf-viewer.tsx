@@ -19,6 +19,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
 import { useOnClickOutside } from "usehooks-ts";
 import { PdfToolbar } from "./pdf-toolbar";
+import { useTheme } from "next-themes";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `/api/pdf-helper?url=unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -49,6 +50,7 @@ export function PdfViewer({ className }: { className?: string }) {
   const pdfPagesRef = useRef<HTMLDivElement[] | null[]>([]);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
+  const { theme } = useTheme();
   const {
     globalContext: { chatData, setExtraData },
   } = useGlobalChat();
@@ -185,7 +187,10 @@ export function PdfViewer({ className }: { className?: string }) {
           onZoomChange={handlePageZoomChange}
           onChangePageOnScroll={setEnableChangePageOnScroll}
         />
-        <div className="flex-1 overflow-auto p-4" ref={pdfContainerRef}>
+        <div
+          className="bg-muted flex-1 overflow-auto p-4"
+          ref={pdfContainerRef}
+        >
           <div className="relative flex h-full gap-4">
             {!pdfData && (
               <Skeleton className="absolute left-0 top-0 block h-full w-full" />
@@ -205,7 +210,9 @@ export function PdfViewer({ className }: { className?: string }) {
                 <Popover open={!!selectedTextOptions}>
                   <Page
                     pageNumber={currentPage}
-                    className="border-border max-w-max border shadow-lg"
+                    className={cn("border-border max-w-max border shadow-lg", {
+                      "opacity-60": theme === "dark",
+                    })}
                     scale={currentZoom}
                     onMouseUp={handleTextSelection}
                   />

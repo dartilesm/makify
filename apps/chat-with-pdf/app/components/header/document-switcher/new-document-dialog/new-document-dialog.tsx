@@ -104,7 +104,7 @@ export function NewDocumentDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogToggle}>
-      <DialogContent className="flex max-h-[600px] min-h-[400px] flex-col">
+      <DialogContent className="flex max-h-screen min-h-[400px] flex-col">
         <DialogHeader>
           <DialogTitle>Start chatting with a new document</DialogTitle>
           <DialogDescription>

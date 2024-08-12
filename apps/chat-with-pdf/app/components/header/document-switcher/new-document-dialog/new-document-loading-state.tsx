@@ -35,7 +35,7 @@ export function NewDocumentLoadingState({
     const lastActiveIndex = loadingMessages.findIndex(
       (step) => !step.completed,
     );
-    console.log(lastActiveIndex);
+
     if (loadingTextRefs.current[lastActiveIndex]) {
       loadingTextRefs.current[lastActiveIndex]?.scrollIntoView({
         behavior: "smooth",
@@ -112,7 +112,7 @@ export function NewDocumentLoadingState({
         <div className="flex h-20 flex-col gap-[6px] overflow-hidden">
           {loadingMessages.map((step, index) => (
             <>
-              {index === 0 && <div className="block min-h-5 w-full" />}
+              {index === 0 && <div className="min-h-5 block w-full" />}
               <motion.div
                 layout
                 className="flex w-full justify-center space-x-4"
@@ -152,7 +152,7 @@ export function NewDocumentLoadingState({
                 </div>
               </motion.div>
               {index === loadingMessages.length - 1 && (
-                <div className="block min-h-5 w-full" />
+                <div className="min-h-5 block w-full" />
               )}
             </>
           ))}
@@ -163,7 +163,7 @@ export function NewDocumentLoadingState({
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-muted-foreground max-w-96 text-center text-sm"
+          className="text-muted-foreground max-w-sm text-center text-sm"
         >
           {failedLoadingMessage.friendlyError}
         </motion.span>

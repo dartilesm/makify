@@ -127,7 +127,7 @@ export function ChatsContainer({
             {!loading && chats?.length === 0 && (
               <div className="flex h-full flex-col items-center justify-center gap-4">
                 <SadFaceIcon className="h-28 w-28 fill-gray-600 opacity-30" />
-                <p className="text-muted-foreground max-w-72 text-center">
+                <p className="text-muted-foreground max-w-xs text-center">
                   Oh no! No chats found. Start a new chat to get the party
                   started.
                 </p>

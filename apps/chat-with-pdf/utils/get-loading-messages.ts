@@ -36,7 +36,9 @@ export function getLoadingMessages({
     const loadingMessagesNewCopy = structuredClone(loadingMessagesToClone);
     loadingMessagesNewCopy[currentActiveIndex]!.error =
       errorMessage || friendlyError;
-    loadingMessagesNewCopy[currentActiveIndex]!.friendlyError = friendlyError;
+    loadingMessagesNewCopy[currentActiveIndex]!.friendlyError =
+      friendlyError ||
+      loadingMessagesNewCopy[currentActiveIndex]!.friendlyError;
     resetLoadingMessages();
     return loadingMessagesNewCopy;
   }

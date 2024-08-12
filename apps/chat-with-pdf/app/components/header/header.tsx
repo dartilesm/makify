@@ -12,7 +12,7 @@ type HeaderProps = {
 export async function Header({ chats = [] }: HeaderProps) {
   return (
     <header className="border-b">
-      <div className="flex h-20 flex-row items-center justify-between overflow-hidden px-4 max-sm:gap-4">
+      <div className="flex h-20 flex-row items-center justify-between gap-2 overflow-hidden px-4 max-sm:gap-4">
         <div className="col flex flex-shrink-0 flex-col gap-1 text-sm">
           Chat with PDF
           <span className="text-muted-foreground text-right text-xs">

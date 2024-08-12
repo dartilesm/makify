@@ -24,7 +24,6 @@ export function ChatFooter() {
       append,
       handleInputChange,
       isLoading,
-      messages,
     },
   } = useGlobalChat();
 
@@ -78,7 +77,7 @@ export function ChatFooter() {
   }
 
   return (
-    <div className="border-border z-10 flex flex-col gap-2 border-t-[1px] p-3">
+    <div className="border-border z-10 flex flex-col gap-2 border-t p-3">
       <AnimatePresence>
         {(extraData?.quotedText as string) && (
           <motion.div
@@ -108,7 +107,11 @@ export function ChatFooter() {
           </motion.div>
         )}
       </AnimatePresence>
-      <form onSubmit={handleOnSubmit} ref={formRef}>
+      <form
+        className="flex flex-col gap-2"
+        onSubmit={handleOnSubmit}
+        ref={formRef}
+      >
         <div
           className={cn(
             "bg-secondary relative flex flex-row justify-between gap-1 rounded-md p-2 pl-4 pr-3",
@@ -119,7 +122,7 @@ export function ChatFooter() {
           )}
         >
           <Textarea
-            className="max-h-24 min-h-2 flex-1 resize-none border-0 border-none p-[2px] shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
+            className="min-h-2 max-h-24 flex-1 resize-none border-0 border-none p-[2px] shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
             placeholder={`Ask me anything about the document...`}
             rows={1}
             onChange={handleTextareaChange}
@@ -136,6 +139,9 @@ export function ChatFooter() {
             <span className="sr-only">Send</span>
           </Button>
         </div>
+        <p className="text-muted-foreground text-center text-sm">
+          AI Assistant can make mistakes. Please check important information.
+        </p>
       </form>
     </div>
   );
