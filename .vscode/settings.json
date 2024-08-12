@@ -17,5 +17,10 @@
     },
     "editor.quickSuggestions": {
         "strings": "on"
-    }
+    },
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ]
 }

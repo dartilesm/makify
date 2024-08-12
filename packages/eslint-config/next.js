@@ -10,7 +10,7 @@ const project = resolve(process.cwd(), 'tsconfig.json');
  * For more information, see https://github.com/vercel/style-guide
  *
  */
-
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: [
     require.resolve('@vercel/style-guide/eslint/node'),
@@ -39,7 +39,7 @@ module.exports = {
   ignorePatterns: ['node_modules/', 'dist/'],
   // add rules configurations here
   rules: {
-    'import/no-default-export': 'off',
+    'import/no-default-export': 'off'
   },
   plugins: ["import"]
 };
