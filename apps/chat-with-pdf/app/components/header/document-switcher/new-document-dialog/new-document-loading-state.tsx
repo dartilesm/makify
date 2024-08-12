@@ -1,24 +1,24 @@
 import { Button } from "@makify/ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { SadFaceIcon } from "icons/sad-face";
-import { SparkleIcon } from "icons/sparkle";
 import { CheckIcon, ClockIcon, LoaderCircleIcon, XIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { SadFaceIcon } from "icons/sad-face";
+import { SparkleIcon } from "icons/sparkle";
 import {
-  loadingPdfFileMessages,
-  loadingPdfLinkMessages,
+  type loadingPdfFileMessages,
+  type loadingPdfLinkMessages,
 } from "../constants/loading-messages";
 
 const SparkleIconAnimated = motion(SparkleIcon);
 const SadFaceIconAnimated = motion(SadFaceIcon);
 const ButtonAnimated = motion(Button);
 
-type NewDocumentLoadingStateProps = {
+interface NewDocumentLoadingStateProps {
   loadingMessages:
     | typeof loadingPdfLinkMessages
     | typeof loadingPdfFileMessages;
   onTryAgain: () => void;
-};
+}
 
 export function NewDocumentLoadingState({
   loadingMessages,
@@ -28,7 +28,7 @@ export function NewDocumentLoadingState({
 
   useEffect(handleLoadingMessageChanges, [loadingMessages]);
 
-  const failedLoadingMessage = loadingMessages?.find((step) => step?.error);
+  const failedLoadingMessage = loadingMessages.find((step) => step.error);
 
   function handleLoadingMessageChanges() {
     /* Auto scroll to next loading message */
@@ -57,14 +57,12 @@ export function NewDocumentLoadingState({
     >
       <div className="relative h-16 w-16">
         <AnimatePresence mode="popLayout">
-          {failedLoadingMessage?.error && (
-            <SadFaceIconAnimated
+          {failedLoadingMessage?.error ? <SadFaceIconAnimated
               className="h-full w-full"
               animate={{ scale: 1, opacity: 1 }}
               initial={{ scale: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-            />
-          )}
+            /> : null}
           {!failedLoadingMessage?.error && (
             <>
               <SparkleIconAnimated
@@ -138,11 +136,9 @@ export function NewDocumentLoadingState({
                 }}
               >
                 <div className="flex h-full items-center">
-                  {step.completed && <CheckIcon className="h-5 w-5" />}
-                  {step.active && !step.error && (
-                    <LoaderCircleIcon className="h-5 w-5 animate-spin" />
-                  )}
-                  {step.error && <XIcon className="h-5 w-5" />}
+                  {step.completed ? <CheckIcon className="h-5 w-5" /> : null}
+                  {step.active && !step.error ? <LoaderCircleIcon className="h-5 w-5 animate-spin" /> : null}
+                  {step.error ? <XIcon className="h-5 w-5" /> : null}
                   {!step.completed && !step.active && (
                     <ClockIcon className="h-5 w-5" />
                   )}
@@ -158,26 +154,22 @@ export function NewDocumentLoadingState({
           ))}
         </div>
       </div>
-      {failedLoadingMessage?.error && (
-        <motion.span
+      {failedLoadingMessage?.error ? <motion.span
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-muted-foreground max-w-96 text-center text-sm"
         >
           {failedLoadingMessage.friendlyError}
-        </motion.span>
-      )}
-      {failedLoadingMessage?.error && (
-        <ButtonAnimated
+        </motion.span> : null}
+      {failedLoadingMessage?.error ? <ButtonAnimated
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           onClick={handleTryAgain}
         >
           Try again
-        </ButtonAnimated>
-      )}
+        </ButtonAnimated> : null}
     </motion.div>
   );
 }

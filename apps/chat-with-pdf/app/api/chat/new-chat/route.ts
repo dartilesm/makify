@@ -1,3 +1,7 @@
+import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
+import { type PineconeRecord } from "@pinecone-database/pinecone";
+import { Prisma } from "@prisma/client";
+import { type NextRequest, NextResponse } from "next/server";
 import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
 import { INPUT_NAME } from "@/components/header/document-switcher/constants/input-names";
 import { chunkedUpsert } from "@/lib/chunked-upsert";
@@ -7,10 +11,6 @@ import { getPdfData } from "@/lib/get-pdf-metadata";
 import { prisma } from "@/lib/prisma";
 import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { supabase } from "@/lib/supabase";
-import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
-import { PineconeRecord } from "@pinecone-database/pinecone";
-import { Prisma } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -84,7 +84,7 @@ async function* createNewChat({
 }) {
   // Fetching PDF data and creating a new chat in the database
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: null,
   });
   // TODO: How to remove this delay?
@@ -96,14 +96,14 @@ async function* createNewChat({
     pdfData = await getPdfData({ documentUrl, documentFile });
     chat = await prisma.chat.create({
       data: {
-        documentUrl: documentUrl,
+        documentUrl,
         documentMetadata: pdfData?.metadata,
       },
     });
   } catch (error: any) {
     console.error(error);
     return getLoadingMessages({
-      isViaLink: !!documentUrl,
+      isViaLink: Boolean(documentUrl),
       chatId: null,
       errorMessage: error?.message || error,
     });
@@ -117,13 +117,13 @@ async function* createNewChat({
       console.error(error);
       await deleteChatAndDependencies(chat, false);
       return getLoadingMessages({
-        isViaLink: !!documentUrl,
+        isViaLink: Boolean(documentUrl),
         chatId: chat.id,
-        errorMessage: error?.message,
+        errorMessage: error.message,
       });
     }
     try {
-      documentUrl = getPdfUrlFromSupabaseStorage(data!);
+      documentUrl = getPdfUrlFromSupabaseStorage(data);
 
       await prisma.chat.update({
         where: { id: chat.id },
@@ -133,7 +133,7 @@ async function* createNewChat({
       console.error(error);
       await deleteChatAndDependencies(chat, false);
       return getLoadingMessages({
-        isViaLink: !!documentUrl,
+        isViaLink: Boolean(documentUrl),
         chatId: chat.id,
         errorMessage: error?.message || error,
       });
@@ -142,7 +142,7 @@ async function* createNewChat({
 
   // Load the PDF
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: chat.id,
   });
   // TODO: How to remove this delay?
@@ -150,12 +150,12 @@ async function* createNewChat({
   await new Promise((resolve) => setTimeout(resolve, 10));
   let pages;
   try {
-    const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
+    const loader = new WebPDFLoader(pdfData?.pdfBlob!);
     pages = await loader.load();
     if (pages.length > 5) {
       await deleteChatAndDependencies(chat, false);
       return getLoadingMessages({
-        isViaLink: !!documentUrl,
+        isViaLink: Boolean(documentUrl),
         chatId: chat.id,
         errorMessage: "The document is too large. Please upload a smaller one",
         friendlyError:
@@ -166,7 +166,7 @@ async function* createNewChat({
     console.error(error);
     await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
-      isViaLink: !!documentUrl,
+      isViaLink: Boolean(documentUrl),
       chatId: chat.id,
       errorMessage: error?.message || error,
     });
@@ -185,7 +185,7 @@ async function* createNewChat({
     console.error(error);
     await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
-      isViaLink: !!documentUrl,
+      isViaLink: Boolean(documentUrl),
       chatId: chat.id,
       errorMessage: error?.message || error,
     });
@@ -193,7 +193,7 @@ async function* createNewChat({
 
   // Vectorize the documents
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: chat.id,
   });
   // TODO: How to remove this delay?
@@ -208,7 +208,7 @@ async function* createNewChat({
     console.error(error);
     await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
-      isViaLink: !!documentUrl,
+      isViaLink: Boolean(documentUrl),
       chatId: chat.id,
       errorMessage: error?.message || error,
     });
@@ -216,7 +216,7 @@ async function* createNewChat({
 
   // Store the vectors in Pinecone
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: chat.id,
   });
   // TODO: How to remove this delay?
@@ -228,7 +228,7 @@ async function* createNewChat({
     console.error(error);
     await deleteChatAndDependencies(chat, false);
     return getLoadingMessages({
-      isViaLink: !!documentUrl,
+      isViaLink: Boolean(documentUrl),
       chatId: chat.id,
       errorMessage: error?.message || error,
     });
@@ -236,7 +236,7 @@ async function* createNewChat({
 
   // Set as completed the last message
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: chat.id,
   });
   // TODO: How to remove this delay?
@@ -257,19 +257,19 @@ async function* createNewChatMocked({
 }) {
   // Fetching PDF data and creating a new chat in the database
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
   });
   // TODO: How to remove this delay?
   // It doesn't work well without it, the data seems to arrive appended to the fronted
   try {
     await new Promise((resolve, reject) =>
-      setTimeout(() => reject("weird error oh my god"), 1000),
+      setTimeout(() => { reject("weird error oh my god"); }, 1000),
     );
   } catch (error: any) {
     console.log("We got an error:");
     return getLoadingMessages({
-      isViaLink: !!documentUrl,
+      isViaLink: Boolean(documentUrl),
       chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
       errorMessage: error?.message || error,
     });
@@ -290,7 +290,7 @@ async function* createNewChatMocked({
 
   // Split it into chunks
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
   });
   // TODO: How to remove this delay?
@@ -302,7 +302,7 @@ async function* createNewChatMocked({
 
   // Vectorize the documents
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
   });
   // TODO: How to remove this delay?
@@ -312,7 +312,7 @@ async function* createNewChatMocked({
 
   // Store the vectors in Pinecone
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
   });
   // TODO: How to remove this delay?
@@ -322,7 +322,7 @@ async function* createNewChatMocked({
 
   // Set as completed the last message
   yield getLoadingMessages({
-    isViaLink: !!documentUrl,
+    isViaLink: Boolean(documentUrl),
     chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
   });
   // TODO: How to remove this delay?

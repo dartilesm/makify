@@ -1,7 +1,5 @@
 "use client";
 
-import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
-import { editChat } from "@/app/actions/edit-chat";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -23,11 +21,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@makify/ui";
-import { Chat } from "@prisma/client";
+import { type Chat } from "@prisma/client";
 import { LoaderCircleIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { editChat } from "@/app/actions/edit-chat";
+import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
 
 const EditFormSchema = z.object({
   title: z.string().min(2, {
@@ -48,11 +48,11 @@ const enum EDIT_DOCUMENT_TAB {
   DELETE = "delete",
 }
 
-type EditDocumentDialogProps = {
+interface EditDocumentDialogProps {
   isOpen: boolean;
   chat: Chat;
   onOpenChange?: (isOpen: boolean) => void;
-};
+}
 
 export function EditDocumentDialog({
   isOpen,
@@ -63,10 +63,10 @@ export function EditDocumentDialog({
     resolver: zodResolver(EditFormSchema),
     mode: "all",
     defaultValues: {
-      title: (chat.documentMetadata as Record<string, any>)?.title,
+      title: (chat.documentMetadata as Record<string, any>).title,
     },
     values: {
-      title: (chat.documentMetadata as Record<string, any>)?.title,
+      title: (chat.documentMetadata as Record<string, any>).title,
     },
   });
 
@@ -102,7 +102,7 @@ export function EditDocumentDialog({
       <DialogContent className="flex h-[360px] flex-col">
         <DialogHeader>
           <DialogTitle>
-            {(chat.documentMetadata as Record<string, any>)?.title}
+            {(chat.documentMetadata as Record<string, any>).title}
           </DialogTitle>
           <DialogDescription>
             Edit the title or delete the document.
@@ -160,12 +160,10 @@ export function EditDocumentDialog({
                         !editForm.formState.isValid ||
                         editForm.formState.isSubmitting ||
                         (chat.documentMetadata as Record<string, any>)
-                          ?.title === editForm.getValues().title
+                          .title === editForm.getValues().title
                       }
                     >
-                      {editForm.formState.isSubmitting && (
-                        <LoaderCircleIcon className="h-4 w-4 animate-spin" />
-                      )}
+                      {editForm.formState.isSubmitting ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : null}
                       Save changes
                     </Button>
                   </div>
@@ -212,9 +210,7 @@ export function EditDocumentDialog({
                       {!deleteForm.formState.isSubmitting && (
                         <TrashIcon className="h-4 w-4" />
                       )}
-                      {deleteForm.formState.isSubmitting && (
-                        <LoaderCircleIcon className="h-4 w-4 animate-spin" />
-                      )}
+                      {deleteForm.formState.isSubmitting ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : null}
                       Delete document
                     </Button>
                   </div>

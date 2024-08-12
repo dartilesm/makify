@@ -1,6 +1,5 @@
 "use client";
 
-import { submitFeedback } from "@/app/actions/submit-feedback";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -30,6 +29,7 @@ import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { submitFeedback } from "@/app/actions/submit-feedback";
 
 const FeedbackSchema = z.object({
   type: z.union([
@@ -53,9 +53,9 @@ const FeedbackSchema = z.object({
     .max(500),
 });
 
-type FeedbackDialogProps = {
+interface FeedbackDialogProps {
   triggerEl: React.ReactNode;
-};
+}
 
 export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -179,7 +179,7 @@ export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
               <DialogFooter>
                 <Button
                   variant="outline"
-                  onClick={() => handleOnOpenChange(false)}
+                  onClick={() => { handleOnOpenChange(false); }}
                 >
                   Cancel
                 </Button>
@@ -191,9 +191,7 @@ export function FeedbackDialog({ triggerEl }: FeedbackDialogProps) {
                   }
                   className="flex flex-row gap-2"
                 >
-                  {feedbackForm.formState.isSubmitting && (
-                    <Loader2Icon className="h-4 w-4 animate-spin" />
-                  )}
+                  {feedbackForm.formState.isSubmitting ? <Loader2Icon className="h-4 w-4 animate-spin" /> : null}
                   Send
                 </Button>
               </DialogFooter>

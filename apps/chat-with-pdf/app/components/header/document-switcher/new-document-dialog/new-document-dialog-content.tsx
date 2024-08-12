@@ -10,12 +10,12 @@ import {
 import { cn } from "@makify/ui/lib/utils";
 import { TrashIcon } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
-import { RefObject, useEffect, useState } from "react";
-import { DropzoneInputProps, useDropzone } from "react-dropzone";
+import { type RefObject, useEffect, useState } from "react";
+import { type DropzoneInputProps, useDropzone } from "react-dropzone";
 import {
   Controller,
-  ControllerRenderProps,
-  FieldValues,
+  type ControllerRenderProps,
+  type FieldValues,
   useFormContext,
 } from "react-hook-form";
 import { INPUT_NAME } from "../constants/input-names";
@@ -25,7 +25,7 @@ const enum NEW_DOCUMENT_TAB {
   IMPORT = "import",
 }
 
-type FileAttached = {
+interface FileAttached {
   file: File;
   metadata: {
     fileName: string;
@@ -36,7 +36,7 @@ type FileAttached = {
       mb: number;
     };
   };
-};
+}
 
 export function NewDocumentDialogContent() {
   const [fileAttached, setFileAttached] = useState<FileAttached | null>(null);
@@ -86,13 +86,13 @@ export function NewDocumentDialogContent() {
 
     const { name: fileName } = file;
     const size = file.size;
-    const sizeInKB = +(size / 1024).toFixed(2);
-    const sizeInMB = +(sizeInKB / 1024).toFixed(2);
+    const sizeInKB = Number((size / 1024).toFixed(2));
+    const sizeInMB = Number((sizeInKB / 1024).toFixed(2));
 
     const reader = new FileReader();
 
-    reader.onabort = () => console.log("file reading was aborted");
-    reader.onerror = () => console.log("file reading has failed");
+    reader.onabort = () => { console.log("file reading was aborted"); };
+    reader.onerror = () => { console.log("file reading has failed"); };
     reader.onload = async () => {
       // Do whatever you want with the file contents
       const binaryStr = reader.result;
@@ -126,8 +126,8 @@ export function NewDocumentDialogContent() {
     const MAX_FILE_SIZE = 40 * 1024 * 1024; // 40MB
     const MAX_PAGES = 5; // 5 pages
 
-    const sizeInMB = fileData?.metadata?.size.mb;
-    const numPages = fileData?.metadata?.numPages;
+    const sizeInMB = fileData.metadata.size.mb;
+    const numPages = fileData.metadata.numPages;
 
     if (sizeInMB > MAX_FILE_SIZE) {
       return `File size exceeds the limit of 40MB. Current size is ${sizeInMB}MB`;
@@ -167,7 +167,7 @@ export function NewDocumentDialogContent() {
       ...field,
       value: value?.fileName,
       ref: (el) => {
-        (rdInputRef.current as HTMLInputElement | null) = el;
+        (rdInputRef.current) = el;
         rhfInputRef(el);
       },
       onChange: (event) => {
@@ -263,24 +263,23 @@ export function NewDocumentDialogContent() {
               </div>
             </Label>
           )}
-          {fileAttached && (
-            <div className="flex h-full flex-col gap-2">
+          {fileAttached ? <div className="flex h-full flex-col gap-2">
               Upload your pdf *
               <div className="border-border z-10 flex flex-row items-center justify-between gap-2 rounded-md border-2 p-4">
                 <div className="flex shrink flex-row items-center gap-2 truncate">
                   <div className="flex flex-col gap-1 truncate text-left">
                     <span className="truncate">
-                      {fileAttached?.metadata?.fileName}
+                      {fileAttached.metadata.fileName}
                     </span>
                     <div className="flex flex-row gap-2">
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {fileAttached?.metadata?.numPages} page
-                        {fileAttached?.metadata?.numPages > 1 ? "s" : ""}{" "}
+                        {fileAttached.metadata.numPages} page
+                        {fileAttached.metadata.numPages > 1 ? "s" : ""}{" "}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {fileAttached?.metadata?.size.mb > 1
-                          ? `${fileAttached?.metadata?.size.mb} MB`
-                          : `${fileAttached?.metadata?.size.kb} KB`}
+                        {fileAttached.metadata.size.mb > 1
+                          ? `${fileAttached.metadata.size.mb} MB`
+                          : `${fileAttached.metadata.size.kb} KB`}
                       </span>
                     </div>
                   </div>
@@ -295,8 +294,7 @@ export function NewDocumentDialogContent() {
                   <TrashIcon className="h-4 w-4" />
                 </Button>
               </div>
-            </div>
-          )}
+            </div> : null}
           <Controller
             control={control}
             name={INPUT_NAME.FILE}
@@ -309,7 +307,7 @@ export function NewDocumentDialogContent() {
             render={({ field }) => (
               <input {...getMergedInputProps(field, getInputProps())} />
             )}
-          ></Controller>
+           />
         </div>
       </TabsContent>
     </Tabs>

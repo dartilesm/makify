@@ -1,10 +1,10 @@
 import { Document, Page, Text, View } from "@react-pdf/renderer";
-import { Message } from "ai";
+import { type Message } from "ai";
 
-type ChatPDFProps = {
+interface ChatPDFProps {
   documentId: string;
   messages: Message[];
-};
+}
 
 export function ChatPDF({ documentId, messages }: ChatPDFProps) {
   return (
@@ -46,7 +46,7 @@ export function ChatPDF({ documentId, messages }: ChatPDFProps) {
         </Text>
         {messages
           .filter(
-            (message) => !(message.data as Record<string, any>)?.messageType,
+            (message) => !(message.data as Record<string, any>).messageType,
           )
           .map((message, index) => {
             return (

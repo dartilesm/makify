@@ -1,8 +1,8 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { Chat, Prisma } from "@prisma/client";
+import { type Chat, type Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
 
 export async function editChat(chat: Chat, title: string) {
   const newChat = await prisma.chat.update({

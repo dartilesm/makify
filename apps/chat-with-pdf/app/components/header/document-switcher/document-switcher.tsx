@@ -22,7 +22,7 @@ import {
   PopoverTrigger,
 } from "@makify/ui/components/popover";
 import { cn } from "@makify/ui/lib/utils";
-import { Chat } from "@prisma/client";
+import { type Chat } from "@prisma/client";
 import {
   CheckIcon,
   ChevronsUpDownIcon,
@@ -35,10 +35,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { EditDocumentDialog } from "./edit-document-dialog/edit-document-dialog";
 import { NewDocumentDialog } from "./new-document-dialog/new-document-dialog";
 
-type DocumentSwitcherProps = {
+interface DocumentSwitcherProps {
   className?: string;
   chats: Chat[];
-};
+}
 
 export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const params = useParams();
@@ -91,17 +91,17 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
               <span className="truncate">
                 {
                   (selectedDocument?.documentMetadata as Record<string, any>)
-                    ?.title
+                    .title
                 }
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {
                   (selectedDocument?.documentMetadata as Record<string, any>)
-                    ?.numPages
+                    .numPages
                 }{" "}
                 page
                 {(selectedDocument?.documentMetadata as Record<string, any>)
-                  ?.numPages > 1
+                  .numPages > 1
                   ? "s"
                   : ""}{" "}
               </span>
@@ -131,7 +131,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
                       <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
-                        {(chat?.documentMetadata as Record<string, any>)?.title}
+                        {(chat.documentMetadata as Record<string, any>).title}
                       </span>
                     </div>
                     <CheckIcon
@@ -176,12 +176,11 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      {selectedDocument && (
-        <TooltipProvider delayDuration={0}>
+      {selectedDocument ? <TooltipProvider delayDuration={0}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                onClick={() => toggleEditDocumentDialog(true)}
+                onClick={() => { toggleEditDocumentDialog(true); }}
                 size="icon"
                 variant="ghost"
               >
@@ -190,19 +189,16 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             </TooltipTrigger>
             <TooltipContent side="bottom">Edit document</TooltipContent>
           </Tooltip>
-        </TooltipProvider>
-      )}
+        </TooltipProvider> : null}
       <NewDocumentDialog
         isOpen={showNewDocumentDialog}
         onOpenChange={setShowNewDocumentDialog}
       />
-      {selectedDocument && (
-        <EditDocumentDialog
+      {selectedDocument ? <EditDocumentDialog
           chat={selectedDocument}
           isOpen={showEditDocumentDialog}
           onOpenChange={toggleEditDocumentDialog}
-        />
-      )}
+        /> : null}
     </div>
   );
 }

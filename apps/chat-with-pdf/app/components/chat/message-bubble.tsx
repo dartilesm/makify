@@ -5,13 +5,13 @@ import {
   TooltipTrigger,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { Message } from "ai";
+import { type Message } from "ai";
+import { useEffect } from "react";
 import { useGlobalChat } from "hooks/use-global-chat";
 import { AssistantMessage } from "./assistant-message";
 import { MESSAGE_TYPE } from "./constants/message-type";
 import { MessageQuickActions } from "./message-quick-actions";
 import { UserMessage } from "./user-message";
-import { useEffect } from "react";
 
 type MessageBubbleProps =
   | {
@@ -41,17 +41,17 @@ export function MessageBubble({
     useChatReturn: { messages },
   } = useGlobalChat();
 
-  useEffect(onScrollMessageId, [extraData?.messageScrollId]);
+  useEffect(onScrollMessageId, [extraData.messageScrollId]);
 
   function getMessageType(message: Message) {
-    return (message?.data as Record<string, string>)
-      ?.messageType as MESSAGE_TYPE;
+    return (message.data as Record<string, string>)
+      .messageType as MESSAGE_TYPE;
   }
 
   function isAHiddenMessage() {
     if (!message) return null;
 
-    const isUserMessage = message?.role === "user";
+    const isUserMessage = message.role === "user";
 
     const isAnIntroductionMessage =
       getMessageType(message) === MESSAGE_TYPE.INTRODUCTION;
@@ -62,7 +62,7 @@ export function MessageBubble({
   }
 
   function onScrollMessageId() {
-    if (extraData?.messageScrollId) {
+    if (extraData.messageScrollId) {
       setTimeout(() => {
         setExtraData({
           ...extraData,
@@ -87,7 +87,7 @@ export function MessageBubble({
         <TooltipProvider>
           <Tooltip
             delayDuration={0}
-            onOpenChange={() => onTooltipOpenChange(!isTyping ? index : -1)}
+            onOpenChange={() => { onTooltipOpenChange(!isTyping ? index : -1); }}
             open={tooltipOpen}
           >
             <TooltipTrigger asChild>
@@ -97,23 +97,21 @@ export function MessageBubble({
                   "bg-primary text-primary-foreground bg-opacity-20":
                     message?.role === "user",
                   "animate-shake":
-                    extraData?.messageScrollId &&
-                    extraData?.messageScrollId === message?.id,
+                    extraData.messageScrollId &&
+                    extraData.messageScrollId === message?.id,
                 })}
               >
-                {isTyping && (
-                  <div className="flex h-11 items-center gap-2 px-4 py-3">
+                {isTyping ? <div className="flex h-11 items-center gap-2 px-4 py-3">
                     <div className="flex gap-1">
-                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
-                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_0.5s_ease-in-out_infinite] dark:bg-slate-300"></span>
-                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
+                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300" />
+                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_0.5s_ease-in-out_infinite] dark:bg-slate-300" />
+                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300" />
                     </div>
-                  </div>
-                )}
-                {!isTyping && message?.role === "user" && (
+                  </div> : null}
+                {!isTyping && message.role === "user" && (
                   <UserMessage message={message} />
                 )}
-                {!isTyping && message?.role === "assistant" && (
+                {!isTyping && message.role === "assistant" && (
                   <>
                     <AssistantMessage
                       type={getMessageType(messages[index - 1]!)}
@@ -142,7 +140,7 @@ export function MessageBubble({
             </TooltipTrigger>
           </Tooltip>
         </TooltipProvider>
-        {index === messages.length - 1 && message?.role === "assistant" && (
+        {index === messages.length - 1 && message.role === "assistant" && (
           <MessageQuickActions
             className="ml-4"
             index={index}

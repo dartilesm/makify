@@ -1,5 +1,5 @@
+import { type Metadata } from "next";
 import { Header } from "@/components/header/header";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Chats",

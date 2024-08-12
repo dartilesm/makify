@@ -13,18 +13,18 @@ import {
 import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FieldValues, FormProvider, useForm } from "react-hook-form";
+import { type FieldValues, FormProvider, useForm } from "react-hook-form";
 import {
-  loadingPdfFileMessages,
+  type loadingPdfFileMessages,
   loadingPdfLinkMessages,
 } from "../constants/loading-messages";
 import { NewDocumentDialogContent } from "./new-document-dialog-content";
 import { NewDocumentLoadingState } from "./new-document-loading-state";
 
-type NewDocumentDialogProps = {
+interface NewDocumentDialogProps {
   isOpen: boolean;
   onOpenChange?: (isOpen: boolean) => void;
-};
+}
 
 export function NewDocumentDialog({
   isOpen,
@@ -66,9 +66,7 @@ export function NewDocumentDialog({
     const decoder = new TextDecoder();
 
     async function read() {
-      const { done, value } = await (reader?.read() as Promise<
-        ReadableStreamReadResult<Uint8Array>
-      >);
+      const { done, value } = await (reader?.read()!);
 
       const chunk = decoder.decode(value, { stream: true });
       const parsedLoadingMessages = JSON.parse(chunk);
@@ -84,7 +82,7 @@ export function NewDocumentDialog({
         handleDialogToggle(false);
         methods.reset();
         setTimeout(
-          () => router.push(`/chat/${lastLoadingMessage.chatId}`),
+          () => { router.push(`/chat/${lastLoadingMessage.chatId}`); },
           1000,
         );
       }
@@ -126,7 +124,7 @@ export function NewDocumentDialog({
                     <a
                       href="https://www.uh.edu/ussc/launch/services/handouts/Handouts/Tips-On-Studying-A-Foreign-Language.pdf"
                       className="text-blue-600 underline"
-                      target="_blank"
+                      target="_blank" rel="noopener"
                     >
                       Tips on studying a foreign language
                     </a>
@@ -135,7 +133,7 @@ export function NewDocumentDialog({
                     <a
                       href="https://theorganicmarketing.com/wp-content/uploads/2023/08/Twitter-has-been-replaced-by-X.pdf"
                       className="text-blue-600 underline"
-                      target="_blank"
+                      target="_blank" rel="noopener"
                     >
                       Twitter has been replaced by X
                     </a>
@@ -144,7 +142,7 @@ export function NewDocumentDialog({
                     <a
                       href="https://www.onetz.de/sites/default/files/flipbook/insert/3138327/bavarian_times_november2020_klein__S35.pdf"
                       className="text-blue-600 underline"
-                      target="_blank"
+                      target="_blank" rel="noopener"
                     >
                       Twelve strange christmas traditions from around the world
                     </a>
@@ -165,7 +163,7 @@ export function NewDocumentDialog({
                 <DialogFooter>
                   <Button
                     variant="outline"
-                    onClick={() => handleDialogToggle(false)}
+                    onClick={() => { handleDialogToggle(false); }}
                   >
                     Cancel
                   </Button>
@@ -177,9 +175,7 @@ export function NewDocumentDialog({
                     }
                     className="flex flex-row gap-2"
                   >
-                    {methods.formState.isSubmitting && (
-                      <Loader2Icon className="h-4 w-4 animate-spin" />
-                    )}
+                    {methods.formState.isSubmitting ? <Loader2Icon className="h-4 w-4 animate-spin" /> : null}
                     Import
                   </Button>
                 </DialogFooter>
@@ -187,11 +183,11 @@ export function NewDocumentDialog({
             </FormProvider>
           </div>
         )}
-        {!!loadingMessages.length && (
+        {Boolean(loadingMessages.length) && (
           <div className="flex flex-1 flex-col justify-between gap-2">
             <NewDocumentLoadingState
               loadingMessages={loadingMessages}
-              onTryAgain={() => setLoadingMessages([])}
+              onTryAgain={() => { setLoadingMessages([]); }}
             />
           </div>
         )}

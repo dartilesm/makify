@@ -1,12 +1,12 @@
 "use server";
 
-import { chunkedUpsert } from "@/lib/chunked-upsert";
-import { embedDocument, prepareDocument } from "@/lib/embed-document";
-import { prisma } from "@/lib/prisma";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
-import { PineconeRecord } from "@pinecone-database/pinecone";
-import { Chat } from "@prisma/client";
+import { type PineconeRecord } from "@pinecone-database/pinecone";
+import { type Chat } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { embedDocument, prepareDocument } from "@/lib/embed-document";
+import { chunkedUpsert } from "@/lib/chunked-upsert";
 
 export async function createNewChat(formData: FormData) {
   let chat: Chat;
@@ -19,7 +19,7 @@ export async function createNewChat(formData: FormData) {
     console.log("Creating new chat in the database");
     chat = await prisma.chat.create({
       data: {
-        documentUrl: documentUrl,
+        documentUrl,
       },
     });
 

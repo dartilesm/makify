@@ -1,20 +1,18 @@
-import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { google } from "@ai-sdk/google";
-import { Chat } from "@prisma/client";
-import { CoreMessage, JSONValue, Message, StreamData, streamText } from "ai";
+import { type Chat } from "@prisma/client";
+import { type CoreMessage, JSONValue, type Message, StreamData, streamText } from "ai";
+import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { getContext } from "utils/context";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-type RequestBody = {
+interface RequestBody {
   messages: Message[];
   documentId: Chat["id"];
-  data: {
-    [key: string]: any;
-  };
-};
+  data: Record<string, any>;
+}
 
 export async function POST(req: Request) {
   // Protect the route with rate limiting
@@ -32,17 +30,17 @@ export async function POST(req: Request) {
     documentId,
     data: messageData = {},
   } = (await req.json()) as RequestBody;
-  const lastMessage = messages.at(-1) as Message;
+  const lastMessage = messages.at(-1)!;
   const userMessage = parsedUserMessage(
     lastMessage,
-    (lastMessage.data as Record<string, unknown>)?.quotedText as string,
+    (lastMessage.data as Record<string, unknown>).quotedText as string,
   );
 
   const documentContext = lastMessage
     ? await getContext(userMessage, documentId)
     : { page1: "" };
 
-  const userMessages = messages.filter((message) => message?.role === "user");
+  const userMessages = messages.filter((message) => message.role === "user");
 
   userMessages[userMessages.length - 1]!.content = userMessage;
   console.log(documentContext);
@@ -91,7 +89,7 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toAIStreamResponse({ data: data, headers });
+  return result.toAIStreamResponse({ data, headers });
 }
 
 function parsedUserMessage(lastMessage: Message, quotedText: string) {

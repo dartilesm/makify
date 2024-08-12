@@ -9,15 +9,15 @@ import {
   Skeleton,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { useGlobalChat } from "hooks/use-global-chat";
 import { MessageSquareQuoteIcon } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import { useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import { DocumentCallback } from "react-pdf/dist/cjs/shared/types";
+import { type DocumentCallback } from "react-pdf/dist/cjs/shared/types";
 import { useOnClickOutside } from "usehooks-ts";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { PdfToolbar } from "./pdf-toolbar";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `/api/pdf-helper?url=unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -31,18 +31,18 @@ export const enum PAGE_ZOOM_TYPE {
   OUT,
 }
 
-type SelectedTextOptions = {
+interface SelectedTextOptions {
   selectedText: string;
   coordinates: {
     top: number;
     left: number;
   };
-};
+}
 
-export type PdfData = {
+export interface PdfData {
   numPages: number;
   title: string;
-};
+}
 
 export function PdfViewer({ className }: { className?: string }) {
   const pdfContainerRef = useRef<HTMLDivElement>(null);
@@ -52,7 +52,7 @@ export function PdfViewer({ className }: { className?: string }) {
   const {
     globalContext: { chatData, setExtraData },
   } = useGlobalChat();
-  useOnClickOutside(popoverRef, () => setSelectedTextOptions(null));
+  useOnClickOutside(popoverRef, () => { setSelectedTextOptions(null); });
   /* Tools */
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentZoom, setCurrentZoom] = useState<number>(1);
@@ -78,7 +78,7 @@ export function PdfViewer({ className }: { className?: string }) {
 
     if (!chatData.documentMetadata) {
       updateChatMessages({
-        documentId: chatData.id as string,
+        documentId: chatData.id!,
         documentMetadata,
       });
     }
@@ -107,8 +107,8 @@ export function PdfViewer({ className }: { className?: string }) {
     if (pdfContainerEl)
       isScrollAtBottom =
         Math.abs(
-          pdfContainerEl?.scrollHeight -
-            (pdfContainerEl?.scrollTop + pdfContainerEl?.clientHeight),
+          pdfContainerEl.scrollHeight -
+            (pdfContainerEl.scrollTop + pdfContainerEl.clientHeight),
         ) <= 1;
 
     const isScrollAtTop = pdfContainerEl?.scrollTop === 0;
@@ -118,7 +118,7 @@ export function PdfViewer({ className }: { className?: string }) {
 
     if (canGoNextPage || canGoPrevPage) {
       const safeNextPage = Math.min(
-        pdfData?.numPages as number,
+        pdfData?.numPages!,
         Math.max(1, currentPage + (scrollDirection === "down" ? 1 : -1)),
       );
       setCurrentPage(safeNextPage);
@@ -151,10 +151,10 @@ export function PdfViewer({ className }: { className?: string }) {
 
     const textOptions = selectedText
       ? {
-          selectedText: selectedText as string,
+          selectedText,
           coordinates: {
-            top: (rect?.top as number) - 50,
-            left: rect?.left as number,
+            top: (rect?.top!) - 50,
+            left: rect?.left!,
           },
         }
       : null;
@@ -177,7 +177,7 @@ export function PdfViewer({ className }: { className?: string }) {
     <div className={cn("h-full w-full lg:block", className)}>
       <div className="flex h-full flex-col overflow-hidden">
         <PdfToolbar
-          pdfData={pdfData as PdfData}
+          pdfData={pdfData!}
           zoom={currentZoom}
           page={currentPage}
           changePageOnScroll={enableChangePageOnScroll}
@@ -191,8 +191,7 @@ export function PdfViewer({ className }: { className?: string }) {
               <Skeleton className="absolute left-0 top-0 block h-full w-full" />
             )}
 
-            {chatData.documentUrl && (
-              <Document
+            {chatData.documentUrl ? <Document
                 options={documentOptions}
                 file={`/api/pdf-helper?url=${chatData.documentUrl}`}
                 onLoadSuccess={handlePdfData}
@@ -202,7 +201,7 @@ export function PdfViewer({ className }: { className?: string }) {
                 error={null}
                 className="flex w-full flex-col items-center gap-4"
               >
-                <Popover open={!!selectedTextOptions}>
+                <Popover open={Boolean(selectedTextOptions)}>
                   <Page
                     pageNumber={currentPage}
                     className="border-border max-w-max border shadow-lg"
@@ -212,7 +211,7 @@ export function PdfViewer({ className }: { className?: string }) {
                   <PopoverPortal>
                     <PopoverContent
                       className="absolute z-20 w-fit p-1"
-                      onOpenAutoFocus={(e) => e.preventDefault()}
+                      onOpenAutoFocus={(e) => { e.preventDefault(); }}
                       style={{ ...(selectedTextOptions?.coordinates || {}) }}
                       ref={popoverRef}
                     >
@@ -228,8 +227,7 @@ export function PdfViewer({ className }: { className?: string }) {
                     </PopoverContent>
                   </PopoverPortal>
                 </Popover>
-              </Document>
-            )}
+              </Document> : null}
           </div>
         </div>
       </div>

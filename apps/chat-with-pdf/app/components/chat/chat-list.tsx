@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
 import { Avatar, AvatarFallback, AvatarImage } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { cache } from "react";
+import { prisma } from "@/lib/prisma";
 
 const getCachedChats = cache(getChats);
 
@@ -12,9 +12,9 @@ async function getChats() {
   return chats;
 }
 
-type ChatListProps = {
+interface ChatListProps {
   documentId: string;
-};
+}
 
 export async function ChatList({ documentId }: ChatListProps) {
   const chats = await getCachedChats();

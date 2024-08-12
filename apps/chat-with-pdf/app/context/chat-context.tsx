@@ -1,17 +1,17 @@
 "use client";
 
-import { MESSAGE_TYPE } from "@/components/chat/constants/message-type";
-import { Chat } from "@prisma/client";
-import { Message, useChat, UseChatOptions } from "ai/react";
+import { type Chat } from "@prisma/client";
+import { type Message, useChat, type UseChatOptions } from "ai/react";
 import { useParams } from "next/navigation";
 import {
   createContext,
-  Dispatch,
-  SetStateAction,
+  type Dispatch,
+  type SetStateAction,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { MESSAGE_TYPE } from "@/components/chat/constants/message-type";
 import { updateChatMessages } from "../actions/update-chat-messages";
 
 const EMPTY_CHAT_DATA: Partial<Chat> = {
@@ -34,10 +34,10 @@ export const ChatContext = createContext({
   useChatReturn: {} as ReturnType<typeof useChat>,
 });
 
-type ChatProviderProps = {
+interface ChatProviderProps {
   children: React.ReactNode;
   chatData: Partial<Chat>;
-};
+}
 
 export function ChatProvider({ children, chatData }: ChatProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +84,7 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
     setIsLoading(false);
 
     // restore messages from db
-    useChatReturn.setMessages(chatData?.messages as unknown as Message[]);
+    useChatReturn.setMessages(chatData.messages as unknown as Message[]);
   }
 
   function sendPreloadedPrompts() {
@@ -96,14 +96,14 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
     if (isLoading) return;
 
     // If the chat context is not loading and there are initial messages, return
-    if (!isLoading && initialMessages?.length) {
+    if (!isLoading && initialMessages.length) {
       preloadPrompts.current = [];
       return;
     }
 
     const firstMessage = preloadPrompts.current.at(0);
 
-    const message = firstMessage?.message as string;
+    const message = firstMessage?.message!;
     const messageType = firstMessage?.type as string;
 
     setTimeout(() => {
@@ -125,7 +125,7 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
   function storeChatMessages() {
     // Check if new messages have been added to the chat to not update the chat messages with the same messages
     const hasAddedMessages = initialMessages
-      ? useChatReturn.messages.length > initialMessages?.length
+      ? useChatReturn.messages.length > initialMessages.length
       : useChatReturn.messages.length > 0;
     if (hasAddedMessages && !useChatReturn.isLoading)
       updateChatMessages({

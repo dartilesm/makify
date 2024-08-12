@@ -15,12 +15,12 @@ import {
 import { BookmarkIcon, DownloadIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ChatPDF } from "./chat-pdf";
-import { useGlobalChat } from "hooks/use-global-chat";
 import dynamic from "next/dynamic";
-import { Message } from "ai";
+import { type Message } from "ai";
 import { useState } from "react";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { SadFaceIcon } from "icons/sad-face";
+import { ChatPDF } from "./chat-pdf";
 
 // Dynamically import BlobProvider from react-pdf/renderer to avoid SSR issues
 const BlobProvider = dynamic(
@@ -40,7 +40,7 @@ export function ChatHeader() {
   } = useGlobalChat();
 
   const bookmarkedMessages = messages.filter(
-    (message) => (message.data as Record<string, any>)?.bookmarked === true,
+    (message) => (message.data as Record<string, any>).bookmarked === true,
   );
 
   function handleOnBookmarkedMessageClick(message: Message) {
@@ -79,7 +79,7 @@ export function ChatHeader() {
                       asChild
                     >
                       <Link
-                        href={url as string}
+                        href={url}
                         download={`chat conversation - ${params.documentId}.pdf`}
                         target="_blank"
                       >
@@ -123,7 +123,7 @@ export function ChatHeader() {
                       <Card
                         key={message.id}
                         className="max-h-20 max-w-full cursor-pointer p-2 text-xs"
-                        onClick={() => handleOnBookmarkedMessageClick(message)}
+                        onClick={() => { handleOnBookmarkedMessageClick(message); }}
                       >
                         <CardContent className="line-clamp-3 p-0">
                           {message.content}

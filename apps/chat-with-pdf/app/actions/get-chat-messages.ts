@@ -1,7 +1,7 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { cache } from "react";
+import { prisma } from "@/lib/prisma";
 
 export async function getCachedChatMessages(documentId: string) {
   return cache(getChatMessages)(documentId);

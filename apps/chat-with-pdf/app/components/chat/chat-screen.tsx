@@ -1,5 +1,3 @@
-import { Chat } from "@/components/chat/chat";
-import { PdfViewer } from "@/components/pdf/pdf-viewer";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -9,12 +7,14 @@ import {
   TabsTrigger,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
+import { Chat } from "@/components/chat/chat";
+import { PdfViewer } from "@/components/pdf/pdf-viewer";
 import { ChatLoading } from "./loading/chat.loading";
 import { PDFLoading } from "./loading/pdf.loading";
 
-type ChatScreenProps = {
+interface ChatScreenProps {
   loading?: boolean;
-};
+}
 
 export function ChatScreen({ loading }: ChatScreenProps) {
   return (
@@ -44,12 +44,12 @@ export function ChatScreen({ loading }: ChatScreenProps) {
       >
         <ResizablePanel minSize={35} defaultSize={100} id="chat-view">
           {!loading && <Chat className="flex-1" />}
-          {loading && <ChatLoading />}
+          {loading ? <ChatLoading /> : null}
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={35} defaultSize={100} id="document-view">
           {!loading && <PdfViewer className="flex-1" />}
-          {loading && <PDFLoading />}
+          {loading ? <PDFLoading /> : null}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

@@ -1,6 +1,6 @@
+import { type Chat } from "@prisma/client";
 import { ChatProvider } from "@/app/context/chat-context";
 import { ChatScreen } from "../chat/chat-screen";
-import { Chat } from "@prisma/client";
 
 type ChatIdContainerProps =
   | {

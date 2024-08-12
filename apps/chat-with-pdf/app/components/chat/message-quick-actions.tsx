@@ -1,6 +1,5 @@
 "use client";
 
-import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -11,10 +10,9 @@ import {
   useToast,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { Chat } from "@prisma/client";
-import { Message } from "ai";
+import { type Chat } from "@prisma/client";
+import { type Message } from "ai";
 import { AnimatePresence, CustomDomComponent, motion } from "framer-motion";
-import { useGlobalChat } from "hooks/use-global-chat";
 import {
   BookmarkIcon,
   CheckIcon,
@@ -25,15 +23,17 @@ import {
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { forwardRef, RefAttributes, useState } from "react";
+import { useGlobalChat } from "hooks/use-global-chat";
+import { updateChatMessages } from "@/app/actions/update-chat-messages";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
-import { MessageActions } from "./types/message-actions";
+import { type MessageActions } from "./types/message-actions";
 
-type MessageQuickActionsProps = {
+interface MessageQuickActionsProps {
   message: Message;
   index: number;
   className?: string;
   onTooltipOpenChange?: (index: number) => void;
-};
+}
 
 const quickActions: MessageActions[] = [
   {
@@ -56,13 +56,13 @@ const quickActions: MessageActions[] = [
         <BookmarkIcon ref={ref} className="h-4 w-4 fill-current" />
       )),
       condition: (message: Message) => {
-        const messageData = (message?.data as Record<string, any>) || {};
-        return messageData?.bookmarked;
+        const messageData = (message.data as Record<string, any>) || {};
+        return messageData.bookmarked;
       },
     },
     getLabel: (message: Message) => {
-      const messageData = (message?.data as Record<string, any>) || {};
-      return messageData?.bookmarked
+      const messageData = (message.data as Record<string, any>) || {};
+      return messageData.bookmarked
         ? "Unbookmark message"
         : "Bookmark message";
     },
@@ -94,7 +94,7 @@ export function MessageQuickActions({
   const { toast } = useToast();
 
   async function copyMessage(message: string) {
-    let response: { success: boolean; error: unknown } = {
+    const response: { success: boolean; error: unknown } = {
       success: false,
       error: null,
     };
@@ -141,14 +141,14 @@ export function MessageQuickActions({
           (messages[index]!.data as Record<string, any>) || {};
         messages[index]!.data = {
           ...messageData,
-          bookmarked: !messageData?.bookmarked,
+          bookmarked: !messageData.bookmarked,
         };
         await updateChatMessages({
-          documentId: params?.documentId as string,
+          documentId: params.documentId as string,
           messages: messages as unknown as Chat["messages"],
         });
         toast({
-          title: messageData?.bookmarked
+          title: messageData.bookmarked
             ? "Message unbookmarked"
             : "Message bookmarked",
           duration: 3000,
@@ -166,7 +166,7 @@ export function MessageQuickActions({
       type="single"
       size="xs"
       className={cn("z-10 justify-start", className)}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => { e.stopPropagation(); }}
       onValueChange={(action: QUICK_ACTIONS) =>
         handleToggleGroupChange(action, message)
       }
@@ -178,9 +178,7 @@ export function MessageQuickActions({
             quickActionIndex,
           ) => {
             const AnimatedIcon = motion(Icon);
-            const AnimatedSucessIcon = (
-              SucessIcon ? motion(SucessIcon) : SucessIcon
-            ) as CustomDomComponent<LucideProps & RefAttributes<SVGSVGElement>>;
+            const AnimatedSucessIcon = (SucessIcon ? motion(SucessIcon) : SucessIcon)!;
             const ActiveIcon = active?.Icon;
             if (onlyLastMessage && index !== messages.length - 1) {
               return null;
@@ -197,10 +195,8 @@ export function MessageQuickActions({
                     className="hover:text-secondary-foreground text-secondary-foreground group flex aspect-square h-[30px] w-[30px] items-center justify-center data-[state=on]:bg-transparent"
                   >
                     <AnimatePresence mode="wait">
-                      {ActiveIcon && active.condition(message) && (
-                        <ActiveIcon className="h-4 w-4" stroke="currentColor" />
-                      )}
-                      {!active?.condition?.(message) &&
+                      {ActiveIcon && active.condition(message) ? <ActiveIcon className="h-4 w-4" stroke="currentColor" /> : null}
+                      {!active?.condition(message) &&
                         !showSuccessIcon[value] && (
                           <AnimatedIcon
                             className="h-4 w-4 text-opacity-70"
@@ -211,18 +207,16 @@ export function MessageQuickActions({
                             transition={{ duration: 0.3 }}
                           />
                         )}
-                      {!active?.condition?.(message) &&
+                      {!active?.condition(message) &&
                         showSuccessIcon[value] &&
-                        SucessIcon && (
-                          <AnimatedSucessIcon
+                        SucessIcon ? <AnimatedSucessIcon
                             className="h-4 w-4"
                             stroke="currentColor"
                             key={`message-quick-action-sucess-icon-${message.id}${quickActionIndex}`}
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0 }}
-                          />
-                        )}
+                          /> : null}
                     </AnimatePresence>
                     <span className="sr-only">{getLabel(message)}</span>
                   </ToggleGroupItem>
@@ -247,8 +241,6 @@ export function MessageQuickActions({
 
 function QuickActionButton({ Icon, SucessIcon, active }: MessageActions) {
   const AnimatedIcon = motion(Icon);
-  const AnimatedSucessIcon = (
-    SucessIcon ? motion(SucessIcon) : SucessIcon
-  ) as CustomDomComponent<LucideProps & RefAttributes<SVGSVGElement>>;
+  const AnimatedSucessIcon = (SucessIcon ? motion(SucessIcon) : SucessIcon)!;
   const ActiveIcon = active?.Icon;
 }

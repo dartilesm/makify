@@ -9,9 +9,9 @@ import {
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { AnimatePresence, inView, motion } from "framer-motion";
-import { useGlobalChat } from "hooks/use-global-chat";
 import { ArrowDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { MessageBubble } from "./message-bubble";
 
 const AnimatedButton = motion(Button);
@@ -38,7 +38,7 @@ export function ChatMessages() {
 
   // Controls the tooltip open state for each message, as it collides with the inner tooltip
   function updateMessageTooltipOpenIndex(index: number, isOpen?: boolean) {
-    if (isOpen === undefined) return setMessageTooltipOpenIndex(index);
+    if (isOpen === undefined) { setMessageTooltipOpenIndex(index); return; }
     setMessageTooltipOpenIndex(isOpen ? index : null);
   }
 
@@ -61,7 +61,7 @@ export function ChatMessages() {
     <div className="relative flex-1 overflow-hidden" id="chat-messages">
       <div
         className={cn("flex h-full overflow-auto p-4", {
-          "overflow-hidden": messages?.length === 0,
+          "overflow-hidden": messages.length === 0,
         })}
         ref={chatContainerRef}
         data-chat-messages-container
@@ -73,24 +73,21 @@ export function ChatMessages() {
                 key={message.id}
                 message={message}
                 index={index}
-                onTooltipOpenChange={() => updateMessageTooltipOpenIndex(index)}
+                onTooltipOpenChange={() => { updateMessageTooltipOpenIndex(index); }}
                 tooltipOpen={index === messageTooltipOpenIndex}
               />
             );
           })}
-          {isLoading && messages?.at(-1)?.role !== "assistant" && (
-            <MessageBubble isTyping />
-          )}
+          {isLoading && messages.at(-1)?.role !== "assistant" ? <MessageBubble isTyping /> : null}
         </div>
       </div>
       <AnimatePresence>
-        {showScrollBottom && (
-          <TooltipProvider delayDuration={0}>
+        {showScrollBottom ? <TooltipProvider delayDuration={0}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <AnimatedButton
                   className="absolute bottom-4 right-8 -translate-x-2/4 opacity-0"
-                  key={`arrow-button`}
+                  key="arrow-button"
                   initial={{
                     opacity: 0,
                     y: 100,
@@ -113,8 +110,7 @@ export function ChatMessages() {
               </TooltipTrigger>
               <TooltipContent>Scroll to bottom</TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-        )}
+          </TooltipProvider> : null}
       </AnimatePresence>
     </div>
   );

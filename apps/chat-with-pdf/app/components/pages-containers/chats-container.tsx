@@ -13,13 +13,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@makify/ui";
-import { Chat } from "@prisma/client";
+import { type Chat } from "@prisma/client";
 import { FileTextIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { SadFaceIcon } from "icons/sad-face";
 import { Container } from "../ui/container";
 import { Heading } from "../ui/heading";
-import { SadFaceIcon } from "icons/sad-face";
 import { NewDocumentDialog } from "../header/document-switcher/new-document-dialog/new-document-dialog";
 
 type ChatsContainerProps =
@@ -89,28 +89,28 @@ export function ChatsContainer({
                       <CardHeader className="p-0">
                         <CardTitle>
                           {
-                            (chat?.documentMetadata as Record<string, any>)
-                              ?.title
+                            (chat.documentMetadata as Record<string, any>)
+                              .title
                           }
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="text-muted-foreground flex gap-2 p-0">
                         <span>
                           {
-                            (chat?.documentMetadata as Record<string, any>)
-                              ?.numPages
+                            (chat.documentMetadata as Record<string, any>)
+                              .numPages
                           }{" "}
                           page
-                          {(chat?.documentMetadata as Record<string, any>)
-                            ?.numPages > 1
+                          {(chat.documentMetadata as Record<string, any>)
+                            .numPages > 1
                             ? "s"
                             : ""}{" "}
                         </span>
                         <span>
-                          {(chat?.documentMetadata as Record<string, any>)?.size
+                          {(chat.documentMetadata as Record<string, any>).size
                             .mb > 1
-                            ? `${(chat?.documentMetadata as Record<string, any>)?.size.mb} MB`
-                            : `${(chat?.documentMetadata as Record<string, any>)?.size.kb} KB`}
+                            ? `${(chat.documentMetadata as Record<string, any>).size.mb} MB`
+                            : `${(chat.documentMetadata as Record<string, any>).size.kb} KB`}
                         </span>
                       </CardContent>
                     </div>
@@ -120,10 +120,9 @@ export function ChatsContainer({
                   </Button>
                 </Card>
               ))}
-            {loading &&
-              fakeChatsList.map((_, index) => (
+            {loading ? fakeChatsList.map((_, index) => (
                 <Skeleton className="h-20 w-full" />
-              ))}
+              )) : null}
             {!loading && chats?.length === 0 && (
               <div className="flex h-full flex-col items-center justify-center gap-4">
                 <SadFaceIcon className="h-28 w-28 fill-gray-600 opacity-30" />

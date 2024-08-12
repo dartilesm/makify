@@ -1,4 +1,3 @@
-import { PAGE_ZOOM_TYPE, PdfData } from "@/components/pdf/pdf-viewer";
 import {
   Button,
   Input,
@@ -16,8 +15,9 @@ import {
   ZoomOutIcon,
 } from "@radix-ui/react-icons";
 import { UnfoldVerticalIcon } from "lucide-react";
+import { PAGE_ZOOM_TYPE, type PdfData } from "@/components/pdf/pdf-viewer";
 
-type Props = {
+interface Props {
   className?: string;
   pdfData: PdfData;
   page: number;
@@ -26,7 +26,7 @@ type Props = {
   onPageChange?: (page: number) => void;
   onZoomChange?: (zoomType: PAGE_ZOOM_TYPE) => void;
   onChangePageOnScroll?: (enabled: boolean) => void;
-};
+}
 
 export function PdfToolbar({
   className,
@@ -41,7 +41,7 @@ export function PdfToolbar({
   const zoomFormatted = `${zoom * 100}%`;
 
   function handlePageChange(newPage: number) {
-    if (newPage < 1 || newPage > pdfData?.numPages) return;
+    if (newPage < 1 || newPage > pdfData.numPages) return;
     onPageChange(newPage);
   }
 
@@ -60,7 +60,7 @@ export function PdfToolbar({
                   className="flex-shrink-0"
                   size="icon"
                   variant="ghost"
-                  onClick={() => handlePageChange(page - 1)}
+                  onClick={() => { handlePageChange(page - 1); }}
                   disabled={page - 1 < 1}
                 >
                   <ArrowLeftIcon className="h-5 w-5" />
@@ -74,11 +74,11 @@ export function PdfToolbar({
                 value={page}
                 type="number"
                 min={1}
-                max={pdfData?.numPages || 1}
+                max={pdfData.numPages || 1}
                 disabled={!pdfData}
-                onChange={(event) => handlePageChange(+event.target.value)}
+                onChange={(event) => { handlePageChange(Number(event.target.value)); }}
               />
-              <span>of {pdfData?.numPages || 1}</span>
+              <span>of {pdfData.numPages || 1}</span>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -86,8 +86,8 @@ export function PdfToolbar({
                   className="flex-shrink-0"
                   size="icon"
                   variant="ghost"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page + 1 > pdfData?.numPages}
+                  onClick={() => { handlePageChange(page + 1); }}
+                  disabled={page + 1 > pdfData.numPages}
                 >
                   <ArrowRightIcon className="h-5 w-5" />
                 </Button>
@@ -102,7 +102,7 @@ export function PdfToolbar({
                   size="icon"
                   variant="ghost"
                   disabled={zoom === 0.25 || !pdfData}
-                  onClick={() => handlePageZoom(PAGE_ZOOM_TYPE.OUT)}
+                  onClick={() => { handlePageZoom(PAGE_ZOOM_TYPE.OUT); }}
                 >
                   <ZoomOutIcon className="h-5 w-5" />
                 </Button>
@@ -117,7 +117,7 @@ export function PdfToolbar({
                   size="icon"
                   variant="ghost"
                   disabled={zoom === 2 || !pdfData}
-                  onClick={() => handlePageZoom(PAGE_ZOOM_TYPE.IN)}
+                  onClick={() => { handlePageZoom(PAGE_ZOOM_TYPE.IN); }}
                 >
                   <ZoomInIcon className="h-5 w-5" />
                 </Button>

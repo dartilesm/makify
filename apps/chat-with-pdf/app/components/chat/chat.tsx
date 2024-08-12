@@ -5,9 +5,9 @@ import { ChatFooter } from "./chat-footer";
 import { ChatHeader } from "./chat-header/chat-header";
 import { ChatMessages } from "./chat-messages";
 
-type ChatProps = {
+interface ChatProps {
   className?: string;
-};
+}
 
 export function Chat({ className }: ChatProps) {
   return (

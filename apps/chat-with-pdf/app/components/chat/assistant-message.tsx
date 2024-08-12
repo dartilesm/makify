@@ -5,12 +5,12 @@ import {
   TooltipTrigger,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { useGlobalChat } from "hooks/use-global-chat";
-import { HTMLAttributes, ReactNode } from "react";
-import Markdown, { Components } from "react-markdown";
+import { type HTMLAttributes, type ReactNode } from "react";
+import Markdown, { type Components } from "react-markdown";
 import remarkDirective from "remark-directive";
 import remarkDirectiveRehype from "remark-directive-rehype";
 import remarkGfm from "remark-gfm";
+import { useGlobalChat } from "hooks/use-global-chat";
 import { MESSAGE_TYPE } from "./constants/message-type";
 
 export function AssistantMessage({
@@ -80,7 +80,7 @@ export function AssistantMessage({
                       "dark:hover:border-boder dark:bg-gray-900 dark:hover:bg-gray-950",
                     ],
                   )}
-                  onClick={() => submitQuestion(children?.toString() as string)}
+                  onClick={() => { submitQuestion(children?.toString()!); }}
                 >
                   {children}
                 </button>

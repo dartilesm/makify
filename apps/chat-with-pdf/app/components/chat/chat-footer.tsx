@@ -6,11 +6,11 @@ import {
   Textarea,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { Message } from "ai";
+import { type Message } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
-import { useGlobalChat } from "hooks/use-global-chat";
 import { SendIcon, XIcon } from "lucide-react";
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { type FormEvent, type KeyboardEvent, useRef, useState } from "react";
+import { useGlobalChat } from "hooks/use-global-chat";
 
 export function ChatFooter() {
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -80,8 +80,7 @@ export function ChatFooter() {
   return (
     <div className="border-border z-10 flex flex-col gap-2 border-t-[1px] p-3">
       <AnimatePresence>
-        {(extraData?.quotedText as string) && (
-          <motion.div
+        {(extraData.quotedText as string) ? <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -89,10 +88,10 @@ export function ChatFooter() {
             <Alert className="flex max-h-24 flex-row items-center justify-between gap-2">
               <div>
                 <AlertTitle>
-                  Quoted text from page {extraData?.page as string}
+                  Quoted text from page {extraData.page as string}
                 </AlertTitle>
                 <AlertDescription className="line-clamp-3">
-                  {extraData?.quotedText as string}
+                  {extraData.quotedText as string}
                 </AlertDescription>
               </div>
               <Button
@@ -105,8 +104,7 @@ export function ChatFooter() {
                 <span className="sr-only">Close</span>
               </Button>
             </Alert>
-          </motion.div>
-        )}
+          </motion.div> : null}
       </AnimatePresence>
       <form onSubmit={handleOnSubmit} ref={formRef}>
         <div
@@ -120,7 +118,7 @@ export function ChatFooter() {
         >
           <Textarea
             className="max-h-24 min-h-2 flex-1 resize-none border-0 border-none p-[2px] shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
-            placeholder={`Ask me anything about the document...`}
+            placeholder="Ask me anything about the document..."
             rows={1}
             onChange={handleTextareaChange}
             onKeyDown={handleTextareaKeyDown}

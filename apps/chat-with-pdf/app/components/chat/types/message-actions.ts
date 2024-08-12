@@ -1,8 +1,8 @@
-import { Message } from "ai";
-import { LucideProps } from "lucide-react";
-import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { type Message } from "ai";
+import { type LucideProps } from "lucide-react";
+import { type ForwardRefExoticComponent, type RefAttributes } from "react";
 
-export type MessageActions = {
+export interface MessageActions {
   Icon: ForwardRefExoticComponent<LucideProps & RefAttributes<SVGSVGElement>>;
   SucessIcon?: ForwardRefExoticComponent<
     LucideProps & RefAttributes<SVGSVGElement>
@@ -14,4 +14,4 @@ export type MessageActions = {
   getLabel: (message: Message) => string;
   value: string;
   onlyLastMessage?: boolean;
-};
+}

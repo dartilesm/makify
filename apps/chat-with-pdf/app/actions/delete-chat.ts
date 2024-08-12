@@ -1,11 +1,11 @@
 "use server";
 
+import { type Chat } from "@prisma/client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { getPineconeClient } from "@/lib/pinecone.client";
 import { prisma } from "@/lib/prisma";
 import { supabase } from "@/lib/supabase";
-import { Chat } from "@prisma/client";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 async function deleteChat(chat: Chat) {
   return prisma.chat.delete({
@@ -16,7 +16,7 @@ async function deleteChat(chat: Chat) {
 }
 
 async function deleteDocumentFile(chat: Chat) {
-  if (chat.documentUrl?.includes(process.env.SUPABASE_URL as string)) {
+  if (chat.documentUrl?.includes(process.env.SUPABASE_URL!)) {
     return supabase.storage.from("documents").remove([`${chat.id}.pdf`]);
   }
   return null;

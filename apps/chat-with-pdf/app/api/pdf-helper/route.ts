@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       const pdf = await response.arrayBuffer();
       return new Response(pdf, {
         headers: {
-          "Content-Type": response.headers.get("content-type") as string,
+          "Content-Type": response.headers.get("content-type")!,
         },
         status: 200,
       });
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       const javascriptCode = await response.text();
       return new Response(javascriptCode, {
         headers: {
-          "Content-Type": response.headers.get("content-type") as string,
+          "Content-Type": response.headers.get("content-type")!,
         },
         status: 200,
       });
