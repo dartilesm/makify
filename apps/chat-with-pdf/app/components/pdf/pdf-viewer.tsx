@@ -50,7 +50,6 @@ export function PdfViewer({ className }: { className?: string }) {
   const pdfPagesRef = useRef<HTMLDivElement[] | null[]>([]);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [pdfData, setPdfData] = useState<PdfData | null>(null);
-  const { theme } = useTheme();
   const {
     globalContext: { chatData, setExtraData },
   } = useGlobalChat();
@@ -210,9 +209,7 @@ export function PdfViewer({ className }: { className?: string }) {
                 <Popover open={!!selectedTextOptions}>
                   <Page
                     pageNumber={currentPage}
-                    className={cn("border-border max-w-max border shadow-lg", {
-                      "opacity-60": theme === "dark",
-                    })}
+                    className="border-border max-w-max border shadow-lg"
                     scale={currentZoom}
                     onMouseUp={handleTextSelection}
                   />
