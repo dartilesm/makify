@@ -40,7 +40,8 @@ export function NewDocumentDialog({
   function handleDialogToggle(isOpen: boolean) {
     onOpenChange(isOpen);
     if (!isOpen) {
-      setLoadingMessages([]);
+      // Clear the loading messages after the dialog closing animation is done
+      setTimeout(() => setLoadingMessages([]), 500);
     }
   }
 
