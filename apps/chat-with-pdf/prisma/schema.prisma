@@ -9,24 +9,25 @@ datasource db {
 }
 
 model Chat {
-  id               String   @id @unique @default(uuid())
+  id               String    @id @unique @default(uuid())
   documentMetadata Json?
   documentUrl      String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
   messages         Json?
-  documentId       String
-  Document         Document @relation(fields: [documentId], references: [id])
+  documentId       String?
+  Document         Document? @relation(fields: [documentId], references: [id])
 }
 
 model Document {
-  id        String                 @id @unique @default(uuid())
+  id        String                      @id @unique @default(uuid())
   name      String?
   url       String?
-  chatId    String
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @updatedAt
-  embedding Unsupported("vector")?
+  chatId    String?
+  metadata  Json?
+  createdAt DateTime                    @default(now())
+  updatedAt DateTime                    @updatedAt
+  embedding Unsupported("vector(768)")?
   Chat      Chat[]
 }
 
