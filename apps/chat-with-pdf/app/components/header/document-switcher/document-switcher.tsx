@@ -97,7 +97,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
         </div>
         <PopoverContent
           className="z-10 max-w-sm p-0 max-sm:max-w-full"
-          align="start"
+          align="end"
         >
           <Command>
             <CommandInput placeholder="Search document..." />
