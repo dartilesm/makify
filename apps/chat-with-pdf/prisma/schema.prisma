@@ -1,26 +1,39 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Chat {
-    id               String   @id @unique @default(uuid())
-    documentMetadata Json?
-    documentUrl      String?
-    messages         Json?
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
+  id               String   @id @unique @default(uuid())
+  documentMetadata Json?
+  documentUrl      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  messages         Json?
+  documentId       String
+  Document         Document @relation(fields: [documentId], references: [id])
+}
+
+model Document {
+  id        String                 @id @unique @default(uuid())
+  name      String?
+  url       String?
+  chatId    String
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  embedding Unsupported("vector")?
+  Chat      Chat[]
 }
 
 model Feedback {
-    id        String   @id @unique @default(uuid())
-    type      String
-    message   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  type      String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

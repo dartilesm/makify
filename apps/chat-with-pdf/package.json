@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https",
-    "prisma:generate": "prisma generate",
+    "dev": "NODE_ENV=development next dev --experimental-https",
+    "prisma:dev": "dotenv -e .env.development.local -- prisma",
+    "prisma:generate:dev": "dotenv -e .env.development.local -- prisma generate",
+    "prisma:generate": "prisma generate dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -50,6 +52,7 @@
     "@types/react-dom": "18.2.19",
     "ai": "3.2.37",
     "autoprefixer": "10.0.1",
+    "dotenv-cli": "7.4.2",
     "js-md5": "0.8.3",
     "langchain": "0.2.8",
     "pdf-parse": "1.1.1",
