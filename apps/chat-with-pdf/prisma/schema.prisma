@@ -16,7 +16,7 @@ model Chat {
   updatedAt        DateTime  @updatedAt
   messages         Json?
   documentId       String?
-  Document         Document? @relation(fields: [documentId], references: [id])
+  document         Document? @relation(fields: [documentId], references: [id])
 }
 
 model Document {
@@ -28,7 +28,7 @@ model Document {
   createdAt DateTime                    @default(now())
   updatedAt DateTime                    @updatedAt
   embedding Unsupported("vector(768)")?
-  Chat      Chat[]
+  chat      Chat[]
 }
 
 model Feedback {

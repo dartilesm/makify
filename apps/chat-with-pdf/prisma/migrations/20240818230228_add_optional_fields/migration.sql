@@ -4,6 +4,9 @@ ALTER TABLE "Chat" DROP CONSTRAINT "Chat_documentId_fkey";
 -- AlterTable
 ALTER TABLE "Chat" ALTER COLUMN "documentId" DROP NOT NULL;
 
+ -- Example: enable the "vector" extension on supabase.
+create extension vector with schema public;
+
 -- AlterTable
 ALTER TABLE "Document" ADD COLUMN     "embedding" vector(768);
 
