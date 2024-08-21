@@ -15,20 +15,30 @@ model Chat {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   messages         Json?
-  documentId       String?
-  document         Document? @relation(fields: [documentId], references: [id])
+  document         Document?
 }
 
 model Document {
-  id        String                      @id @unique @default(uuid())
-  name      String?
-  url       String?
-  chatId    String?
-  metadata  Json?
-  createdAt DateTime                    @default(now())
-  updatedAt DateTime                    @updatedAt
-  embedding Unsupported("vector(768)")?
-  chat      Chat[]
+  id               String             @id @unique @default(uuid())
+  name             String?
+  url              String?
+  metadata         Json?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  chatId           String?            @unique
+  chat             Chat?              @relation(fields: [chatId], references: [id])
+  documentSections DocumentSections[]
+}
+
+model DocumentSections {
+  id         String                      @id @unique @default(uuid())
+  embedding  Unsupported("vector(768)")?
+  chatId     String?
+  text       String?
+  textChunk  String?
+  pageNumber Int?
+  document   Document?                   @relation(fields: [documentId], references: [id])
+  documentId String?
 }
 
 model Feedback {
