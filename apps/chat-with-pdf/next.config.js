@@ -1,5 +1,3 @@
-const { withPlausibleProxy } = require('next-plausible')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     webpack: function (config) {
@@ -21,7 +19,4 @@ const nextConfig = {
     swcMinify: true
 };
 
-module.exports = withPlausibleProxy({
-    scriptName: 'script',
-    customDomain: `https://${process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL}`,
-})(nextConfig);
+module.exports = nextConfig
