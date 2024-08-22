@@ -23,7 +23,7 @@ export default function RootLayout({
       <head>
         <script
           defer
-          data-domain={process.env.VERCEL_URL || ""}
+          data-domain="makify-chat-with-pdf.vercel.app"
           src="/js/script.js"
         ></script>
       </head>
