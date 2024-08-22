@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "@makify/ui/globals.css";
 import { Toaster } from "@makify/ui";
-import PlausibleProvider from "next-plausible";
 import { ThemeProvider } from "./components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
