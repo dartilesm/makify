@@ -21,4 +21,7 @@ const nextConfig = {
     swcMinify: true
 };
 
-module.exports = withPlausibleProxy()(nextConfig);
+module.exports = withPlausibleProxy({
+    scriptName: 'script',
+    customDomain: `https://${process.env.VERCEL_URL || process.env.NEXT_PUBLIC_VERCEL_URL}`,
+})(nextConfig);

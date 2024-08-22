@@ -21,9 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {process.env.VERCEL_URL && (
-          <PlausibleProvider domain={process.env.VERCEL_URL} />
-        )}
+        <PlausibleProvider domain={process.env.VERCEL_URL || ""} />
       </head>
       <body className={inter.className}>
         <ThemeProvider
