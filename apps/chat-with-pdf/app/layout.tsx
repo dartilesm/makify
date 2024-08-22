@@ -21,11 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          defer
-          data-domain="makify-chat-with-pdf.vercel.app"
-          src="/js/script.js"
-        ></script>
+        <PlausibleProvider domain="makify-chat-with-pdf.vercel.app" />
       </head>
       <body className={inter.className}>
         <ThemeProvider
