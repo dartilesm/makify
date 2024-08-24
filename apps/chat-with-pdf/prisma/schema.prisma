@@ -31,7 +31,7 @@ model Document {
 }
 
 model DocumentSections {
-  id         String                      @id @unique @default(uuid())
+  id         String                      @id @unique @default(dbgenerated("extensions.gen_random_uuid()")) @db.Uuid
   embedding  Unsupported("vector(768)")?
   chatId     String?
   text       String?
