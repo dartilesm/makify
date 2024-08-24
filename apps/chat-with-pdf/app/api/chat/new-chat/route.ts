@@ -98,6 +98,15 @@ async function* createNewChat({
       data: {
         documentUrl: documentUrl,
         documentMetadata: pdfData?.metadata,
+        document: {
+          create: {
+            url: documentUrl,
+            metadata: pdfData?.metadata,
+          },
+        },
+      },
+      include: {
+        document: true,
       },
     });
   } catch (error: any) {
@@ -223,7 +232,62 @@ async function* createNewChat({
   // It doesn't work well without it, the data seems to arrive appended to the fronted
   await new Promise((resolve) => setTimeout(resolve, 10));
   try {
-    await chunkedUpsert(vectors, chat.id);
+    /*     const mappedVectors = vectors.map((vector) => ({
+      chatId: chat.id,
+      embedding: vector.values,
+      text: vector.metadata?.text as string,
+      textChunk: vector.metadata?.textChunk as string,
+      pageNumber: vector.metadata?.pageNumber as number,
+      documentId: chat?.document?.id,
+    }));
+    await prisma.documentSections.createMany({
+      data: mappedVectors,
+    }); */
+    /*     const { data, error } = await supabase
+      .from("DocumentSections")
+      .insert(mappedVectors); */
+    /* const response =
+      await prisma.$executeRaw`INSERT INTO "DocumentSections" ("chatId", "embedding", "text", "textChunk", "pageNumber", "documentId")
+  VALUES
+  ${vectors
+    .map(
+      (vector) => `(
+    '${chat.id}',
+    ARRAY[${vector.values.join(", ")}],
+    '${String(vector.metadata?.text ? vector.metadata.text : null)}',
+    '${String(vector.metadata?.textChunk ? vector.metadata.textChunk : null)}',
+    ${String(vector.metadata?.pageNumber ? vector.metadata.pageNumber : null)},
+    '${chat?.document?.id}'
+  )`,
+    )
+    .join(", ")}
+`; */
+    const valuesToInsert = vectors.map((vector) => {
+      // [chatId, embedding, text, textChunk, pageNumber, documentId]
+      return [
+        chat.id,
+        vector.values,
+        vector.metadata?.text ? vector.metadata.text : null,
+        vector.metadata?.textChunk ? vector.metadata.textChunk : null,
+        vector.metadata?.pageNumber ? vector.metadata.pageNumber : null,
+        chat?.document?.id,
+      ];
+    });
+
+    await prisma.$executeRaw`insert into "DocumentSections" (
+      "chatId",
+      "embedding",
+      "text",
+      "textChunk",
+      "pageNumber",
+      "documentId"
+    ) values ${Prisma.join(
+      valuesToInsert.map(
+        (valueToInsert) => Prisma.sql`(${Prisma.join(valueToInsert)})`,
+      ),
+    )}
+`;
+    /* await chunkedUpsert(vectors, chat.id); */
   } catch (error: any) {
     console.error(error);
     await deleteChatAndDependencies(chat, false);

@@ -38,6 +38,8 @@ export async function embedDocument(doc: Document<Record<string, any>>) {
     const embeddings = await getEmbeddings(doc.pageContent);
     const hash = md5(doc.pageContent);
 
+    const textChunk = doc.pageContent;
+
     return {
       id: hash,
       values: embeddings,
@@ -45,6 +47,7 @@ export async function embedDocument(doc: Document<Record<string, any>>) {
         chatId: doc.metadata.chatId,
         text: doc.metadata.text,
         pageNumber: doc.metadata.pageNumber,
+        textChunk,
       },
     };
   } catch (error) {}
