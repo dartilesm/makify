@@ -8,7 +8,7 @@
 -- AlterTable
 ALTER TABLE "DocumentSections" DROP CONSTRAINT "DocumentSections_pkey",
 DROP COLUMN "id",
-ADD COLUMN     "id" UUID NOT NULL DEFAULT extensions.gen_random_uuid(),
+ADD COLUMN     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
 ADD CONSTRAINT "DocumentSections_pkey" PRIMARY KEY ("id");
 
 -- CreateIndex
