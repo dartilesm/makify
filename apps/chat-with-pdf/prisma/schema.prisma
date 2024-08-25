@@ -1,0 +1,26 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+model Chat {
+    id               String   @id @unique @default(uuid())
+    documentMetadata Json?
+    documentUrl      String?
+    messages         Json?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+}
+
+model Feedback {
+    id        String   @id @unique @default(uuid())
+    type      String
+    message   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}

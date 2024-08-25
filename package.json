@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "turbo dev --env-mode=loose",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "commit": "sui-mono commit"
@@ -11,11 +11,13 @@
   "devDependencies": {
     "@makify/eslint-config": "workspace:*",
     "@makify/typescript-config": "workspace:*",
-    "@s-ui/mono": "^2.45.0",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.14",
-    "tailwindcss": "^3.4.3",
-    "turbo": "latest"
+    "@s-ui/mono": "2.45.0",
+    "eslint-config-next": "14.2.5",
+    "prettier": "3.2.5",
+    "prettier-plugin-tailwindcss": "0.5.14",
+    "tailwindcss": "3.4.3",
+    "tsx": "4.16.0",
+    "turbo": "2.0.12"
   },
   "engines": {
     "node": ">=20"
@@ -25,11 +27,5 @@
     "apps/*",
     "packages/*"
   ],
-  "dependencies": {
-    "eslint-config-next": "latest",
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "react-pdf": "^7.7.1"
-  }
+  "dependencies": {}
 }

@@ -1,0 +1,331 @@
+import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
+import { INPUT_NAME } from "@/components/header/document-switcher/constants/input-names";
+import { chunkedUpsert } from "@/lib/chunked-upsert";
+import { embedDocument, prepareDocument } from "@/lib/embed-document";
+import { getLoadingMessages } from "@/lib/get-loading-messages";
+import { getPdfData } from "@/lib/get-pdf-metadata";
+import { prisma } from "@/lib/prisma";
+import { rateLimitRequests } from "@/lib/rate-limit-requests";
+import { supabase } from "@/lib/supabase";
+import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
+import { PineconeRecord } from "@pinecone-database/pinecone";
+import { Prisma } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
+
+export async function POST(request: NextRequest) {
+  // Protect the route with rate limiting
+  const { success, headers } = await rateLimitRequests(request);
+
+  if (!success) {
+    return new Response("Rate limit exceeded", {
+      status: 429,
+      headers,
+    });
+  }
+
+  try {
+    const formData = await request.formData();
+
+    const documentUrl = formData.get(INPUT_NAME.LINK) as string;
+    const documentFile = formData.get(INPUT_NAME.FILE) as File;
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        /* for await (const loadingMessages of createNewChatMocked({
+          documentUrl,
+          documentFile,
+        })) {
+          const messageArrayToString = JSON.stringify(loadingMessages);
+          const encodedMessages = new TextEncoder().encode(messageArrayToString);
+          controller.enqueue(encodedMessages);
+        } */
+
+        const loadingMessagesGenerator = createNewChat({
+          documentUrl,
+          documentFile,
+        });
+        async function retrieveLoadingMessages() {
+          const { value: loadingMessages, done } =
+            await loadingMessagesGenerator.next();
+
+          const loadingMessagesToString = JSON.stringify(loadingMessages);
+          const encodedLoadingMessages = new TextEncoder().encode(
+            loadingMessagesToString,
+          );
+          controller.enqueue(encodedLoadingMessages);
+
+          if (!done) return retrieveLoadingMessages();
+        }
+        await retrieveLoadingMessages();
+        controller.close();
+      },
+    });
+
+    return new NextResponse(stream, {
+      headers,
+    });
+  } catch (error: any) {
+    return new Response(JSON.stringify({ error: error?.message }), {
+      status: 500,
+    });
+  }
+}
+
+async function* createNewChat({
+  documentUrl,
+  documentFile,
+}: {
+  documentUrl: string;
+  documentFile?: File;
+}) {
+  // Fetching PDF data and creating a new chat in the database
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: null,
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  let chat: any;
+  let pdfData;
+  try {
+    pdfData = await getPdfData({ documentUrl, documentFile });
+    chat = await prisma.chat.create({
+      data: {
+        documentUrl: documentUrl,
+        documentMetadata: pdfData?.metadata,
+      },
+    });
+  } catch (error: any) {
+    console.error(error);
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: null,
+      errorMessage: error?.message || error,
+    });
+  }
+
+  if (!documentUrl) {
+    const { data, error } = await supabase.storage
+      .from("documents")
+      .upload(`${chat.id}.pdf`, documentFile!);
+    if (error) {
+      console.error(error);
+      await deleteChatAndDependencies(chat, false);
+      return getLoadingMessages({
+        isViaLink: !!documentUrl,
+        chatId: chat.id,
+        errorMessage: error?.message,
+      });
+    }
+    try {
+      documentUrl = getPdfUrlFromSupabaseStorage(data!);
+
+      await prisma.chat.update({
+        where: { id: chat.id },
+        data: { documentUrl },
+      });
+    } catch (error: any) {
+      console.error(error);
+      await deleteChatAndDependencies(chat, false);
+      return getLoadingMessages({
+        isViaLink: !!documentUrl,
+        chatId: chat.id,
+        errorMessage: error?.message || error,
+      });
+    }
+  }
+
+  // Load the PDF
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: chat.id,
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  let pages;
+  try {
+    const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
+    pages = await loader.load();
+    if (pages.length > 5) {
+      await deleteChatAndDependencies(chat, false);
+      return getLoadingMessages({
+        isViaLink: !!documentUrl,
+        chatId: chat.id,
+        errorMessage: "The document is too large. Please upload a smaller one",
+        friendlyError:
+          "The document is too large. Please upload a smaller one. The maximum number of pages is 5",
+      });
+    }
+  } catch (error: any) {
+    console.error(error);
+    await deleteChatAndDependencies(chat, false);
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: chat.id,
+      errorMessage: error?.message || error,
+    });
+  }
+
+  // Split it into chunks
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  let documents;
+  try {
+    documents = await Promise.all(
+      pages.map((page) => prepareDocument(page, chat.id)),
+    );
+  } catch (error: any) {
+    console.error(error);
+    await deleteChatAndDependencies(chat, false);
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: chat.id,
+      errorMessage: error?.message || error,
+    });
+  }
+
+  // Vectorize the documents
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: chat.id,
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  let vectors;
+  try {
+    vectors = (await Promise.all(
+      documents.flat().map(embedDocument),
+    )) as PineconeRecord[];
+  } catch (error: any) {
+    console.error(error);
+    await deleteChatAndDependencies(chat, false);
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: chat.id,
+      errorMessage: error?.message || error,
+    });
+  }
+
+  // Store the vectors in Pinecone
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: chat.id,
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  try {
+    await chunkedUpsert(vectors, chat.id);
+  } catch (error: any) {
+    console.error(error);
+    await deleteChatAndDependencies(chat, false);
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: chat.id,
+      errorMessage: error?.message || error,
+    });
+  }
+
+  // Set as completed the last message
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: chat.id,
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function getPdfUrlFromSupabaseStorage({ fullPath }: { fullPath: string }) {
+  return `${process.env.SUPABASE_URL}/storage/v1/object/public/${fullPath}`;
+}
+
+async function* createNewChatMocked({
+  documentUrl,
+  documentFile,
+}: {
+  documentUrl: string;
+  documentFile?: File;
+}) {
+  // Fetching PDF data and creating a new chat in the database
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  try {
+    await new Promise((resolve, reject) =>
+      setTimeout(() => reject("weird error oh my god"), 1000),
+    );
+  } catch (error: any) {
+    console.log("We got an error:");
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
+      errorMessage: error?.message || error,
+    });
+  }
+  /* const pdfData = await getPdfData({ link: documentUrl });
+    const chat = await prisma.chat.create({
+      data: {
+        documentUrl: documentUrl,
+        documentMetadata: pdfData?.metadata,
+      },
+    }); */
+  // Load the PDF
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  /* const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
+    const pages = await loader.load(); */
+
+  // Split it into chunks
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  /* const documents = await Promise.all(
+      pages.map((page) => prepareDocument(page, chat.id)),
+    ); */
+
+  // Vectorize the documents
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  /* const vectors = await Promise.all(documents.flat().map(embedDocument)); */
+
+  // Store the vectors in Pinecone
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  await new Promise((resolve) => setTimeout(resolve, 2100));
+  /* await chunkedUpsert(vectors, chat.id); */
+
+  // Set as completed the last message
+  yield getLoadingMessages({
+    isViaLink: !!documentUrl,
+    chatId: "f7cd3ecc-3e94-43a4-a19d-cffbd35779a0",
+  });
+  // TODO: How to remove this delay?
+  // It doesn't work well without it, the data seems to arrive appended to the fronted
+  /* await new Promise((resolve) => setTimeout(resolve, 0)); */
+}

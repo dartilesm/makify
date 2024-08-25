@@ -6,9 +6,9 @@ import { VariantProps, cva } from "class-variance-authority";
 const cardVariants = cva("rounded-xl border", {
   variants: {
     variant: {
-      default: "bg-white backdrop-blur-lg transition-all hover:shadow-lg",
+      default: "bg-card backdrop-blur-lg transition-all hover:shadow-sm",
       blurry:
-        "bg-white/10 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur",
+        "bg-card/10 shadow-[inset_10px_-50px_94px_0_rgb(199,199,199,0.2)] backdrop-blur",
     },
   },
   defaultVariants: {

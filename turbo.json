@@ -1,17 +1,33 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "pipeline": {
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
+  "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ],
+      "env": [
+        "SUPABASE_URL",
+        "SUPABASE_API_KEY",
+        "DATABASE_URL",
+        "DIRECT_URL"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "dev": {
       "cache": false,
       "persistent": true
     }
-  }
+  },
+  "ui": "tui"
 }
