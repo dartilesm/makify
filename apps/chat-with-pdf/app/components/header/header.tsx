@@ -13,14 +13,40 @@ type HeaderProps = {
 export async function Header({ chats = [] }: HeaderProps) {
   return (
     <header className="border-b">
-      <div className="flex h-20 flex-row items-center justify-between gap-2 overflow-hidden px-4 max-sm:gap-4">
-        <div className="col flex flex-shrink-0 flex-col gap-1 text-sm">
+      <div className="flex h-16 flex-row items-center justify-between gap-4 overflow-hidden px-4 max-sm:gap-4">
+        {/*         <Breadcrumb className="max-w-full">
+          <BreadcrumbList className="flex-nowrap">
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href="/"
+                className="col flex flex-shrink-0 flex-col gap-1 text-sm leading-none"
+              >
+                Chat with PDF
+                <span className="text-muted-foreground text-right text-[8px] leading-none">
+                  by Makify ✨
+                </span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {!!chats.length && (
+              <>
+                <BreadcrumbSeparator>
+                  <SlashIcon className="h-4 -rotate-[15] opacity-10" />
+                </BreadcrumbSeparator>
+                <BreadcrumbPage className="overflow-auto">
+                  <DocumentSwitcher chats={chats} />
+                </BreadcrumbPage>
+              </>
+            )}
+          </BreadcrumbList>
+        </Breadcrumb> */}
+        <div className="col flex flex-shrink-0 flex-col gap-1 text-sm leading-none">
           Chat with PDF
-          <span className="text-muted-foreground text-right text-xs">
+          <span className="text-muted-foreground text-right text-[8px] leading-none">
             by Makify ✨
           </span>
         </div>
-        <div className="flex flex-1 justify-center overflow-hidden">
+
+        <div className="flex h-full flex-1 justify-center overflow-hidden">
           {!!chats.length && <DocumentSwitcher chats={chats} />}
         </div>
         <div className="flex flex-row gap-2 max-sm:hidden">

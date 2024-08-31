@@ -82,11 +82,11 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             ref={buttonRef}
             aria-label="Select a team"
             className={cn(
-              "flex h-14 flex-1 justify-between gap-2 truncate",
+              "flex flex-1 justify-between gap-2 truncate",
               className,
             )}
           >
-            <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
               <span className="truncate">
                 {
@@ -94,19 +94,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     ?.title
                 }
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {
-                  (selectedDocument?.documentMetadata as Record<string, any>)
-                    ?.numPages
-                }{" "}
-                page
-                {(selectedDocument?.documentMetadata as Record<string, any>)
-                  ?.numPages > 1
-                  ? "s"
-                  : ""}{" "}
-              </span>
             </div>
-            <ChevronsUpDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDownIcon className="ml-auto h-3 w-3 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -129,14 +118,14 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
-                      <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
                         {(chat?.documentMetadata as Record<string, any>)?.title}
                       </span>
                     </div>
                     <CheckIcon
                       className={cn(
-                        "min-h-4 h-4 w-4 shrink-0",
+                        "h-4 min-h-4 w-4 shrink-0",
                         params.documentId === chat.id
                           ? "opacity-100"
                           : "opacity-0",
@@ -185,7 +174,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                 size="icon"
                 variant="ghost"
               >
-                <PencilIcon className="h-4 w-4" />
+                <PencilIcon className="stroke-muted-foreground h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">Edit document</TooltipContent>
