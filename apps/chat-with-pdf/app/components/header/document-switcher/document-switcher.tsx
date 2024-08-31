@@ -31,7 +31,7 @@ import {
   PlusCircleIcon,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { EditDocumentDialog } from "./edit-document-dialog/edit-document-dialog";
 import { NewDocumentDialog } from "./new-document-dialog/new-document-dialog";
 
@@ -44,60 +44,63 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   const params = useParams();
   const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [popoverDynamicStyles, setPopoverDynamicStyles] = useState({});
   const [open, setOpen] = useState(false);
   const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
   const [showEditDocumentDialog, setShowEditDocumentDialog] = useState(false);
+
+  useEffect(setPopoverWidth, []);
 
   const selectedDocument = useMemo(
     () => chats.find((chat) => chat.id === params.documentId),
     [params.documentId, chats],
   );
 
+  function setPopoverWidth() {
+    const buttonStyles = window.getComputedStyle(buttonRef.current as Element);
+    const buttonMaxWidth = buttonStyles.getPropertyValue("max-width");
+    const buttonWidth = buttonStyles.getPropertyValue("width");
+
+    setPopoverDynamicStyles({
+      maxWidth: buttonMaxWidth,
+      width: buttonWidth,
+    });
+  }
+
   function toggleEditDocumentDialog(isOpen: boolean) {
     setShowEditDocumentDialog(isOpen);
   }
 
   return (
-    <div className="flex max-w-lg flex-1 flex-row items-center justify-center gap-2 max-sm:max-w-full max-sm:justify-start sm:w-3/4">
+    <div className="flex max-w-sm flex-1 flex-row items-center justify-center gap-2 max-sm:max-w-full max-sm:justify-start sm:w-3/4">
       <Popover open={open} onOpenChange={setOpen}>
-        <div className="flex h-12 flex-1 items-center justify-between gap-2 truncate">
-          <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
-          <div className="flex flex-col truncate text-left">
-            <span className="truncate">
-              {
-                (selectedDocument?.documentMetadata as Record<string, any>)
-                  ?.title
-              }
-            </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {
-                (selectedDocument?.documentMetadata as Record<string, any>)
-                  ?.numPages
-              }{" "}
-              page
-              {(selectedDocument?.documentMetadata as Record<string, any>)
-                ?.numPages > 1
-                ? "s"
-                : ""}{" "}
-            </span>
-          </div>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              role="combobox"
-              aria-expanded={open}
-              ref={buttonRef}
-              aria-label="Select a team"
-              className={cn(className)}
-            >
-              <ChevronsUpDownIcon className="h-4 w-4 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-        </div>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            ref={buttonRef}
+            aria-label="Select a team"
+            className={cn(
+              "flex flex-1 justify-between gap-2 truncate",
+              className,
+            )}
+          >
+            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
+            <div className="flex flex-col truncate text-left">
+              <span className="truncate">
+                {
+                  (selectedDocument?.documentMetadata as Record<string, any>)
+                    ?.title
+                }
+              </span>
+            </div>
+            <ChevronsUpDownIcon className="ml-auto h-3 w-3 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
         <PopoverContent
-          className="z-10 max-w-sm p-0 max-sm:max-w-full"
-          align="end"
+          className="z-10 max-w-sm p-0 max-sm:max-w-full sm:w-2/4"
+          style={popoverDynamicStyles}
         >
           <Command>
             <CommandInput placeholder="Search document..." />
@@ -115,14 +118,14 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
-                      <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
                         {(chat?.documentMetadata as Record<string, any>)?.title}
                       </span>
                     </div>
                     <CheckIcon
                       className={cn(
-                        "min-h-4 h-4 w-4 shrink-0",
+                        "h-4 min-h-4 w-4 shrink-0",
                         params.documentId === chat.id
                           ? "opacity-100"
                           : "opacity-0",
