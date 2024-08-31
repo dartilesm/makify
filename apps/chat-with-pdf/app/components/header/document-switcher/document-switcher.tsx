@@ -104,7 +104,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
         >
           <Command>
             <CommandInput placeholder="Search document..." />
-            <CommandEmpty>No team found.</CommandEmpty>
+            <CommandEmpty>No document found.</CommandEmpty>
             <CommandList>
               <CommandGroup>
                 {chats.map((chat) => (

@@ -82,7 +82,10 @@ export function ChatsContainer({
           <CardContent className="flex flex-1 flex-col gap-4 p-4">
             {!loading &&
               chats?.map((chat) => (
-                <Card className="flex flex-row items-center justify-between p-4">
+                <Card
+                  className="flex flex-row items-center justify-between p-4"
+                  key={chat.id}
+                >
                   <div className="flex flex-row items-center gap-4">
                     <FileTextIcon className="h-6 w-6" />
                     <div className="flex flex-col gap-2">

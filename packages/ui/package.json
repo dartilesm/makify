@@ -46,6 +46,7 @@
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.0",
     "cmdk": "1.0.0",
+    "embla-carousel-react": "^8.2.0",
     "react-hook-form": "7.52.1",
     "react-resizable-panels": "2.0.22",
     "tailwind-merge": "2.2.2",
