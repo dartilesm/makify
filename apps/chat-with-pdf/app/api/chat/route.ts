@@ -1,7 +1,7 @@
 import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { google } from "@ai-sdk/google";
-import { Chat } from "@prisma/client";
-import { CoreMessage, JSONValue, Message, StreamData, streamText } from "ai";
+import { CoreMessage, Message, StreamData, streamText } from "ai";
+import { Tables } from "database.types";
 import { getContext } from "utils/context";
 
 export const revalidate = 0;
@@ -10,7 +10,7 @@ export const maxDuration = 30;
 
 type RequestBody = {
   messages: Message[];
-  documentId: Chat["id"];
+  documentId: Tables<"Chat">["id"];
   data: {
     [key: string]: any;
   };

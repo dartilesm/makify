@@ -22,7 +22,6 @@ import {
   PopoverTrigger,
 } from "@makify/ui/components/popover";
 import { cn } from "@makify/ui/lib/utils";
-import { Chat } from "@prisma/client";
 import {
   CheckIcon,
   ChevronsUpDownIcon,
@@ -34,10 +33,11 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EditDocumentDialog } from "./edit-document-dialog/edit-document-dialog";
 import { NewDocumentDialog } from "./new-document-dialog/new-document-dialog";
+import { Tables } from "database.types";
 
 type DocumentSwitcherProps = {
   className?: string;
-  chats: Chat[];
+  chats: Tables<"Chat">[];
 };
 
 export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
@@ -86,7 +86,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
               className,
             )}
           >
-            <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
               <span className="truncate">
                 {
@@ -129,14 +129,14 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
-                      <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">
                         {(chat?.documentMetadata as Record<string, any>)?.title}
                       </span>
                     </div>
                     <CheckIcon
                       className={cn(
-                        "min-h-4 h-4 w-4 shrink-0",
+                        "h-4 min-h-4 w-4 shrink-0",
                         params.documentId === chat.id
                           ? "opacity-100"
                           : "opacity-0",

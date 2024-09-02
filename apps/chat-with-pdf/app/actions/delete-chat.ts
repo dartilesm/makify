@@ -1,15 +1,15 @@
 "use server";
 
 import { supabase } from "@/lib/supabase";
-import { Chat } from "@prisma/client";
+import { Tables } from "database.types";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
-async function deleteChat(chat: Chat) {
+async function deleteChat(chat: Tables<"Chat">) {
   supabase.from("Chat").delete().eq("id", chat.id).select("id");
 }
 
-async function deleteDocumentFile(chat: Chat) {
+async function deleteDocumentFile(chat: Tables<"Chat">) {
   if (chat.documentUrl?.includes(process.env.SUPABASE_URL as string)) {
     return supabase.storage.from("documents").remove([`${chat.id}.pdf`]);
   }
@@ -17,7 +17,7 @@ async function deleteDocumentFile(chat: Chat) {
 }
 
 export async function deleteChatAndDependencies(
-  chat: Chat,
+  chat: Tables<"Chat">,
   shouldRedirect = true,
 ) {
   await Promise.all([deleteChat(chat), deleteDocumentFile(chat)]);

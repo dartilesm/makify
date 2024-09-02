@@ -23,7 +23,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@makify/ui";
-import { Chat } from "@prisma/client";
+import { Tables } from "database.types";
 import { LoaderCircleIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -50,7 +50,7 @@ const enum EDIT_DOCUMENT_TAB {
 
 type EditDocumentDialogProps = {
   isOpen: boolean;
-  chat: Chat;
+  chat: Tables<"Chat">;
   onOpenChange?: (isOpen: boolean) => void;
 };
 

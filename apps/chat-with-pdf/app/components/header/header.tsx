@@ -1,12 +1,12 @@
 import { Button } from "@makify/ui";
-import { Chat } from "@prisma/client";
+import { Tables } from "database.types";
 import { MessageSquareIcon } from "lucide-react";
 import { DocumentSwitcher } from "./document-switcher/document-switcher";
 import { FeedbackDialog } from "./feedback-dialog";
 import { ThemeSwitcher } from "./theme-switcher";
 
 type HeaderProps = {
-  chats: Chat[];
+  chats: Tables<"Chats">[];
 };
 
 export async function Header({ chats = [] }: HeaderProps) {

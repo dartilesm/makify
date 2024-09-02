@@ -1,7 +1,6 @@
 "use client";
 
 import { MESSAGE_TYPE } from "@/components/chat/constants/message-type";
-import { Chat } from "@prisma/client";
 import { Message, useChat, UseChatOptions } from "ai/react";
 import { useParams } from "next/navigation";
 import {
@@ -13,8 +12,9 @@ import {
   useState,
 } from "react";
 import { updateChatMessages } from "../actions/update-chat-messages";
+import { Tables } from "database.types";
 
-const EMPTY_CHAT_DATA: Partial<Chat> = {
+const EMPTY_CHAT_DATA: Partial<Tables<"Chat">> = {
   id: "",
   documentMetadata: "",
   documentUrl: "",
@@ -36,7 +36,7 @@ export const ChatContext = createContext({
 
 type ChatProviderProps = {
   children: React.ReactNode;
-  chatData: Partial<Chat>;
+  chatData: Partial<Tables<"Chat">>;
 };
 
 export function ChatProvider({ children, chatData }: ChatProviderProps) {
@@ -130,7 +130,8 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
     if (hasAddedMessages && !useChatReturn.isLoading)
       updateChatMessages({
         documentId: params.documentId as string,
-        messages: useChatReturn.messages as unknown as Chat["messages"],
+        messages:
+          useChatReturn.messages as unknown as Tables<"Chat">["messages"],
       });
   }
 

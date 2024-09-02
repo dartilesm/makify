@@ -1,12 +1,12 @@
 "use server";
 
 import { supabase } from "@/lib/supabase";
-import { Chat, Prisma } from "@prisma/client";
+import { Tables } from "database.types";
 
 type UpdateChatMessagesParams = {
   documentId: string;
-  messages?: Chat["messages"];
-  documentMetadata?: Chat["documentMetadata"];
+  messages?: Tables<"Chat">["messages"];
+  documentMetadata?: Tables<"Chat">["documentMetadata"];
 };
 
 export async function updateChatMessages({

@@ -13,7 +13,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@makify/ui";
-import { Chat } from "@prisma/client";
 import { FileTextIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -21,6 +20,7 @@ import { Container } from "../ui/container";
 import { Heading } from "../ui/heading";
 import { SadFaceIcon } from "icons/sad-face";
 import { NewDocumentDialog } from "../header/document-switcher/new-document-dialog/new-document-dialog";
+import { Tables } from "database.types";
 
 type ChatsContainerProps =
   | {
@@ -29,7 +29,7 @@ type ChatsContainerProps =
     }
   | {
       loading?: false;
-      chats: Chat[];
+      chats: Tables<"Chat">[];
     };
 
 export function ChatsContainer({
