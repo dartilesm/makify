@@ -1,5 +1,6 @@
 "use client";
 
+import { signup } from "@/app/actions/signup";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -25,8 +26,8 @@ export function SignUpContainer() {
     resolver: zodResolver(LoginSchema),
   });
 
-  function handleLogin() {
-    console.log(form.formState);
+  async function handleSignUp(values: z.infer<typeof LoginSchema>) {
+    await signup(values);
   }
 
   return (
@@ -38,7 +39,7 @@ export function SignUpContainer() {
         </p>
       </div>
       <Form {...form}>
-        <form className="grid gap-4" onSubmit={form.handleSubmit(handleLogin)}>
+        <form className="grid gap-4" onSubmit={form.handleSubmit(handleSignUp)}>
           <div className="grid gap-2">
             <FormField
               control={form.control}

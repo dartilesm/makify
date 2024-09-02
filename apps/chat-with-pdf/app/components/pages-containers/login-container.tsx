@@ -1,5 +1,6 @@
 "use client";
 
+import { login } from "@/app/actions/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -25,8 +26,8 @@ export function LoginContainer() {
     resolver: zodResolver(LoginSchema),
   });
 
-  function handleLogin() {
-    console.log(form.formState);
+  async function handleLogin(values: z.infer<typeof LoginSchema>) {
+    await login(values);
   }
 
   return (
