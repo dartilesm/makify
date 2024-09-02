@@ -5,6 +5,7 @@ import "@makify/ui/globals.css";
 import { Toaster } from "@makify/ui";
 import PlausibleProvider from "next-plausible";
 import { ThemeProvider } from "./components/theme-provider";
+import { cn } from "@makify/ui/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,7 @@ export default function RootLayout({
       <head>
         <PlausibleProvider domain="makify-chat-with-pdf.vercel.app" />
       </head>
-      <body className={inter.className}>
+      <body className={cn(inter.className, "h-screen")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
