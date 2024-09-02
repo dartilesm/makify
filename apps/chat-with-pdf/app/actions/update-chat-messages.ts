@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { Chat, Prisma } from "@prisma/client";
 
 type UpdateChatMessagesParams = {
@@ -14,14 +14,11 @@ export async function updateChatMessages({
   messages,
   documentMetadata,
 }: UpdateChatMessagesParams) {
-  const chat = await prisma.chat.update({
-    where: {
-      id: documentId as string,
-    },
-    data: {
-      messages: messages as unknown as Chat["messages"][],
-      documentMetadata: documentMetadata as Prisma.JsonObject,
-    },
-  });
-  return chat;
+  await supabase
+    .from("Chat")
+    .update({
+      messages,
+      documentMetadata,
+    })
+    .eq("id", documentId);
 }

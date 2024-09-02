@@ -1,24 +1,22 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import { Chat, Prisma } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function editChat(chat: Chat, title: string) {
-  const newChat = await prisma.chat.update({
-    where: {
-      id: chat.id,
-    },
-    data: {
+  await supabase
+    .from("Chat")
+    .update({
       documentMetadata: {
         ...(chat.documentMetadata as Prisma.JsonObject),
         title,
       },
-    },
-  });
+    })
+    .eq("id", chat.id);
+  await supabase.from("Document").update({ name: title }).eq("chatId", chat.id);
 
   revalidatePath(`/chat/${chat.id}`);
   revalidatePath("/chat");
-
-  return newChat;
+  revalidateTag("chats");
 }
