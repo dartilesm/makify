@@ -24,7 +24,7 @@ export default function RootLayout({
           defer
           data-domain="makify-chat-with-pdf.vercel.app"
           /* This is being proxied by vercel. See vercel.json */
-          src="/js/script.js"
+          src="https://makify-chat-with-pdf.vercel.app/js/script.js"
         ></script>
       </head>
       <body className={inter.className}>
