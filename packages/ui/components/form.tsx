@@ -109,7 +109,6 @@ const FormControl = React.forwardRef<
 >(({ ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } =
     useFormField();
-
   return (
     <Slot
       ref={ref}
@@ -121,6 +120,10 @@ const FormControl = React.forwardRef<
       }
       aria-invalid={!!error}
       {...props}
+      className={cn(props.className, {
+        "border-destructive ring-destructive text-destructive-foreground focus-visible:ring-destructive":
+          Boolean(error),
+      })}
     />
   );
 });
