@@ -22,13 +22,16 @@ jobs:
         run: supabase init
 
       - name: Start Supabase local development setup
-        run: supabase db start
+        run: supabase start
 
-      - name: Run Supabase tests locally
-        run: supabase test
+      - name: Output Supabase local development status
+        run: supabase status
 
       - name: Run Supabase lint locally
-        run: supabase lint
+        run: supabase db lint
+
+      - name: Run Supabase tests locally
+        run: supabase test db
 
       - name: Verify generated types are checked in
         run: |
