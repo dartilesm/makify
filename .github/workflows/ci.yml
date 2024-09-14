@@ -2,9 +2,11 @@ name: CI
 
 on:
   pull_request:
-    paths: "apps/chat-with-pdf/**"
+    paths:
+      - 'apps/chat-with-pdf/**''
   workflow_dispatch:
-    paths: "apps/chat-with-pdf/**"
+    paths:
+      - 'apps/chat-with-pdf/**''
 
 jobs:
   test:
