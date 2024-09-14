@@ -33,7 +33,7 @@ jobs:
 
       - name: Verify generated types are checked in
         run: |
-          supabase gen types typescript --local > database.types.ts
+          supabase gen types typescript --local > apps/chat-with-pdf/database.types.ts
           if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
             echo "Detected uncommitted changes after build. See status below:"
             git diff
