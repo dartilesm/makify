@@ -82,7 +82,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             ref={buttonRef}
             aria-label="Select a team"
             className={cn(
-              "flex h-14 flex-1 justify-between gap-2 truncate",
+              "flex flex-1 justify-between gap-2 truncate",
               className,
             )}
           >
@@ -94,19 +94,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                     ?.title
                 }
               </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {
-                  (selectedDocument?.documentMetadata as Record<string, any>)
-                    ?.numPages
-                }{" "}
-                page
-                {(selectedDocument?.documentMetadata as Record<string, any>)
-                  ?.numPages > 1
-                  ? "s"
-                  : ""}{" "}
-              </span>
             </div>
-            <ChevronsUpDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDownIcon className="ml-auto h-3 w-3 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -185,7 +174,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                 size="icon"
                 variant="ghost"
               >
-                <PencilIcon className="h-4 w-4" />
+                <PencilIcon className="stroke-muted-foreground h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">Edit document</TooltipContent>
