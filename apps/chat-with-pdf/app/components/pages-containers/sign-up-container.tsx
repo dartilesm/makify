@@ -1,5 +1,6 @@
 "use client";
 
+import { signInWithOAuth } from "@/app/actions/sign-in-with-oauth";
 import { signup } from "@/app/actions/signup";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -22,6 +23,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { SiGithub } from "react-icons/si";
 
 const LoginSchema = z.object({
   email: z
@@ -54,6 +56,10 @@ export function SignUpContainer() {
         duration: 3000,
       });
     }
+  }
+
+  async function handleGithubSignIn() {
+    signInWithOAuth("github");
   }
 
   return (
@@ -117,8 +123,13 @@ export function SignUpContainer() {
               </Button>
             </form>
           </Form>
-          <Button variant="outline" className="w-full">
-            Sign up with Google
+          <Button
+            variant="outline"
+            className="flex w-full gap-2"
+            onClick={handleGithubSignIn}
+          >
+            <SiGithub className="h-4 w-4" />
+            Sign up with Github
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">

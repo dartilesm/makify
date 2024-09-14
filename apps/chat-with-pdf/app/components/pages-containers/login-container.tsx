@@ -1,6 +1,7 @@
 "use client";
 
 import { login } from "@/app/actions/login";
+import { signInWithOAuth } from "@/app/actions/sign-in-with-oauth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -22,6 +23,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { SiGithub } from "react-icons/si";
 
 const LoginSchema = z.object({
   email: z
@@ -31,9 +33,13 @@ const LoginSchema = z.object({
     .email({
       message: "Invalid email",
     }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters",
-  }),
+  password: z
+    .string({
+      message: "This field is required",
+    })
+    .min(8, {
+      message: "Password must be at least 8 characters",
+    }),
 });
 
 export function LoginContainer() {
@@ -59,6 +65,10 @@ export function LoginContainer() {
         duration: 3000,
       });
     }
+  }
+
+  async function handleGithubLogin() {
+    signInWithOAuth("github");
   }
 
   return (
@@ -130,8 +140,13 @@ export function LoginContainer() {
               </Button>
             </form>
           </Form>
-          <Button variant="outline" className="w-full">
-            Login with Google
+          <Button
+            variant="outline"
+            className="flex w-full gap-2"
+            onClick={handleGithubLogin}
+          >
+            <SiGithub className="h-4 w-4" />
+            Login with Github
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
