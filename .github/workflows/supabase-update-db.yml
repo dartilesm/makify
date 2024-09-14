@@ -1,0 +1,32 @@
+name: Supabase update
+
+on:
+  push:
+    paths:
+      - "apps/chat-with-pdf/**"
+    branches:
+      - "develop"
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: Update Supabase db
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ github.base_ref == 'main' && secrets.SUPABASE_PROD_PROJECT_ID || secrets.SUPABASE_STAGING_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ github.base_ref == 'main' && secrets.SUPABASE_PROD_DB_PASSWORD || secrets.SUPABASE_STAGING_DB_PASSWORD }}
+      SUPABASE_AUTH_GITHUB_CLIENT_ID: ${{ secrets.SUPABASE_AUTH_GITHUB_CLIENT_ID }}
+      SUPABASE_AUTH_GITHUB_SECRET: ${{ secrets.SUPABASE_AUTH_GITHUB_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: supabase link --project-ref $SUPABASE_PROJECT_ID --debug
+        working-directory: apps/chat-with-pdf
+      - run: supabase db push
+        working-directory: apps/chat-with-pdf
