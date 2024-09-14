@@ -3,8 +3,8 @@ name: CI
 on:
   pull_request:
   push:
-    paths:
-      - "apps/chat-with-pdf/**"
+    # paths:
+    #   - "apps/chat-with-pdf/**"
     branches:
       - "feature/**"
   workflow_dispatch:
