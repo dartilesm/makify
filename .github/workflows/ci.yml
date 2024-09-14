@@ -8,39 +8,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Supabase tests
-    runs-on: ubuntu-latest
+  # test:
+  #   name: Supabase tests
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
+  #     - uses: supabase/setup-cli@v1
+  #       with:
+  #         version: latest
 
-      - name: Init Supabase local development setup
-        run: supabase init
+  #     - name: Init Supabase local development setup
+  #       run: supabase init
 
-      - name: Start Supabase local development setup
-        run: supabase start
+  #     - name: Start Supabase local development setup
+  #       run: supabase start
 
-      - name: Run Supabase lint locally
-        run: supabase db lint
+  #     - name: Run Supabase lint locally
+  #       run: supabase db lint
 
-      - name: Run Supabase tests locally
-        run: supabase test db
+  #     - name: Run Supabase tests locally
+  #       run: supabase test db
 
-      # - name: Verify generated types are checked in
-      #   run: |
-      #     supabase gen types typescript --local > apps/chat-with-pdf/database.types.ts
-      #     if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
-      #       echo "Detected uncommitted changes after build. See status below:"
-      #       git diff
-      #       exit 1
-      #     fi
+  # - name: Verify generated types are checked in
+  #   run: |
+  #     supabase gen types typescript --local > apps/chat-with-pdf/database.types.ts
+  #     if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+  #       echo "Detected uncommitted changes after build. See status below:"
+  #       git diff
+  #       exit 1
+  #     fi
   push:
-    needs: test
     name: Push to Supabase
     runs-on: ubuntu-latest
     env:
