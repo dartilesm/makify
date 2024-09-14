@@ -4,9 +4,10 @@ import { MessageSquareIcon } from "lucide-react";
 import { DocumentSwitcher } from "./document-switcher/document-switcher";
 import { FeedbackDialog } from "./feedback-dialog";
 import { ThemeSwitcher } from "./theme-switcher";
+import { UserNav } from "./user-nav/user-nav";
 
 type HeaderProps = {
-  chats: Tables<"Chats">[];
+  chats: Tables<"Chat">[];
 };
 
 export async function Header({ chats = [] }: HeaderProps) {
@@ -22,7 +23,7 @@ export async function Header({ chats = [] }: HeaderProps) {
         <div className="flex flex-1 justify-center overflow-hidden">
           {!!chats.length && <DocumentSwitcher chats={chats} />}
         </div>
-        <div className="flex flex-row gap-2 max-sm:hidden">
+        <div className="flex flex-row items-center gap-2 max-sm:hidden">
           <FeedbackDialog
             triggerEl={
               <Button variant="outline" className="flex flex-row gap-2">
@@ -31,7 +32,7 @@ export async function Header({ chats = [] }: HeaderProps) {
               </Button>
             }
           />
-          <ThemeSwitcher />
+          <UserNav />
         </div>
       </div>
     </header>
