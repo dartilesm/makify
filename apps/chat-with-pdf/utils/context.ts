@@ -1,3 +1,4 @@
+import { Tables } from "database.types";
 import { supabase } from "./supabase";
 import { getEmbeddings } from "./vector-store";
 
@@ -15,19 +16,22 @@ export async function getContext(query: string, documentId: string) {
     },
   );
 
-  const supabaseTextContent = documentSections.reduce((acc, match) => {
-    const { pageNumber, textChunk } = match;
-    // Return the accumulator in this format:
-    // START PAGE 1 BLOCK
-    // Text extracted from page 1
+  const supabaseTextContent = documentSections.reduce(
+    (acc: string, currentDocSections: Tables<"DocumentSections">) => {
+      const { pageNumber, textChunk } = currentDocSections;
+      // Return the accumulator in this format:
+      // START PAGE 1 BLOCK
+      // Text extracted from page 1
 
-    if (!acc.includes(`START PAGE ${pageNumber} BLOCK`)) {
-      acc += `START PAGE ${pageNumber} BLOCK\n`;
-    }
-    acc += `${textChunk}\n`;
+      if (!acc.includes(`START PAGE ${pageNumber} BLOCK`)) {
+        acc += `START PAGE ${pageNumber} BLOCK\n`;
+      }
+      acc += `${textChunk}\n`;
 
-    return acc;
-  }, "");
+      return acc;
+    },
+    "",
+  );
 
   const textContentNormalized = supabaseTextContent.replace(/\n/g, " ");
   console.log(textContentNormalized);

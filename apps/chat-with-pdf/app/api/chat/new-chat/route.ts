@@ -7,6 +7,7 @@ import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { supabase } from "@/lib/supabase";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { PineconeRecord } from "@pinecone-database/pinecone";
+import { Tables } from "database.types";
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -102,7 +103,6 @@ async function* createNewChat({
     })
     .select("id")
     .single();
-  console.log({ chatData: chat, chatError });
 
   if (chatError && !chat) {
     console.error(chatError);
@@ -139,7 +139,7 @@ async function* createNewChat({
       .upload(`${chat.id}.pdf`, documentFile!);
     if (error) {
       console.error(error);
-      await deleteChatAndDependencies(chat, false);
+      await deleteChatAndDependencies(chat as Tables<"Chat">, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -159,7 +159,7 @@ async function* createNewChat({
         data: { documentUrl },
       }); */
     if (chatUpdateError) {
-      await deleteChatAndDependencies(chat, false);
+      await deleteChatAndDependencies(chat as Tables<"Chat">, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -181,7 +181,7 @@ async function* createNewChat({
     const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
     pages = await loader.load();
     if (pages.length > 5) {
-      await deleteChatAndDependencies(chat, false);
+      await deleteChatAndDependencies(chat as Tables<"Chat">, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -192,7 +192,7 @@ async function* createNewChat({
     }
   } catch (error: any) {
     console.error(error);
-    await deleteChatAndDependencies(chat, false);
+    await deleteChatAndDependencies(chat as Tables<"Chat">, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -211,7 +211,7 @@ async function* createNewChat({
     );
   } catch (error: any) {
     console.error(error);
-    await deleteChatAndDependencies(chat, false);
+    await deleteChatAndDependencies(chat as Tables<"Chat">, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -234,7 +234,7 @@ async function* createNewChat({
     )) as PineconeRecord[];
   } catch (error: any) {
     console.error(error);
-    await deleteChatAndDependencies(chat, false);
+    await deleteChatAndDependencies(chat as Tables<"Chat">, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -264,7 +264,7 @@ async function* createNewChat({
     .from("DocumentSections")
     .insert(vectorsToInsert);
   if (documentSectionsError) {
-    await deleteChatAndDependencies(chat, false);
+    await deleteChatAndDependencies(chat as Tables<"Chat">, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,

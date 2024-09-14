@@ -51,7 +51,7 @@ export function SignUpContainer() {
     } catch (error: unknown) {
       toast({
         title: "Oops! Something went wrong",
-        description: error?.message || error,
+        description: (error as Error)?.message || String(error),
         variant: "destructive",
         duration: 3000,
       });
