@@ -1,4 +1,4 @@
-create extension if not exists "vector" with schema "public" version '0.7.0';
+create extension vector with schema extensions;
 
 create table "public"."Document" (
     "id" text not null default gen_random_uuid(),
@@ -234,20 +234,6 @@ grant trigger on table "public"."DocumentSections" to "service_role";
 grant truncate on table "public"."DocumentSections" to "service_role";
 
 grant update on table "public"."DocumentSections" to "service_role";
-
-grant delete on table "public"."DocumentSections" to "supabase_functions_admin";
-
-grant insert on table "public"."DocumentSections" to "supabase_functions_admin";
-
-grant references on table "public"."DocumentSections" to "supabase_functions_admin";
-
-grant select on table "public"."DocumentSections" to "supabase_functions_admin";
-
-grant trigger on table "public"."DocumentSections" to "supabase_functions_admin";
-
-grant truncate on table "public"."DocumentSections" to "supabase_functions_admin";
-
-grant update on table "public"."DocumentSections" to "supabase_functions_admin";
 
 grant delete on table "public"."profiles" to "anon";
 
