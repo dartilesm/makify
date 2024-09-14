@@ -121,7 +121,7 @@ const FormControl = React.forwardRef<
       aria-invalid={!!error}
       {...props}
       className={cn(props.className, {
-        "border-destructive ring-destructive text-destructive-foreground focus-visible:ring-destructive":
+        "border-destructive ring-destructive text-destructive focus-visible:ring-destructive":
           Boolean(error),
       })}
     />
