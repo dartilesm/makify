@@ -2,11 +2,7 @@ name: CI
 
 on:
   pull_request:
-    paths:
-      - "apps/chat-with-pdf/**"
   push:
-    paths:
-      - "apps/chat-with-pdf/**"
     branches:
       - "feature/**"
   workflow_dispatch:
