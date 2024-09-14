@@ -3,6 +3,8 @@ name: CI
 on:
   pull_request:
   push:
+    paths:
+      - "apps/chat-with-pdf/**"
     branches:
       - "feature/**"
   workflow_dispatch:
@@ -42,6 +44,10 @@ jobs:
   push:
     name: Push to Supabase
     runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_STAGING_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v4
@@ -50,8 +56,6 @@ jobs:
           version: latest
 
       - run: supabase link --project-ref $SUPABASE_PROJECT_ID --debug
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_STAGING_PROJECT_ID }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_STAGING_DB_PASSWORD }}
+        working-directory: apps/chat-with-pdf
       - run: supabase db push --dry-run
+        working-directory: apps/chat-with-pdf
