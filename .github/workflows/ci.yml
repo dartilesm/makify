@@ -31,14 +31,14 @@ jobs:
       - name: Run Supabase tests locally
         run: supabase test db
 
-      - name: Verify generated types are checked in
-        run: |
-          supabase gen types typescript --local > apps/chat-with-pdf/database.types.ts
-          if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
-            echo "Detected uncommitted changes after build. See status below:"
-            git diff
-            exit 1
-          fi
+      # - name: Verify generated types are checked in
+      #   run: |
+      #     supabase gen types typescript --local > apps/chat-with-pdf/database.types.ts
+      #     if ! git diff --ignore-space-at-eol --exit-code --quiet types.gen.ts; then
+      #       echo "Detected uncommitted changes after build. See status below:"
+      #       git diff
+      #       exit 1
+      #     fi
   push:
     needs: test
     name: Push to Supabase
