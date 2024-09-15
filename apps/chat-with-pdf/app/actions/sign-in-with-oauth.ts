@@ -11,7 +11,6 @@ export async function signInWithOAuth(
 ) {
   const supabase = createClient();
   const redirectTo = getOAuthRedirectUrl(searchParams);
-  console.log({ redirectTo });
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
@@ -19,8 +18,6 @@ export async function signInWithOAuth(
       redirectTo,
     },
   });
-
-  console.log({ dataUrl: data?.url, error });
 
   if (error) {
     throw error;
