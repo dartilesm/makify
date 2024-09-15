@@ -24,6 +24,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SiGithub } from "react-icons/si";
+import { useSearchParams } from "next/navigation";
 
 const LoginSchema = z.object({
   email: z
@@ -47,6 +48,8 @@ export function LoginContainer() {
     resolver: zodResolver(LoginSchema),
   });
 
+  const searchParams = useSearchParams();
+
   const { toast } = useToast();
 
   async function handleLogin(values: z.infer<typeof LoginSchema>) {
@@ -68,7 +71,7 @@ export function LoginContainer() {
   }
 
   async function handleGithubLogin() {
-    signInWithOAuth("github");
+    signInWithOAuth("github", searchParams);
   }
 
   return (
