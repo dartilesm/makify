@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { SadFaceIcon } from "icons/sad-face";
 import { SparkleIcon } from "icons/sparkle";
 import { CheckIcon, ClockIcon, LoaderCircleIcon, XIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
@@ -111,7 +111,7 @@ export function NewDocumentLoadingState({
         <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 z-10 h-4 bg-gradient-to-t to-transparent" />
         <div className="flex h-20 flex-col gap-[6px] overflow-hidden">
           {loadingMessages.map((step, index) => (
-            <>
+            <Fragment key={index}>
               {index === 0 && <div className="min-h-5 block w-full" />}
               <motion.div
                 layout
@@ -154,7 +154,7 @@ export function NewDocumentLoadingState({
               {index === loadingMessages.length - 1 && (
                 <div className="min-h-5 block w-full" />
               )}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>

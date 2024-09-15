@@ -24,7 +24,8 @@ import { cn } from "@makify/ui/lib/utils";
 import { EmblaCarouselType } from "embla-carousel";
 import { motion } from "framer-motion";
 import { LightbulbIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 const newFeatures = [
   {
@@ -82,6 +83,10 @@ export function AppTour() {
   const [carouselApi, setCarouselApi] = useState<
     EmblaCarouselType | undefined
   >();
+  const [appTourOpened, saveAppTourOpened] = useLocalStorage(
+    "app-tour-opened",
+    false,
+  );
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(handleCarouselApi, [carouselApi]);
@@ -101,11 +106,9 @@ export function AppTour() {
   }
 
   function handleToggleDialog() {
-    window.localStorage.setItem("app-tour-opened", "true");
+    saveAppTourOpened(true);
     setDialogOpen((prev) => !prev);
   }
-
-  const appTourOpened = window.localStorage.getItem("app-tour-opened");
 
   return (
     <Dialog open={dialogOpen} onOpenChange={handleToggleDialog}>
@@ -114,7 +117,12 @@ export function AppTour() {
           <div>
             <DialogTrigger asChild>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" className="relative">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="relative"
+                  suppressHydrationWarning
+                >
                   {!appTourOpened && (
                     <span className="absolute right-0 top-0 flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-400 opacity-75"></span>
@@ -196,6 +204,7 @@ export function AppTour() {
                   <motion.div className="mt-2 flex justify-center">
                     {newFeatures.map((_, index) => (
                       <motion.div
+                        key={index}
                         className={cn("mx-1 h-2 w-2 rounded-full", {
                           "bg-primary": index === currentSlideIndex,
                           "bg-muted": index !== currentSlideIndex,

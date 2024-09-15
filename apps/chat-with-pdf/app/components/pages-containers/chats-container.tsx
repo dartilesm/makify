@@ -125,7 +125,7 @@ export function ChatsContainer({
               ))}
             {loading &&
               fakeChatsList.map((_, index) => (
-                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" key={index} />
               ))}
             {!loading && chats?.length === 0 && (
               <div className="flex h-full flex-col items-center justify-center gap-4">
