@@ -1,6 +1,8 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 export async function getChat(id: string) {
+  const supabase = createClient();
+
   const { data, error } = await supabase
     .from("Chat")
     .select("*")
@@ -8,7 +10,8 @@ export async function getChat(id: string) {
     .single();
 
   if (error) {
-    throw error;
+    console.error(error);
+    return null;
   }
 
   return data;

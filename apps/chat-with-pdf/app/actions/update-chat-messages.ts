@@ -1,6 +1,6 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { Tables } from "database.types";
 
 type UpdateChatMessagesParams = {
@@ -14,6 +14,8 @@ export async function updateChatMessages({
   messages,
   documentMetadata,
 }: UpdateChatMessagesParams) {
+  const supabase = createClient();
+
   await supabase
     .from("Chat")
     .update({

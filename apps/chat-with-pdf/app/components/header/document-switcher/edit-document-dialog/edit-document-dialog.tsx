@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
+import { deleteChat } from "@/app/actions/delete-chat";
 import { editChat } from "@/app/actions/edit-chat";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -93,7 +93,7 @@ export function EditDocumentDialog({
   }
 
   async function onDeleteDocument() {
-    await deleteChatAndDependencies(chat);
+    await deleteChat(chat);
     handleDialogToggle(false);
   }
 

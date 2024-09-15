@@ -1,10 +1,12 @@
 import { Tables } from "database.types";
-import { supabase } from "./supabase";
 import { getEmbeddings } from "./vector-store";
+import { createClient } from "@/lib/supabase/server";
 
 export async function getContext(query: string, documentId: string) {
   // User query embeddings
   const userQueryEmbeddings = await getEmbeddings(query);
+
+  const supabase = createClient();
 
   const { data: documentSections, error } = await supabase.rpc(
     "match_documents",
