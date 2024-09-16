@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/server";
 import { Avatar, AvatarFallback, AvatarImage } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
@@ -15,10 +16,13 @@ type ChatListProps = {
 };
 
 export async function ChatList({ documentId }: ChatListProps) {
-  const chats = await getCachedChats();
+  const supabase = createClient();
+  // Sending supabase as a parameter to getCachedChats to avoid
+  // accessing to dynamic data in a cached function
+  const chats = await getCachedChats(supabase, params.documentId);
 
   return (
-    <div className="hidden h-full border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
+    <div className="hidden h-full border-r bg-gray-100/40 dark:bg-gray-800/40 lg:block">
       <div className="flex flex-col gap-2">
         <div className="flex h-[60px] items-center px-6">
           <Link className="flex items-center gap-2 font-semibold" href="#">

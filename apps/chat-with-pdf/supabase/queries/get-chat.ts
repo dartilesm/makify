@@ -1,8 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export async function getChat(id: string) {
-  const supabase = createClient();
-
+export async function getChat(supabase: SupabaseClient, id: string) {
   const { data, error } = await supabase
     .from("Chat")
     .select("*")
