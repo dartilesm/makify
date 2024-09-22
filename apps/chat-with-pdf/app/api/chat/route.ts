@@ -1,6 +1,6 @@
 import { rateLimitRequests } from "@/lib/rate-limit-requests";
 import { google } from "@ai-sdk/google";
-import { CoreMessage, Message, StreamData, streamText } from "ai";
+import { Message, StreamData, convertToCoreMessages, streamText } from "ai";
 import { Tables } from "database.types";
 import { getContext } from "utils/context";
 
@@ -57,8 +57,16 @@ export async function POST(req: Request) {
     ${documentContext}
     END OF DOCUMENT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
-    The DOCUMENT BLOCK includes a START PAGE {page number} BLOCK, AI will use the {page number} in the response to inform the user where the information was found, the page number should have this format :page[{page number}].
-    If the document does not provide the answer to question, will try to answer the question based on the document.
+    When referencing information from the document, AI will use the following format:
+    1. Apply underline styling to the specific information from a page using HTML <u> tags with a data-page attribute containing the page number.
+    2. Immediately after the closing </u> tag, add the page reference as a superscript with the format <sup data-page="{page number}">{page number}</sup>.
+    3. If information spans multiple pages or comes from different pages, use separate underline tags and superscript references for each.
+    Example: "The document states that <u data-page="3">English is considered a relatively easy language to learn</u><sup data-page="3">3</sup>. However, it also mentions that <u data-page="5">Mandarin Chinese is often regarded as one of the most challenging languages for English speakers</u><sup data-page="5">5</sup>."
+    AI assistant can format the response using either Markdown or HTML, but should not mix the two formats within the same response. For example:
+    Correct (HTML): "<p>This is a paragraph.</p><ul><li>List item</li></ul>"
+    Correct (Markdown): "This is a paragraph.\n\n- List item"
+    Incorrect (Mixed): "<p>This is a **bold** paragraph.</p>"
+    If the document does not provide the answer to a question, AI will try to answer based on the document's context without inventing information.
     AI assistant will not invent anything that is not drawn directly from the document.`;
 
   const data = new StreamData();
@@ -66,17 +74,10 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: google("models/gemini-1.5-pro-latest"),
-    messages: messagesToAI as CoreMessage[],
+    messages: convertToCoreMessages(messagesToAI),
     system: systemInstructions,
     maxTokens: 3000,
-    onFinish({
-      text,
-      toolCalls,
-      toolResults,
-      usage,
-      finishReason,
-      rawResponse,
-    }) {
+    onFinish({ text, toolCalls, toolResults, usage, finishReason }) {
       console.log({
         onFinish: {
           text,
@@ -84,14 +85,14 @@ export async function POST(req: Request) {
           toolResults,
           usage,
           finishReason,
-          rawResponse,
         },
       });
       data.close();
     },
+    maxSteps: 5,
   });
 
-  return result.toAIStreamResponse({ data: data, headers });
+  return result.toDataStreamResponse({ data, headers });
 }
 
 function parsedUserMessage(lastMessage: Message, quotedText: string) {

@@ -14,13 +14,6 @@ export async function getEmbeddings(value: string) {
 
     const embedding = await googleGenerativeAIEmbeddings.embedQuery(value);
 
-    // Embed the text using the OpenAI API
-
-    // const { embedding } = await embed({
-    //   model: openai.embedding('text-embedding-ada-002'),
-    //   value: value.replace(/\n/g, ' '),
-    // })
-
     return embedding;
   } catch (error) {
     console.log("Error in getEmbeddings", error);

@@ -19,7 +19,7 @@ export async function ChatList({ documentId }: ChatListProps) {
   const supabase = createClient();
   // Sending supabase as a parameter to getCachedChats to avoid
   // accessing to dynamic data in a cached function
-  const chats = await getCachedChats(supabase, params.documentId);
+  const chats = await getCachedChats(supabase);
 
   return (
     <div className="hidden h-full border-r bg-gray-100/40 dark:bg-gray-800/40 lg:block">
