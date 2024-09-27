@@ -1,4 +1,5 @@
 import {
+  Button,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -6,7 +7,7 @@ import {
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { useGlobalChat } from "hooks/use-global-chat";
-import Markdown from "react-markdown";
+import Markdown, { ExtraProps } from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { MESSAGE_TYPE } from "./constants/message-type";
@@ -99,6 +100,19 @@ export function AssistantMessage({
             </Tooltip>
           </TooltipProvider>
         ),
+        u: ({ children, ...props }: React.HTMLProps<HTMLElement>) => {
+          const { node, ...attributes } = props as {
+            node: ExtraProps["node"];
+            [key: string]: any;
+          };
+          return (
+            <button className="contents text-left">
+              <u {...attributes} className="decoration-dotted">
+                {children}
+              </u>
+            </button>
+          );
+        },
       }}
     >
       {message}
