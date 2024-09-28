@@ -37,10 +37,13 @@ import { Tables } from "database.types";
 
 type DocumentSwitcherProps = {
   className?: string;
-  chats: Tables<"Chat">[];
+  documents: Tables<"Document">[];
 };
 
-export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
+export function DocumentSwitcher({
+  className,
+  documents,
+}: DocumentSwitcherProps) {
   const params = useParams();
   const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -52,8 +55,8 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
   useEffect(setPopoverWidth, []);
 
   const selectedDocument = useMemo(
-    () => chats.find((chat) => chat.id === params.documentId),
-    [params.documentId, chats],
+    () => documents.find((document) => document.chatId === params.documentId),
+    [params.documentId, documents],
   );
 
   function setPopoverWidth() {
@@ -86,14 +89,9 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
               className,
             )}
           >
-            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
+            <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
-              <span className="truncate">
-                {
-                  (selectedDocument?.documentMetadata as Record<string, any>)
-                    ?.title
-                }
-              </span>
+              <span className="truncate">{selectedDocument?.name}</span>
             </div>
             <ChevronsUpDownIcon className="ml-auto h-3 w-3 shrink-0 opacity-50" />
           </Button>
@@ -107,26 +105,24 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
             <CommandEmpty>No document found.</CommandEmpty>
             <CommandList>
               <CommandGroup>
-                {chats.map((chat) => (
+                {documents.map((document) => (
                   <CommandItem
-                    value={chat.id}
-                    key={chat.id}
+                    value={document.id}
+                    key={document.id}
                     onSelect={() => {
                       setOpen(false);
-                      router.push(`/chat/${chat.id}`);
+                      router.push(`/chat/${document.chatId}`);
                     }}
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
-                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
-                      <span className="truncate">
-                        {(chat?.documentMetadata as Record<string, any>)?.title}
-                      </span>
+                      <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+                      <span className="truncate">{document?.name}</span>
                     </div>
                     <CheckIcon
                       className={cn(
-                        "h-4 min-h-4 w-4 shrink-0",
-                        params.documentId === chat.id
+                        "min-h-4 h-4 w-4 shrink-0",
+                        params.documentId === document.chatId
                           ? "opacity-100"
                           : "opacity-0",
                       )}
@@ -142,7 +138,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                   <TooltipTrigger asChild>
                     <CommandGroup>
                       <CommandItem
-                        disabled={chats.length === 5}
+                        disabled={documents.length === 5}
                         className="h-10 cursor-pointer"
                         onSelect={() => {
                           setOpen(false);
@@ -154,7 +150,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
                       </CommandItem>
                     </CommandGroup>
                   </TooltipTrigger>
-                  {chats.length === 5 && (
+                  {documents.length === 5 && (
                     <TooltipContent>
                       You have reached the maximum number of documents.
                     </TooltipContent>
@@ -187,7 +183,7 @@ export function DocumentSwitcher({ className, chats }: DocumentSwitcherProps) {
       />
       {selectedDocument && (
         <EditDocumentDialog
-          chat={selectedDocument}
+          document={selectedDocument}
           isOpen={showEditDocumentDialog}
           onOpenChange={toggleEditDocumentDialog}
         />

@@ -1,25 +1,15 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { JsonObject } from "@prisma/client/runtime/library";
 import { Tables } from "database.types";
 import { revalidatePath, revalidateTag } from "next/cache";
 
-export async function editChat(chat: Tables<"Chat">, title: string) {
+export async function editChat(document: Tables<"Document">, title: string) {
   const supabase = createClient();
 
-  await supabase
-    .from("Chat")
-    .update({
-      documentMetadata: {
-        ...(chat.documentMetadata as JsonObject),
-        title,
-      },
-    })
-    .eq("id", chat.id);
-  await supabase.from("Document").update({ name: title }).eq("chatId", chat.id);
+  await supabase.from("Document").update({ name: title }).eq("id", document.id);
 
-  revalidatePath(`/chat/${chat.id}`);
+  revalidatePath(`/chat/${document.id}`);
   revalidatePath("/chat");
-  revalidateTag("chats");
+  revalidateTag("documents");
 }

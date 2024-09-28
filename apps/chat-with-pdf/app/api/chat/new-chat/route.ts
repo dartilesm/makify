@@ -140,7 +140,7 @@ async function* createNewChat({
       .upload(`${chat.id}.pdf`, documentFile!);
     if (error) {
       console.error(error);
-      await deleteChat(chat as Tables<"Chat">, false);
+      await deleteChat(chat.id, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -160,7 +160,7 @@ async function* createNewChat({
         data: { documentUrl },
       }); */
     if (chatUpdateError) {
-      await deleteChat(chat as Tables<"Chat">, false);
+      await deleteChat(chat.id, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -182,7 +182,7 @@ async function* createNewChat({
     const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
     pages = await loader.load();
     if (pages.length > 5) {
-      await deleteChat(chat as Tables<"Chat">, false);
+      await deleteChat(chat.id, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -193,7 +193,7 @@ async function* createNewChat({
     }
   } catch (error: any) {
     console.error(error);
-    await deleteChat(chat as Tables<"Chat">, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -212,7 +212,7 @@ async function* createNewChat({
     );
   } catch (error: any) {
     console.error(error);
-    await deleteChat(chat as Tables<"Chat">, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -235,7 +235,7 @@ async function* createNewChat({
     )) as PineconeRecord[];
   } catch (error: any) {
     console.error(error);
-    await deleteChat(chat as Tables<"Chat">, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -265,7 +265,7 @@ async function* createNewChat({
     .from("DocumentSections")
     .insert(vectorsToInsert);
   if (documentSectionsError) {
-    await deleteChat(chat as Tables<"Chat">, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,

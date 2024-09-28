@@ -1,14 +1,13 @@
 import { Button } from "@makify/ui";
 import { Tables } from "database.types";
 import { MessageSquareIcon } from "lucide-react";
+import { AppTour } from "./app-tour";
 import { DocumentSwitcher } from "./document-switcher/document-switcher";
 import { FeedbackDialog } from "./feedback-dialog";
-import { ThemeSwitcher } from "./theme-switcher";
 import { UserNav } from "./user-nav/user-nav";
-import { AppTour } from "./app-tour";
 
 type HeaderProps = {
-  chats: Tables<"Chat">[];
+  chats: Tables<"Document">[];
 };
 
 export async function Header({ chats = [] }: HeaderProps) {
@@ -23,7 +22,7 @@ export async function Header({ chats = [] }: HeaderProps) {
         </div>
 
         <div className="flex h-full flex-1 justify-center overflow-hidden">
-          {!!chats.length && <DocumentSwitcher chats={chats} />}
+          {!!chats.length && <DocumentSwitcher documents={chats} />}
         </div>
         <div className="flex flex-row items-center gap-2 max-sm:hidden">
           <FeedbackDialog

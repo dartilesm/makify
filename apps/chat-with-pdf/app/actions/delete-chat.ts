@@ -5,18 +5,24 @@ import { Tables } from "database.types";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function deleteChat(chat: Tables<"Chat">, shouldRedirect = true) {
+export async function deleteChat(
+  chatId: Tables<"Chat">["id"],
+  shouldRedirect = true,
+) {
   const supabase = createClient();
 
-  await supabase.from("Chat").delete().eq("id", chat.id).select("id");
+  await supabase.from("Chat").delete().eq("id", chatId).select("id");
 
-  revalidateTag("chats");
+  revalidateTag("documents");
   revalidatePath("/chat");
 
   if (!shouldRedirect) return;
 
-  const { data: firstChat } = await supabase.from("Chat").select("id").single();
+  const { data: firstDocument } = await supabase
+    .from("Document")
+    .select("chatId")
+    .single();
 
-  if (firstChat?.id) return redirect(`/chat/${firstChat.id}`);
+  if (firstDocument?.chatId) return redirect(`/chat/${firstDocument.chatId}`);
   redirect("/chat");
 }

@@ -50,28 +50,28 @@ const enum EDIT_DOCUMENT_TAB {
 
 type EditDocumentDialogProps = {
   isOpen: boolean;
-  chat: Tables<"Chat">;
+  document: Tables<"Document">;
   onOpenChange?: (isOpen: boolean) => void;
 };
 
 export function EditDocumentDialog({
   isOpen,
-  chat,
+  document,
   onOpenChange = () => null,
 }: EditDocumentDialogProps) {
   const editForm = useForm<z.infer<typeof EditFormSchema>>({
     resolver: zodResolver(EditFormSchema),
     mode: "all",
     defaultValues: {
-      title: (chat.documentMetadata as Record<string, any>)?.title,
+      title: document.name || "",
     },
     values: {
-      title: (chat.documentMetadata as Record<string, any>)?.title,
+      title: document.name || "",
     },
   });
 
   const deleteForm = useForm<z.infer<ReturnType<typeof getDeleteFormSchema>>>({
-    resolver: zodResolver(getDeleteFormSchema(chat.id)),
+    resolver: zodResolver(getDeleteFormSchema(document.chatId || "")),
     mode: "all",
     defaultValues: {
       documentId: "",
@@ -88,12 +88,14 @@ export function EditDocumentDialog({
   }
 
   async function onSaveChanges(values: z.infer<typeof EditFormSchema>) {
-    await editChat(chat, values.title);
+    await editChat(document, values.title);
     handleDialogToggle(false);
   }
 
-  async function onDeleteDocument() {
-    await deleteChat(chat);
+  async function onDeleteDocument(
+    values: z.infer<ReturnType<typeof getDeleteFormSchema>>,
+  ) {
+    await deleteChat(values.documentId);
     handleDialogToggle(false);
   }
 
@@ -101,9 +103,7 @@ export function EditDocumentDialog({
     <Dialog open={isOpen} onOpenChange={handleDialogToggle}>
       <DialogContent className="flex h-[360px] flex-col">
         <DialogHeader>
-          <DialogTitle>
-            {(chat.documentMetadata as Record<string, any>)?.title}
-          </DialogTitle>
+          <DialogTitle>{document.name}</DialogTitle>
           <DialogDescription>
             Edit the title or delete the document.
           </DialogDescription>
@@ -159,8 +159,7 @@ export function EditDocumentDialog({
                       disabled={
                         !editForm.formState.isValid ||
                         editForm.formState.isSubmitting ||
-                        (chat.documentMetadata as Record<string, any>)
-                          ?.title === editForm.getValues().title
+                        document.name === editForm.getValues().title
                       }
                     >
                       {editForm.formState.isSubmitting && (
@@ -191,8 +190,9 @@ export function EditDocumentDialog({
                           <Input placeholder="Document ID..." {...field} />
                         </FormControl>
                         <FormDescription>
-                          Type <span className="font-bold">{chat.id}</span> to
-                          delete the document.
+                          Type{" "}
+                          <span className="font-bold">{document.chatId}</span>{" "}
+                          to delete the document.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -203,7 +203,6 @@ export function EditDocumentDialog({
                       type="submit"
                       variant="destructive"
                       className="flex gap-2"
-                      onClick={onDeleteDocument}
                       disabled={
                         !deleteForm.formState.isValid ||
                         deleteForm.formState.isSubmitting

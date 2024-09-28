@@ -13,6 +13,8 @@ import {
 } from "react";
 import { updateChatMessages } from "../actions/update-chat-messages";
 import { Tables } from "database.types";
+import { createClient } from "@/lib/supabase/client";
+import { generateDocumentTitle as generateDocumentTitleAction } from "../actions/generate-document-title";
 
 const EMPTY_CHAT_DATA: Partial<Tables<"Chat">> = {
   id: "",
@@ -69,6 +71,7 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
 
   useEffect(() => {
     fetchChatData();
+    generateDocumentTitle();
   }, []);
 
   useEffect(sendPreloadedPrompts, [isLoading]);
@@ -85,6 +88,33 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
 
     // restore messages from db
     useChatReturn.setMessages(chatData?.messages as unknown as Message[]);
+  }
+
+  async function generateDocumentTitle() {
+    const supabase = createClient();
+
+    const chatId = chatData.id as string;
+
+    // Check if the document title is already set
+    const {
+      data: { name: documentTitle },
+      error,
+    } = await supabase
+      .from("Document")
+      .select("name")
+      .eq("chatId", chatId)
+      .single();
+
+    if (!documentTitle) {
+      const { title: generatedTitle } =
+        await generateDocumentTitleAction(chatId);
+      console.log({ generatedTitle });
+
+      await supabase
+        .from("Document")
+        .update({ name: generatedTitle })
+        .eq("chatId", chatId);
+    }
   }
 
   function sendPreloadedPrompts() {
