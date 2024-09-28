@@ -121,24 +121,25 @@ export function ChatFooter() {
   }
 
   return (
-    <div className="border-border z-10 flex flex-col gap-2 border-t p-3">
+    <div className="border-border relative z-10 flex flex-col gap-2 border-t p-3">
       <motion.div
         className={cn("flex flex-col gap-2")}
         initial={{ height: 0 }}
         animate={{
           height: isHelpfulQuestionsOpen
-            ? 210
+            ? "auto"
             : questionsContainerHeight || "auto",
+          overflow: isHelpfulQuestionsOpen ? "hidden" : "auto",
         }}
         exit={{ height: questionsContainerHeight || "auto" }}
         transition={{ duration: 0.3 }}
         ref={questionsContainerRef}
       >
         <button
-          className="bg-muted mx-auto h-1.5 w-[100px] flex-shrink-0 rounded-full"
+          className="bg-muted absolute left-1/2 top-2 z-10 mx-auto h-1.5 w-[100px] flex-shrink-0 -translate-x-1/2 rounded-full"
           onClick={toggleHelpfulQuestions}
         />
-        <div className="flex flex-row items-center gap-2">
+        <div className="mt-2 flex flex-row items-center gap-2">
           <ScrollArea>
             <motion.div
               className={cn({
@@ -155,7 +156,7 @@ export function ChatFooter() {
                   variant="outline"
                   size="sm"
                   className={cn(
-                    "relative flex justify-start gap-1.5 text-left",
+                    "relative flex justify-start gap-1.5 p-2 text-left",
                     {
                       "h-auto whitespace-pre-wrap": isHelpfulQuestionsOpen,
                       "whitespace-nowrap": !isHelpfulQuestionsOpen,
