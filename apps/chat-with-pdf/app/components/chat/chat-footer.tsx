@@ -1,20 +1,42 @@
+import { generateSuggestedQuestions } from "@/app/actions/generate-suggested-questions";
 import {
   Alert,
   AlertDescription,
   AlertTitle,
   Button,
+  ScrollArea,
+  ScrollBar,
   Textarea,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { Message } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGlobalChat } from "hooks/use-global-chat";
-import { SendIcon, XIcon } from "lucide-react";
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import {
+  MessageSquareIcon,
+  SendIcon,
+  SparkleIcon,
+  SparklesIcon,
+  XIcon,
+} from "lucide-react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
+
+const helpfulQuestions = [
+  "What were the initial goals and challenges faced by Elon Musk's X.com in the online financial services sector?",
+  "How did the merger with Confinity contribute to X.com's growth and the eventual creation of PayPal?",
+  "What factors contributed to PayPal's rapid growth and success, and how did its integration with eBay impact its popularity?",
+  "What were the key reasons behind eBay's acquisition of PayPal, and how did this acquisition affect PayPal's trajectory?",
+  "What were the reasons behind Elon Musk's departure from PayPal, and what other ventures did he pursue after leaving the company?",
+];
+
+const AnimatedScrollArea = motion(ScrollArea);
 
 export function ChatFooter() {
+  const questionsContainerRef = useRef<HTMLDivElement | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
+  const [isHelpfulQuestionsOpen, setIsHelpfulQuestionsOpen] = useState(false);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
+  const [questionsContainerHeight, setQuestionsContainerHeight] = useState(0);
 
   const {
     globalContext: { extraData, setExtraData },
@@ -26,6 +48,11 @@ export function ChatFooter() {
       isLoading,
     },
   } = useGlobalChat();
+
+  useEffect(() => {
+    /* getQuestions(); */
+    getQuestionsContainerHeight();
+  }, []);
 
   function extractTextareaLineHeight(textarea: HTMLTextAreaElement) {
     const computedStyle = window.getComputedStyle(textarea);
@@ -76,8 +103,77 @@ export function ChatFooter() {
     removeQuotedText();
   }
 
+  async function getQuestions() {
+    const questions = await generateSuggestedQuestions(
+      extraData?.documentId as string,
+    );
+
+    console.log(questions);
+  }
+
+  function getQuestionsContainerHeight() {
+    const height = questionsContainerRef.current?.scrollHeight;
+    setQuestionsContainerHeight(height || 0);
+  }
+
+  function toggleHelpfulQuestions() {
+    setIsHelpfulQuestionsOpen(!isHelpfulQuestionsOpen);
+  }
+
   return (
     <div className="border-border z-10 flex flex-col gap-2 border-t p-3">
+      <motion.div
+        className={cn("flex flex-col gap-2")}
+        initial={{ height: 0 }}
+        animate={{
+          height: isHelpfulQuestionsOpen
+            ? 210
+            : questionsContainerHeight || "auto",
+        }}
+        exit={{ height: questionsContainerHeight || "auto" }}
+        transition={{ duration: 0.3 }}
+        ref={questionsContainerRef}
+      >
+        <button
+          className="bg-muted mx-auto h-1.5 w-[100px] flex-shrink-0 rounded-full"
+          onClick={toggleHelpfulQuestions}
+        />
+        <div className="flex flex-row items-center gap-2">
+          <ScrollArea>
+            <motion.div
+              className={cn({
+                "flex space-x-2 overflow-x-auto pb-3": !isHelpfulQuestionsOpen,
+                "flex flex-col gap-2": isHelpfulQuestionsOpen,
+              })}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {helpfulQuestions.map((question) => (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "relative flex justify-start gap-1.5 text-left",
+                    {
+                      "h-auto whitespace-pre-wrap": isHelpfulQuestionsOpen,
+                      "whitespace-nowrap": !isHelpfulQuestionsOpen,
+                    },
+                  )}
+                >
+                  <span className="relative shrink-0">
+                    <SparkleIcon className="absolute -top-1 left-1 h-3 w-3" />
+                    <MessageSquareIcon className="h-3 w-3" />
+                  </span>
+                  {question}
+                </Button>
+              ))}
+            </motion.div>
+            <ScrollBar orientation="horizontal" className="mt-2" />
+          </ScrollArea>
+        </div>
+      </motion.div>
       <AnimatePresence>
         {(extraData?.quotedText as string) && (
           <motion.div
@@ -107,6 +203,7 @@ export function ChatFooter() {
           </motion.div>
         )}
       </AnimatePresence>
+
       <form
         className="flex flex-col gap-2"
         onSubmit={handleOnSubmit}
