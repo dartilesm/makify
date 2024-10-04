@@ -1,6 +1,5 @@
 "use client";
 
-import { generateSuggestedQuestions } from "@/app/actions/generate-suggested-questions";
 import {
   Alert,
   AlertDescription,
@@ -16,12 +15,14 @@ import { SendIcon, XIcon } from "lucide-react";
 import { FormEvent, KeyboardEvent, useRef, useState } from "react";
 import { SuggestedQuestions } from "./chat-footer/suggested-questions";
 
+const AnimatedSuggestedQuestions = motion(SuggestedQuestions);
+
 export function ChatFooter() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
 
   const {
-    globalContext: { extraData, setExtraData },
+    globalContext: { extraData, chatData, setExtraData },
     useChatReturn: {
       input: inputValue,
       setInput,
@@ -82,7 +83,11 @@ export function ChatFooter() {
 
   return (
     <div className="border-border bg-background relative z-50 flex flex-col gap-2 border-t p-3">
-      <SuggestedQuestions />
+      <AnimatePresence>
+        {chatData.suggestedQuestions && (
+          <AnimatedSuggestedQuestions questions={chatData.suggestedQuestions} />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {(extraData?.quotedText as string) && (
           <motion.div

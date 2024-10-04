@@ -15,6 +15,8 @@ import { updateChatMessages } from "../actions/update-chat-messages";
 import { Tables } from "database.types";
 import { createClient } from "@/lib/supabase/client";
 import { generateDocumentTitle as generateDocumentTitleAction } from "../actions/generate-document-title";
+import { generateSuggestedQuestions } from "../actions/generate-suggested-questions";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const EMPTY_CHAT_DATA: Partial<Tables<"Chat">> = {
   id: "",
@@ -59,19 +61,15 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
   const preloadPrompts = useRef([
     {
       message:
-        "Introduce yourself without mention your name and summarize the document.",
+        "Introduce yourself and explain your purpose here. Mention that you're here to assist with the provided document. Avoid mentioning your name. Make your message friendly and professional.",
       type: MESSAGE_TYPE.INTRODUCTION,
-    },
-    {
-      message:
-        "Give me a list of a few questions that are already answered by the document content. Give me the questions as a list. Say those questions are suggestions to start and don't mention the questions are already answered by the document content.",
-      type: MESSAGE_TYPE.SUGGESTION_MESSAGES,
     },
   ]);
 
   useEffect(() => {
     fetchChatData();
     generateDocumentTitle();
+    if (!chatData.suggestedQuestions) fetchSuggestedQuestions();
   }, []);
 
   useEffect(sendPreloadedPrompts, [isLoading]);
@@ -115,6 +113,26 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
         .update({ name: generatedTitle })
         .eq("chatId", chatId);
     }
+  }
+
+  async function fetchSuggestedQuestions() {
+    const supabase = createClient();
+
+    const chatId = chatData.id as string;
+
+    const { questions } = await generateSuggestedQuestions(chatId);
+
+    const { error } = await supabase
+      .from("Chat")
+      .update({ suggestedQuestions: questions })
+      .eq("id", chatId);
+
+    if (error) {
+      console.error(error);
+    }
+
+    revalidatePath(`/chat/${chatId}`);
+    revalidateTag("chat");
   }
 
   function sendPreloadedPrompts() {

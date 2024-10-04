@@ -74,7 +74,9 @@ export type Database = {
           documentUrl: string | null
           id: string
           messages: Json | null
+          suggestedQuestions: string[] | null
           updatedAt: string
+          userId: string
         }
         Insert: {
           createdAt?: string
@@ -82,7 +84,9 @@ export type Database = {
           documentUrl?: string | null
           id?: string
           messages?: Json | null
+          suggestedQuestions?: string[] | null
           updatedAt?: string
+          userId?: string
         }
         Update: {
           createdAt?: string
@@ -90,7 +94,9 @@ export type Database = {
           documentUrl?: string | null
           id?: string
           messages?: Json | null
+          suggestedQuestions?: string[] | null
           updatedAt?: string
+          userId?: string
         }
         Relationships: []
       }
@@ -103,6 +109,7 @@ export type Database = {
           name: string | null
           updatedAt: string
           url: string | null
+          userId: string
         }
         Insert: {
           chatId?: string | null
@@ -112,6 +119,7 @@ export type Database = {
           name?: string | null
           updatedAt?: string
           url?: string | null
+          userId?: string
         }
         Update: {
           chatId?: string | null
@@ -121,6 +129,7 @@ export type Database = {
           name?: string | null
           updatedAt?: string
           url?: string | null
+          userId?: string
         }
         Relationships: [
           {
@@ -141,6 +150,7 @@ export type Database = {
           pageNumber: number | null
           text: string | null
           textChunk: string | null
+          userId: string
         }
         Insert: {
           chatId?: string | null
@@ -150,6 +160,7 @@ export type Database = {
           pageNumber?: number | null
           text?: string | null
           textChunk?: string | null
+          userId?: string
         }
         Update: {
           chatId?: string | null
@@ -159,6 +170,7 @@ export type Database = {
           pageNumber?: number | null
           text?: string | null
           textChunk?: string | null
+          userId?: string
         }
         Relationships: [
           {
@@ -184,6 +196,7 @@ export type Database = {
           message: string
           type: string
           updatedAt: string
+          userId: string | null
         }
         Insert: {
           createdAt?: string
@@ -191,6 +204,7 @@ export type Database = {
           message: string
           type: string
           updatedAt: string
+          userId?: string | null
         }
         Update: {
           createdAt?: string
@@ -198,6 +212,7 @@ export type Database = {
           message?: string
           type?: string
           updatedAt?: string
+          userId?: string | null
         }
         Relationships: []
       }
@@ -367,6 +382,7 @@ export type Database = {
               pageNumber: number | null
               text: string | null
               textChunk: string | null
+              userId: string
             }[]
           }
         | {
@@ -383,6 +399,7 @@ export type Database = {
               pageNumber: number | null
               text: string | null
               textChunk: string | null
+              userId: string
             }[]
           }
         | {
@@ -400,6 +417,7 @@ export type Database = {
               pageNumber: number | null
               text: string | null
               textChunk: string | null
+              userId: string
             }[]
           }
       sparsevec_out: {

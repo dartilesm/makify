@@ -33,6 +33,9 @@ export async function POST(req: Request) {
     data: messageData = {},
   } = (await req.json()) as RequestBody;
   const lastMessage = messages.at(-1) as Message;
+
+  console.log({ lastMessage });
+
   const userMessage = parsedUserMessage(
     lastMessage,
     (lastMessage.data as Record<string, unknown>)?.quotedText as string,
@@ -42,11 +45,9 @@ export async function POST(req: Request) {
     ? await getContext(userMessage, documentId)
     : { page1: "" };
 
-  const userMessages = messages.filter((message) => message?.role === "user");
+  messages[messages.length - 1]!.content = userMessage;
 
-  userMessages[userMessages.length - 1]!.content = userMessage;
-  console.log(documentContext);
-  const messagesToAI = [...userMessages];
+  console.log({ convertToCoreMessages: convertToCoreMessages(messages) });
 
   const systemInstructions = `AI assistant is a brand new, powerful, human-like artificial intelligence.
     The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: google("models/gemini-1.5-pro-latest"),
-    messages: convertToCoreMessages(messagesToAI),
+    messages: convertToCoreMessages(messages),
     system: systemInstructions,
     maxTokens: 3000,
     onFinish({ text, toolCalls, toolResults, usage, finishReason }) {

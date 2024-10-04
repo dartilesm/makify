@@ -11,20 +11,15 @@ import {
   SparkleIcon,
   SparklesIcon,
 } from "lucide-react";
-import { useRef, useState } from "react";
-
-const helpfulQuestions = [
-  "What were the initial goals and challenges faced by Elon Musk's X.com in the online financial services sector?",
-  "How did the merger with Confinity contribute to X.com's growth and the eventual creation of PayPal?",
-  "What factors contributed to PayPal's rapid growth and success, and how did its integration with eBay impact its popularity?",
-  "What were the key reasons behind eBay's acquisition of PayPal, and how did this acquisition affect PayPal's trajectory?",
-  "What were the reasons behind Elon Musk's departure from PayPal, and what other ventures did he pursue after leaving the company?",
-];
+import { forwardRef, useRef, useState } from "react";
 
 const AnimatedButton = motion(Button);
 
-export function SuggestedQuestions() {
-  const questionsContainerRef = useRef<HTMLDivElement>(null);
+export const SuggestedQuestions = forwardRef<
+  HTMLDivElement,
+  { questions: string[] }
+>(({ questions }, ref) => {
+  const questionsContainerRef = useRef<HTMLDivElement | null>(null);
   const [isSuggestedQuestionsOpen, setIsSuggestedQuestionsOpen] =
     useState(false);
   const [questionsContainer, setQuestionsContainer] = useState({
@@ -42,7 +37,6 @@ export function SuggestedQuestions() {
 
   function getQuestionsContainerHeight() {
     const height = questionsContainerRef.current?.scrollHeight;
-    console.log(height);
     const state = isSuggestedQuestionsOpen ? "onOpen" : "onClose";
     setQuestionsContainer((prev) => ({
       ...prev,
@@ -71,7 +65,11 @@ export function SuggestedQuestions() {
       exit={{ height: questionsContainer.onClose || "auto" }}
       onAnimationComplete={getQuestionsContainerHeight}
       transition={{ duration: 0.3, delay: isSuggestedQuestionsOpen ? 0.3 : 0 }}
-      ref={questionsContainerRef}
+      ref={(el) => {
+        if (typeof ref === "function") ref(el);
+        else if (ref) ref.current = el;
+        questionsContainerRef.current = el;
+      }}
     >
       <button
         className="absolute left-1/2 top-2 z-10 mx-auto flex h-1.5 w-[100px] flex-shrink-0 -translate-x-1/2 justify-center rounded-full"
@@ -109,7 +107,7 @@ export function SuggestedQuestions() {
             delay: !isSuggestedQuestionsOpen ? 0.3 : 0,
           }}
         >
-          {helpfulQuestions.map((question) => (
+          {questions.map((question) => (
             <AnimatedButton
               variant="outline"
               size="sm"
@@ -137,4 +135,4 @@ export function SuggestedQuestions() {
       </div>
     </motion.div>
   );
-}
+});
