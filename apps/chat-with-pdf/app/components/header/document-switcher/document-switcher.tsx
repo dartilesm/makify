@@ -89,7 +89,7 @@ export function DocumentSwitcher({
               className,
             )}
           >
-            <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
               <span className="truncate">{selectedDocument?.name}</span>
             </div>
@@ -116,12 +116,12 @@ export function DocumentSwitcher({
                     className="flex h-10 cursor-pointer flex-row gap-2 text-sm"
                   >
                     <div className="flex flex-1 flex-row items-center gap-2 truncate">
-                      <FileTextIcon className="min-h-4 h-4 w-4 shrink-0 text-gray-500" />
+                      <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
                       <span className="truncate">{document?.name}</span>
                     </div>
                     <CheckIcon
                       className={cn(
-                        "min-h-4 h-4 w-4 shrink-0",
+                        "h-4 min-h-4 w-4 shrink-0",
                         params.documentId === document.chatId
                           ? "opacity-100"
                           : "opacity-0",

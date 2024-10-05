@@ -82,7 +82,7 @@ export function ChatFooter() {
   }
 
   return (
-    <div className="border-border bg-background relative z-50 flex flex-col gap-2 border-t p-3">
+    <div className="border-border bg-background relative z-10 flex flex-col gap-2 border-t p-3">
       <AnimatePresence>
         {chatData.suggestedQuestions && (
           <AnimatedSuggestedQuestions questions={chatData.suggestedQuestions} />

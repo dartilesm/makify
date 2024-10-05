@@ -124,7 +124,7 @@ export function MessageBubble({
                       <TooltipContent
                         align="start"
                         side="bottom"
-                        className="bg-background rounded-md border p-1 dark:border-2"
+                        className="bg-background z-[1] rounded-md border p-1 dark:border-2"
                         sideOffset={-10}
                         alignOffset={10}
                         avoidCollisions={false}
