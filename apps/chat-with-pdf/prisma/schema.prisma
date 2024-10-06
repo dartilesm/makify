@@ -1,26 +1,50 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Chat {
-    id               String   @id @unique @default(uuid())
-    documentMetadata Json?
-    documentUrl      String?
-    messages         Json?
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
+  id               String    @id @unique @default(uuid())
+  documentMetadata Json?
+  documentUrl      String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  messages         Json?
+  document         Document?
+}
+
+model Document {
+  id               String             @id @unique @default(uuid())
+  name             String?
+  url              String?
+  metadata         Json?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  chatId           String?            @unique
+  chat             Chat?              @relation(fields: [chatId], references: [id])
+  documentSections DocumentSections[]
+}
+
+model DocumentSections {
+  id         String                      @id @unique @default(dbgenerated("extensions.gen_random_uuid()")) @db.Uuid
+  embedding  Unsupported("vector(768)")?
+  chatId     String?
+  text       String?
+  textChunk  String?
+  pageNumber Int?
+  document   Document?                   @relation(fields: [documentId], references: [id])
+  documentId String?
 }
 
 model Feedback {
-    id        String   @id @unique @default(uuid())
-    type      String
-    message   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  type      String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

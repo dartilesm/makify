@@ -1,65 +1,43 @@
-import { getPineconeClient } from "./pinecone.client";
+import { Tables } from "database.types";
 import { getEmbeddings } from "./vector-store";
-
-async function getMatchesFromEmbeddings(
-  embeddings: number[],
-  documentId: string,
-) {
-  const pineconeClient = await getPineconeClient(documentId);
-
-  try {
-    const queryResult = await pineconeClient.query({
-      topK: 5,
-      vector: embeddings,
-      includeMetadata: true,
-    });
-
-    return queryResult.matches || [];
-  } catch (error) {
-    console.log("error querying embeddings", error);
-    throw error;
-  }
-}
+import { createClient } from "@/lib/supabase/server";
 
 export async function getContext(query: string, documentId: string) {
   // User query embeddings
   const userQueryEmbeddings = await getEmbeddings(query);
 
-  // Get matches from Pinecone
-  const matches = await getMatchesFromEmbeddings(
-    userQueryEmbeddings,
-    documentId,
+  const supabase = createClient();
+
+  const { data: documentSections, error } = await supabase.rpc(
+    "match_documents",
+    {
+      query_embedding: userQueryEmbeddings,
+      match_threshold: 0.7,
+      match_count: 200,
+      document_id: documentId,
+    },
   );
 
-  const qualifiedMatches = matches.filter((match) => match?.score ?? 0 > 0.7);
+  const supabaseTextContent = documentSections.reduce(
+    (acc: string, currentDocSections: Tables<"DocumentSections">) => {
+      const { pageNumber, textChunk } = currentDocSections;
+      // Return the accumulator in this format:
+      // START PAGE 1 BLOCK
+      // Text extracted from page 1
 
-  const textContent = qualifiedMatches.reduce((acc, match) => {
-    const { metadata } = match;
-    const pageNumber = metadata?.pageNumber;
-    const text = metadata?.text;
-    // Return the accumulator in this format:
-    // START PAGE 1 BLOCK
-    // Text extracted from page 1
+      if (!acc.includes(`START PAGE ${pageNumber} BLOCK`)) {
+        acc += `START PAGE ${pageNumber} BLOCK\n`;
+      }
+      acc += `${textChunk}\n`;
 
-    if (!acc.includes(`START PAGE ${pageNumber} BLOCK`)) {
-      acc += `START PAGE ${pageNumber} BLOCK\n`;
-    }
-    acc += `${text}\n`;
+      return acc;
+    },
+    "",
+  );
 
-    return acc;
-  }, "");
-
-  const docs = qualifiedMatches.map((match) => match.metadata?.text);
-  const pageNumbers = qualifiedMatches
-    .map((match) => match.metadata?.pageNumber)
-    .filter((pageNumber, index, self) => self.indexOf(pageNumber) === index);
-
-  const context = {
-    text: docs.join("\n").substring(0, 3000),
-    pageNumbers,
-  };
+  const textContentNormalized = supabaseTextContent.replace(/\n/g, " ");
 
   // Limit the block text to 3000 characters
 
-  return textContent.substring(0, 3000);
+  return textContentNormalized.substring(0, 3000);
 }

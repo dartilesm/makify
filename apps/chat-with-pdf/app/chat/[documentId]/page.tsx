@@ -1,24 +1,24 @@
-import { getCachedChatMessages } from "@/app/actions/get-chat-messages";
 import { ChatIdContainer } from "@/components/pages-containers/chat-id-container";
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getChat } from "supabase/queries/get-chat";
+import { getDocumentByChatId } from "supabase/queries/get-document-by-chat-id";
 
 type Props = {
   params: {
     documentId: string;
   };
 };
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const chatData = await getCachedChatMessages(params.documentId);
+  const document = await getDocumentByChatId(params.documentId);
 
   return {
-    title: `Chat - ${(chatData?.documentMetadata as Record<string, unknown>)?.title}`,
+    title: `Chat - ${document?.name || "Untitled"}`,
   };
 }
 
 export default async function Page({ params }: Props) {
-  const chatData = await getCachedChatMessages(params.documentId);
+  const chatData = await getChat(params.documentId);
 
   if (!chatData) redirect("/chat");
 

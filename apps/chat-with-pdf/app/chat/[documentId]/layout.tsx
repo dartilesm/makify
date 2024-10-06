@@ -1,23 +1,16 @@
 import { Header } from "@/components/header/header";
-import { prisma } from "@/lib/prisma";
-import { cache } from "react";
-
-const getCachedChats = cache(getChats);
-
-async function getChats() {
-  const chats = await prisma.chat.findMany();
-  return chats;
-}
+import { getDocuments } from "supabase/queries/get-documents";
 
 export default async function ChatLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const chats = await getCachedChats();
+  const documents = await getDocuments();
+
   return (
     <div className="flex h-[100dvh] max-h-[100dvh] flex-col">
-      <Header chats={chats} />
+      <Header chats={documents} />
       {children}
     </div>
   );

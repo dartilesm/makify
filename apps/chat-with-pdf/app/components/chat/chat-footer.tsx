@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Alert,
   AlertDescription,
@@ -11,13 +13,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useGlobalChat } from "hooks/use-global-chat";
 import { SendIcon, XIcon } from "lucide-react";
 import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { SuggestedQuestions } from "./chat-footer/suggested-questions";
+
+const AnimatedSuggestedQuestions = motion(SuggestedQuestions);
 
 export function ChatFooter() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
 
   const {
-    globalContext: { extraData, setExtraData },
+    globalContext: { extraData, chatData, setExtraData },
     useChatReturn: {
       input: inputValue,
       setInput,
@@ -77,7 +82,12 @@ export function ChatFooter() {
   }
 
   return (
-    <div className="border-border z-10 flex flex-col gap-2 border-t p-3">
+    <div className="border-border bg-background relative z-10 flex flex-col gap-2 border-t p-3">
+      <AnimatePresence>
+        {chatData.suggestedQuestions && (
+          <AnimatedSuggestedQuestions questions={chatData.suggestedQuestions} />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {(extraData?.quotedText as string) && (
           <motion.div
@@ -107,6 +117,7 @@ export function ChatFooter() {
           </motion.div>
         )}
       </AnimatePresence>
+
       <form
         className="flex flex-col gap-2"
         onSubmit={handleOnSubmit}
@@ -122,7 +133,7 @@ export function ChatFooter() {
           )}
         >
           <Textarea
-            className="min-h-2 max-h-24 flex-1 resize-none border-0 border-none p-[2px] shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
+            className="max-h-24 min-h-2 flex-1 resize-none border-0 border-none p-[2px] shadow-none focus:[box-shadow:none] focus:[outline:none] focus-visible:[box-shadow:none] focus-visible:[outline:none]"
             placeholder={`Ask me anything about the document...`}
             rows={1}
             onChange={handleTextareaChange}
