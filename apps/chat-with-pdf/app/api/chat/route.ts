@@ -34,8 +34,6 @@ export async function POST(req: Request) {
   } = (await req.json()) as RequestBody;
   const lastMessage = messages.at(-1) as Message;
 
-  console.log({ lastMessage });
-
   const userMessage = parsedUserMessage(
     lastMessage,
     (lastMessage.data as Record<string, unknown>)?.quotedText as string,
@@ -46,8 +44,6 @@ export async function POST(req: Request) {
     : { page1: "" };
 
   messages[messages.length - 1]!.content = userMessage;
-
-  console.log({ convertToCoreMessages: convertToCoreMessages(messages) });
 
   const systemInstructions = `AI assistant is a brand new, powerful, human-like artificial intelligence.
     The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.

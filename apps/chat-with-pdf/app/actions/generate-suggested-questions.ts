@@ -3,6 +3,7 @@
 import { getContext } from "@/lib/context";
 import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function generateSuggestedQuestions(documentId: string) {
@@ -18,6 +19,8 @@ export async function generateSuggestedQuestions(documentId: string) {
     }),
     prompt: `You are an AI assistant that generates a list of 3-5 suggested questions based on the following document summary. The questions should be diverse and cover different aspects of the document: ${documentSummary}`,
   });
+
+  revalidatePath(`/chat/${documentId}`, "page");
 
   return object;
 }

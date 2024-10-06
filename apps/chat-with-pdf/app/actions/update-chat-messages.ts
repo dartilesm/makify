@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { Tables } from "database.types";
+import { revalidatePath } from "next/cache";
 
 type UpdateChatMessagesParams = {
   documentId: string;
@@ -23,4 +24,6 @@ export async function updateChatMessages({
       documentMetadata,
     })
     .eq("id", documentId);
+
+  revalidatePath(`/chat/${documentId}`, "page");
 }

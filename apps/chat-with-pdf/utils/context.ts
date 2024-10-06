@@ -36,7 +36,6 @@ export async function getContext(query: string, documentId: string) {
   );
 
   const textContentNormalized = supabaseTextContent.replace(/\n/g, " ");
-  console.log(textContentNormalized);
 
   // Limit the block text to 3000 characters
 

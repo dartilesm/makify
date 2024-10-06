@@ -15,8 +15,6 @@ import { updateChatMessages } from "../actions/update-chat-messages";
 import { Tables } from "database.types";
 import { createClient } from "@/lib/supabase/client";
 import { generateDocumentTitle as generateDocumentTitleAction } from "../actions/generate-document-title";
-import { generateSuggestedQuestions } from "../actions/generate-suggested-questions";
-import { revalidatePath, revalidateTag } from "next/cache";
 
 const EMPTY_CHAT_DATA: Partial<Tables<"Chat">> = {
   id: "",
@@ -69,7 +67,6 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
   useEffect(() => {
     fetchChatData();
     generateDocumentTitle();
-    if (!chatData.suggestedQuestions) fetchSuggestedQuestions();
   }, []);
 
   useEffect(sendPreloadedPrompts, [isLoading]);
@@ -113,26 +110,6 @@ export function ChatProvider({ children, chatData }: ChatProviderProps) {
         .update({ name: generatedTitle })
         .eq("chatId", chatId);
     }
-  }
-
-  async function fetchSuggestedQuestions() {
-    const supabase = createClient();
-
-    const chatId = chatData.id as string;
-
-    const { questions } = await generateSuggestedQuestions(chatId);
-
-    const { error } = await supabase
-      .from("Chat")
-      .update({ suggestedQuestions: questions })
-      .eq("id", chatId);
-
-    if (error) {
-      console.error(error);
-    }
-
-    revalidatePath(`/chat/${chatId}`);
-    revalidateTag("chat");
   }
 
   function sendPreloadedPrompts() {
