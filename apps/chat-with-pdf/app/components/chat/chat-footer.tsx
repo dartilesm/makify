@@ -12,13 +12,14 @@ import { Message } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGlobalChat } from "hooks/use-global-chat";
 import { SendIcon, XIcon } from "lucide-react";
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { SuggestedQuestions } from "./chat-footer/suggested-questions";
 
 const AnimatedSuggestedQuestions = motion(SuggestedQuestions);
 
 export function ChatFooter() {
   const formRef = useRef<HTMLFormElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [hasTextareaGrown, setHasTextareaGrown] = useState(false);
 
   const {
@@ -31,6 +32,8 @@ export function ChatFooter() {
       isLoading,
     },
   } = useGlobalChat();
+
+  useEffect(autoFocusTextarea, [extraData?.quotedText]);
 
   function extractTextareaLineHeight(textarea: HTMLTextAreaElement) {
     const computedStyle = window.getComputedStyle(textarea);
@@ -67,6 +70,12 @@ export function ChatFooter() {
   function removeQuotedText() {
     setExtraData({});
     setInput("");
+  }
+
+  function autoFocusTextarea() {
+    if (textareaRef.current && Boolean(extraData?.quotedText)) {
+      textareaRef.current.focus();
+    }
   }
 
   function handleOnSubmit(
@@ -139,6 +148,7 @@ export function ChatFooter() {
             onChange={handleTextareaChange}
             onKeyDown={handleTextareaKeyDown}
             value={inputValue}
+            ref={textareaRef}
           />
           <Button
             type="submit"
