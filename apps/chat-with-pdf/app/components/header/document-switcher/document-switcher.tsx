@@ -24,6 +24,7 @@ import {
 import { cn } from "@makify/ui/lib/utils";
 import {
   CheckIcon,
+  ChevronDownIcon,
   ChevronsUpDownIcon,
   FileTextIcon,
   PencilIcon,
@@ -79,7 +80,7 @@ export function DocumentSwitcher({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             role="combobox"
             aria-expanded={open}
             ref={buttonRef}
@@ -89,11 +90,10 @@ export function DocumentSwitcher({
               className,
             )}
           >
-            <FileTextIcon className="h-4 min-h-4 w-4 shrink-0 text-gray-500" />
             <div className="flex flex-col truncate text-left">
               <span className="truncate">{selectedDocument?.name}</span>
             </div>
-            <ChevronsUpDownIcon className="ml-auto h-3 w-3 shrink-0 opacity-50" />
+            <ChevronDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent

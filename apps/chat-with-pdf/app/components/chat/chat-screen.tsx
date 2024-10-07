@@ -42,7 +42,7 @@ export function ChatScreen({ loading }: ChatScreenProps) {
         className="flex w-full flex-1 flex-row justify-between"
         direction="horizontal"
       >
-        <ResizablePanel minSize={35} defaultSize={100} id="chat-view">
+        <ResizablePanel minSize={20} defaultSize={35} id="chat-view">
           {!loading && <Chat className="flex-1" />}
           {loading && <ChatLoading />}
         </ResizablePanel>
