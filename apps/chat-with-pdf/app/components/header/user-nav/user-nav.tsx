@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@makify/ui/components/button";
 import {
   DropdownMenu,

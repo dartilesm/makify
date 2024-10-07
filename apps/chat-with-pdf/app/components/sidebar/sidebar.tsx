@@ -23,21 +23,34 @@ import {
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { FeedbackDialog } from "../header/feedback-dialog";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { cn } from "@makify/ui/lib/utils";
 
 type SidebarProps = {
   userInfo: React.ReactNode;
   userAvatar: React.ReactNode;
+  className?: string;
 };
 
-export function Sidebar({ userAvatar, userInfo }: SidebarProps) {
+export function Sidebar({ userAvatar, userInfo, className }: SidebarProps) {
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  async function handleLogout() {
+    const supabase = createClient();
+
+    await supabase.auth.signOut();
+
+    router.push("/login");
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
       <SheetTrigger asChild>
         <div
-          className="flex items-end pb-2 pl-1"
+          className={cn("flex items-end pb-2 pl-1", className)}
           onMouseEnter={() => setIsOpen(true)}
         >
           <div className="flex flex-col items-center gap-2">
@@ -52,7 +65,7 @@ export function Sidebar({ userAvatar, userInfo }: SidebarProps) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2"
+        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2 sm:max-w-xs"
         hideCloseIcon
         onMouseLeave={() => setIsOpen(false)}
       >
@@ -110,7 +123,11 @@ export function Sidebar({ userAvatar, userInfo }: SidebarProps) {
           <Separator className="ml-0" />
           <div className="flex flex-col gap-1">
             {userInfo}
-            <Button variant="ghost" className="flex justify-start gap-2">
+            <Button
+              variant="ghost"
+              className="flex justify-start gap-2"
+              onClick={handleLogout}
+            >
               <LogOut className="h-4 w-4" />
               <span>Logout</span>
             </Button>
