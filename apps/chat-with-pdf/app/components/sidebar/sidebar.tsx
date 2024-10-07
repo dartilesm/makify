@@ -1,0 +1,122 @@
+"use client";
+
+import {
+  Button,
+  Separator,
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTrigger,
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@makify/ui";
+import {
+  LaptopMinimalIcon,
+  LogOut,
+  MessageSquareIcon,
+  MoonIcon,
+  PanelRightIcon,
+  SunIcon,
+  SunMoonIcon,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { useState } from "react";
+import { FeedbackDialog } from "../header/feedback-dialog";
+
+type SidebarProps = {
+  userInfo: React.ReactNode;
+  userAvatar: React.ReactNode;
+};
+
+export function Sidebar({ userAvatar, userInfo }: SidebarProps) {
+  const { theme, setTheme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
+      <SheetTrigger asChild>
+        <div
+          className="flex items-end pb-2 pl-1"
+          onMouseEnter={() => setIsOpen(true)}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div className="outline-border relative h-8 w-8 rounded-full shadow-sm outline outline-1 outline-offset-2">
+              {userAvatar}
+            </div>
+            <Button variant="ghost" onClick={() => setIsOpen(!isOpen)}>
+              <PanelRightIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </SheetTrigger>
+      <SheetContent
+        side="left"
+        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2"
+        hideCloseIcon
+        onMouseLeave={() => setIsOpen(false)}
+      >
+        <SheetHeader></SheetHeader>
+        <SheetFooter className="flex gap-2 sm:flex-col sm:justify-start sm:space-x-0">
+          <div className="flex flex-col gap-2">
+            <FeedbackDialog
+              triggerEl={
+                <Button
+                  variant="ghost"
+                  className="flex w-full justify-start gap-2"
+                >
+                  <MessageSquareIcon className="h-4 w-4" />
+                  Feedback
+                </Button>
+              }
+            />
+            <Button
+              variant="ghost"
+              className="flex w-full justify-between gap-2"
+            >
+              <span className="flex items-center justify-start gap-2">
+                <SunMoonIcon className="h-4 w-4" />
+                Theme
+              </span>
+              <ToggleGroup
+                type="single"
+                size="sm"
+                value={theme}
+                onValueChange={(value) => setTheme(value)}
+                onClick={(event) => event.stopPropagation()}
+                className="border-border bg-background rounded-md border"
+              >
+                <ToggleGroupItem
+                  value="system"
+                  className="aspect-square rounded-md"
+                >
+                  <LaptopMinimalIcon className="text-muted-foreground h-3 w-3" />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="light"
+                  className="aspect-square rounded-md"
+                >
+                  <SunIcon className="text-muted-foreground h-3 w-3" />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="dark"
+                  className="aspect-square rounded-md"
+                >
+                  <MoonIcon className="text-muted-foreground h-3 w-3" />
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </Button>
+          </div>
+          <Separator className="ml-0" />
+          <div className="flex flex-col gap-1">
+            {userInfo}
+            <Button variant="ghost" className="flex justify-start gap-2">
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </Button>
+          </div>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+}
