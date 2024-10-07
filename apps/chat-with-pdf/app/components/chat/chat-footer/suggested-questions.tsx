@@ -93,7 +93,7 @@ export const SuggestedQuestions = forwardRef<
         <motion.div
           className={cn("flex", {
             "space-x-2 overflow-x-auto pb-3": !isSuggestedQuestionsOpen,
-            "max-h-full overflow-auto ": isSuggestedQuestionsOpen,
+            "max-h-full w-full overflow-auto": isSuggestedQuestionsOpen,
           })}
           initial={{ opacity: 0 }}
           animate={{
