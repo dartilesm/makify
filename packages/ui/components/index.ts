@@ -18,6 +18,7 @@ export * from "./popover";
 export * from "./resizable";
 export * from "./separator";
 export * from "./scroll-area";
+export * from "./sheet";
 export * from "./select";
 export * from "./switch";
 export * from "./tabs";
