@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
 import {
   Button,
   Separator,
@@ -11,21 +12,22 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@makify/ui";
+import { cn } from "@makify/ui/lib/utils";
 import {
   LaptopMinimalIcon,
   LogOut,
   MessageSquareIcon,
+  MessageSquarePlusIcon,
   MoonIcon,
   PanelRightIcon,
   SunIcon,
   SunMoonIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FeedbackDialog } from "../header/feedback-dialog";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { cn } from "@makify/ui/lib/utils";
+import RecentConversations from "./recent-conversations";
 
 type SidebarProps = {
   userInfo: React.ReactNode;
@@ -65,11 +67,21 @@ export function Sidebar({ userAvatar, userInfo, className }: SidebarProps) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2 sm:max-w-xs"
+        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2 pt-14 sm:max-w-xs"
         hideCloseIcon
         onMouseLeave={() => setIsOpen(false)}
       >
-        <SheetHeader></SheetHeader>
+        <SheetHeader>
+          {/* Add list of chats here and a button to create a new chat */}
+          <div className="flex flex-col gap-4">
+            <Button variant="outline" className="justify-start gap-2">
+              <MessageSquarePlusIcon className="h-4 w-4" />
+              New conversation
+            </Button>
+            <Separator />
+            <RecentConversations />
+          </div>
+        </SheetHeader>
         <SheetFooter className="flex gap-2 sm:flex-col sm:justify-start sm:space-x-0">
           <div className="flex flex-col gap-2">
             <FeedbackDialog
