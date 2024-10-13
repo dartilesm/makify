@@ -105,7 +105,7 @@ async function* createNewChat({
     .select("id")
     .single();
 
-  if (chatError && !chat) {
+  if (chatError) {
     console.error(chatError);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
@@ -154,11 +154,8 @@ async function* createNewChat({
       .update({
         documentUrl,
       })
-      .eq("chatId", chat.id);
-    /*       await prisma.chat.update({
-        where: { id: chat.id },
-        data: { documentUrl },
-      }); */
+      .eq("id", chat.id);
+
     if (chatUpdateError) {
       await deleteChat(chat.id, false);
       return getLoadingMessages({

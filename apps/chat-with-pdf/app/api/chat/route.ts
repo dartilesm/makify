@@ -55,10 +55,18 @@ export async function POST(req: Request) {
     END OF DOCUMENT BLOCK
     AI assistant will take into account any DOCUMENT BLOCK that is provided in a conversation.
     When referencing information from the document, AI will use the following format:
-    1. Apply underline styling to the specific information from a page using HTML <u> tags with a data-page attribute containing the page number.
-    2. Immediately after the closing </u> tag, add the page reference as a superscript with the format <sup data-page="{page number}">{page number}</sup>.
-    3. If information spans multiple pages or comes from different pages, use separate underline tags and superscript references for each.
-    Example: "The document states that <u data-page="3">English is considered a relatively easy language to learn</u><sup data-page="3">3</sup>. However, it also mentions that <u data-page="5">Mandarin Chinese is often regarded as one of the most challenging languages for English speakers</u><sup data-page="5">5</sup>."
+    1. Apply underline styling to the AI's interpretation or paraphrase of the information using HTML <u> tags.
+    2. Include two attributes in the <u> tag:
+       - data-page: containing the page number where the information is found
+       - data-based-text: containing the exact text from the DOCUMENT BLOCK that the AI used as a basis for its response
+    3. The content inside the <u> tags can be the AI's own words, related to but not necessarily identical to the data-based-text.
+    4. Immediately after the closing </u> tag, add the page reference as a superscript with the format <sup data-page="{page number}">{page number}</sup>.
+    5. If information spans multiple pages or comes from different pages, use separate underline tags and superscript references for each.
+    6. Always try to wrap entire paragraphs, sentences or meaningful phrases within the <u> tags.
+
+    Example: "The document discusses language learning difficulty. <u data-page="3" data-based-text="English is widely considered one of the easiest languages to learn">It suggests that English is relatively simple for many learners to acquire</u><sup data-page="3">3</sup>. In contrast, <u data-page="5" data-based-text="Mandarin Chinese poses significant challenges for English speakers due to its tonal nature and complex writing system">Mandarin Chinese is described as particularly challenging for English speakers, largely due to its tonal aspects and intricate writing system</u><sup data-page="5">5</sup>."
+
+    AI assistant must ensure that the data-based-text attribute contains the exact text extracted from the DOCUMENT BLOCK, while the content inside the <u> tags can be the AI's interpretation or paraphrase of that information.
     AI assistant can format the response using either Markdown or HTML, but should not mix the two formats within the same response. For example:
     Correct (HTML): "<p>This is a paragraph.</p><ul><li>List item</li></ul>"
     Correct (Markdown): "This is a paragraph.\n\n- List item"
