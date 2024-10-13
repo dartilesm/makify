@@ -1,18 +1,12 @@
 import { ChatsContainer } from "@/components/pages-containers/chats-container";
-import { prisma } from "@/lib/prisma";
-import { cache } from "react";
+import { getChats } from "supabase/queries/get-chats";
+import { getDocuments } from "supabase/queries/get-documents";
 
 export const dynamic = "force-dynamic";
 
-const getCachedChats = cache(getChats);
-
-async function getChats() {
-  const chats = await prisma.chat.findMany();
-  return chats;
-}
-
 export default async function Page() {
-  const chats = await getCachedChats();
+  const chats = await getChats();
+  const documents = await getDocuments();
 
-  return <ChatsContainer chats={chats} />;
+  return <ChatsContainer chats={chats} documents={documents} />;
 }

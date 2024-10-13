@@ -1,26 +1,18 @@
-import { prisma } from "@/lib/prisma";
 import { Avatar, AvatarFallback, AvatarImage } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { cache } from "react";
-
-const getCachedChats = cache(getChats);
-
-async function getChats() {
-  const chats = await prisma.chat.findMany();
-  return chats;
-}
+import { getChats } from "supabase/queries/get-chats";
 
 type ChatListProps = {
   documentId: string;
 };
 
 export async function ChatList({ documentId }: ChatListProps) {
-  const chats = await getCachedChats();
+  const chats = await getChats();
 
   return (
-    <div className="hidden h-full border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
+    <div className="hidden h-full border-r bg-gray-100/40 dark:bg-gray-800/40 lg:block">
       <div className="flex flex-col gap-2">
         <div className="flex h-[60px] items-center px-6">
           <Link className="flex items-center gap-2 font-semibold" href="#">

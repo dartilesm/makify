@@ -56,7 +56,7 @@ export function ChatHeader() {
   }
 
   return (
-    <header className="border-border flex items-center border-b-[1px] p-2">
+    <header className="border-border bg-background z-[2] flex items-center p-2">
       <TooltipProvider delayDuration={0}>
         <div className="ml-auto flex h-9 items-center gap-2">
           <BlobProvider

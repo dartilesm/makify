@@ -11,7 +11,6 @@ import {
   useToast,
 } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
-import { Chat } from "@prisma/client";
 import { Message } from "ai";
 import { AnimatePresence, CustomDomComponent, motion } from "framer-motion";
 import { useGlobalChat } from "hooks/use-global-chat";
@@ -27,6 +26,7 @@ import { useParams } from "next/navigation";
 import { forwardRef, RefAttributes, useState } from "react";
 import { QUICK_ACTIONS } from "./constants/message-quick-actions";
 import { MessageActions } from "./types/message-actions";
+import { Tables } from "database.types";
 
 type MessageQuickActionsProps = {
   message: Message;
@@ -145,7 +145,7 @@ export function MessageQuickActions({
         };
         await updateChatMessages({
           documentId: params?.documentId as string,
-          messages: messages as unknown as Chat["messages"],
+          messages: messages as unknown as Tables<"Chat">["messages"],
         });
         toast({
           title: messageData?.bookmarked
@@ -243,12 +243,4 @@ export function MessageQuickActions({
       </TooltipProvider>
     </ToggleGroup>
   );
-}
-
-function QuickActionButton({ Icon, SucessIcon, active }: MessageActions) {
-  const AnimatedIcon = motion(Icon);
-  const AnimatedSucessIcon = (
-    SucessIcon ? motion(SucessIcon) : SucessIcon
-  ) as CustomDomComponent<LucideProps & RefAttributes<SVGSVGElement>>;
-  const ActiveIcon = active?.Icon;
 }
