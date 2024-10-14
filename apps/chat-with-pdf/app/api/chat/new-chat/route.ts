@@ -1,5 +1,5 @@
 import { deleteChat } from "@/app/actions/delete-chat";
-import { INPUT_NAME } from "@/components/header/document-switcher/constants/input-names";
+import { INPUT_NAME } from "@/components/header/document-title/constants/input-names";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
 import { getLoadingMessages } from "@/lib/get-loading-messages";
 import { getPdfData } from "@/lib/get-pdf-metadata";

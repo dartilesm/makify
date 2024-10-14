@@ -19,7 +19,7 @@ import { useState } from "react";
 import { Container } from "../ui/container";
 import { Heading } from "../ui/heading";
 import { SadFaceIcon } from "icons/sad-face";
-import { NewDocumentDialog } from "../header/document-switcher/new-document-dialog/new-document-dialog";
+import { NewDocumentDialog } from "../header/document-title/new-document-dialog/new-document-dialog";
 import { Tables } from "database.types";
 
 type ChatsContainerProps =

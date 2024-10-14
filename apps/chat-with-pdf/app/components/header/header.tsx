@@ -1,6 +1,6 @@
 import { Tables } from "database.types";
 import { Logo } from "../ui/logo";
-import { DocumentSwitcher } from "./document-switcher/document-switcher";
+import { DocumentTitle } from "./document-title/document-title";
 
 type HeaderProps = {
   chats: Tables<"Document">[];
@@ -13,7 +13,7 @@ export async function Header({ chats = [] }: HeaderProps) {
         <Logo className="z-30" />
 
         <div className="flex h-full flex-1 justify-center overflow-hidden">
-          {!!chats.length && <DocumentSwitcher documents={chats} />}
+          {!!chats.length && <DocumentTitle documents={chats} />}
         </div>
         <div className="flex flex-row items-center gap-2 max-sm:hidden"></div>
       </div>

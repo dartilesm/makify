@@ -43,7 +43,7 @@ function getDeleteFormSchema(documentId: string) {
   });
 }
 
-const enum EDIT_DOCUMENT_TAB {
+export const enum EDIT_DOCUMENT_TAB {
   EDIT = "edit",
   DELETE = "delete",
 }
@@ -51,12 +51,14 @@ const enum EDIT_DOCUMENT_TAB {
 type EditDocumentDialogProps = {
   isOpen: boolean;
   document: Tables<"Document">;
+  defaultTab?: EDIT_DOCUMENT_TAB;
   onOpenChange?: (isOpen: boolean) => void;
 };
 
 export function EditDocumentDialog({
   isOpen,
   document,
+  defaultTab = EDIT_DOCUMENT_TAB.EDIT,
   onOpenChange = () => null,
 }: EditDocumentDialogProps) {
   const editForm = useForm<z.infer<typeof EditFormSchema>>({
@@ -109,10 +111,7 @@ export function EditDocumentDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1">
-          <Tabs
-            defaultValue={EDIT_DOCUMENT_TAB.EDIT}
-            className="flex h-full flex-col"
-          >
+          <Tabs defaultValue={defaultTab} className="flex h-full flex-col">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger
                 className="flex gap-2"

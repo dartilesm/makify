@@ -67,7 +67,7 @@ export function Sidebar({ userAvatar, userInfo, className }: SidebarProps) {
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2 pt-14 sm:max-w-xs"
+        className="z-20 flex flex-col justify-between rounded-br-md rounded-tr-md px-1 pb-2 pt-16 sm:max-w-xs"
         hideCloseIcon
         onMouseLeave={() => setIsOpen(false)}
       >

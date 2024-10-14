@@ -1,7 +1,7 @@
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
-} from "@/components/header/document-switcher/constants/loading-messages";
+} from "@/components/header/document-title/constants/loading-messages";
 import { PostgrestError } from "@supabase/supabase-js";
 
 let currentActiveIndex = -1;
