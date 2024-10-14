@@ -20,7 +20,6 @@ import {
   EDIT_DOCUMENT_TAB,
   EditDocumentDialog,
 } from "./edit-document-dialog/edit-document-dialog";
-import { NewDocumentDialog } from "./new-document-dialog/new-document-dialog";
 
 type DocumentTitleProps = {
   className?: string;
@@ -30,7 +29,6 @@ type DocumentTitleProps = {
 export function DocumentTitle({ className, documents }: DocumentTitleProps) {
   const params = useParams();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [showNewDocumentDialog, setShowNewDocumentDialog] = useState(false);
   const [editDocumentDialogTab, setEditDocumentDialogTab] =
     useState<EDIT_DOCUMENT_TAB | null>(null);
 
@@ -89,10 +87,6 @@ export function DocumentTitle({ className, documents }: DocumentTitleProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      <NewDocumentDialog
-        isOpen={showNewDocumentDialog}
-        onOpenChange={setShowNewDocumentDialog}
-      />
       {selectedDocument && editDocumentDialogTab && (
         <EditDocumentDialog
           document={selectedDocument}
