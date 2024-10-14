@@ -55,7 +55,7 @@ export function Sidebar({ userAvatar, userInfo, className }: SidebarProps) {
 
   return (
     <>
-      <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
+      <Sheet open onOpenChange={setIsOpen} modal={false}>
         <SheetTrigger asChild>
           <div
             className={cn("flex items-end pb-2 pl-1", className)}

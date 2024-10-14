@@ -12,11 +12,15 @@ export async function UserInfo() {
       <div className="outline-border relative h-8 w-8 rounded-full shadow-sm outline outline-1 outline-offset-2">
         <UserAvatar />
       </div>
-      <div className="flex flex-col text-sm font-medium">
+      <div className="flex flex-col overflow-hidden text-sm font-medium">
         <span>
-          {user?.user_metadata?.full_name || user?.user_metadata?.name}
+          {user?.user_metadata?.full_name ||
+            user?.user_metadata?.name ||
+            "Unknown User"}
         </span>
-        <span className="text-muted-foreground">{user?.email}</span>
+        <span className="text-muted-foreground truncate" title={user?.email}>
+          {user?.email}
+        </span>
       </div>
     </div>
   );
