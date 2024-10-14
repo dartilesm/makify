@@ -12,7 +12,16 @@ type SignUpProps = {
 export async function signup(signUpData: SignUpProps) {
   const supabase = createClient();
 
-  const { error } = await supabase.auth.signUp(signUpData);
+  const baseUrl = process.env.VERCEL_URL || "https://localhost:3000";
+
+  const emailRedirectTo = `${baseUrl}/api/auth/callback`;
+
+  const { error } = await supabase.auth.signUp({
+    ...signUpData,
+    options: {
+      emailRedirectTo,
+    },
+  });
 
   if (error) {
     throw error;
