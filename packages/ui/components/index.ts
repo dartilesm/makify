@@ -13,6 +13,7 @@ export * from "./form";
 export * from "./avatar";
 export * from "./label";
 export * from "./skeleton";
+export * from "./input-otp";
 export * from "./pagination";
 export * from "./popover";
 export * from "./resizable";
