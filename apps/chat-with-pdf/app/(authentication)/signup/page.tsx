@@ -1,4 +1,4 @@
-import { SignUpContainer } from "@/components/pages-containers/sign-up-container";
+import { SignUpContainer } from "@/components/pages-containers/signup/register";
 import { Suspense } from "react";
 
 export default function LoginPage() {
