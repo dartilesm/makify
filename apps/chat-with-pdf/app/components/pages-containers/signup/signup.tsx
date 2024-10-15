@@ -47,7 +47,7 @@ const FormSchema = z
     { message: "Password does't match", path: ["confirm-pass"] },
   );
 
-export default function SignUp({ redirectTo }: { redirectTo: string }) {
+export function SignUp({ redirectTo }: { redirectTo: string }) {
   const queryString =
     typeof window !== "undefined" ? window.location.search : "";
   const urlParams = new URLSearchParams(queryString);

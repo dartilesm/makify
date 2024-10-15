@@ -1,17 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { SignUp } from "./signup";
-import { Social } from "./social";
+import { Social } from "../signup/social";
+import { LoginForm } from "./login-form";
 
-export function SignUpContainer() {
+export function LoginContainer() {
   const queryString =
     typeof window !== "undefined" ? window?.location.search : "";
   const urlParams = new URLSearchParams(queryString);
 
   // Get the value of the 'next' parameter
   const next = urlParams.get("next");
-  const verify = urlParams.get("verify");
 
   return (
     <div className="w-full rounded-md border shadow  sm:w-[26rem] sm:p-5 dark:border-zinc-800">
@@ -24,10 +23,8 @@ export function SignUpContainer() {
             height={50}
             className=" mx-auto rounded-full"
           />
-          <h1 className="font-bold">Create Account</h1>
-          <p className="text-sm">
-            Welcome! Please fill in the details to get started.
-          </p>
+          <h1 className="font-bold">Sign in to SupaAuth</h1>
+          <p className="text-sm">Welcome back! Please sign in to continue</p>
         </div>
         <Social redirectTo={next || "/"} />
         <div className="flex items-center gap-5">
@@ -35,8 +32,8 @@ export function SignUpContainer() {
           <div className="text-sm">or</div>
           <div className="h-[0.5px] w-full flex-1 bg-zinc-400 dark:bg-zinc-800"></div>
         </div>
+        <LoginForm redirectTo={next || "/"} />
       </div>
-      <SignUp redirectTo={next || "/"} />
     </div>
   );
 }

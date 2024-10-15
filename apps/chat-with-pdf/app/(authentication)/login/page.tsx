@@ -1,4 +1,4 @@
-import { LoginContainer } from "@/components/pages-containers/login-container";
+import { LoginContainer } from "@/components/pages-containers/login/login-container";
 import { Suspense } from "react";
 
 export default function LoginPage() {

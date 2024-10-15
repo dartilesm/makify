@@ -5,7 +5,7 @@ import { IoLogoGithub } from "react-icons/io5";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@makify/ui";
 
-export default function Social({ redirectTo }: { redirectTo: string }) {
+export function Social({ redirectTo }: { redirectTo: string }) {
   const loginWithProvider = async (provider: "github" | "google") => {
     const supbase = createClient();
     await supbase.auth.signInWithOAuth({
