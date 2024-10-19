@@ -228,10 +228,7 @@ export function SignUp({ redirectTo }: { redirectTo: string }) {
               </FormItem>
             )}
           />
-          <Button
-            type="submit"
-            className="flex h-8 w-full items-center gap-2 bg-indigo-500 text-white transition-all hover:bg-indigo-600"
-          >
+          <Button type="submit" className="flex w-full gap-2">
             <AiOutlineLoading3Quarters
               className={cn(!isPending ? "hidden" : "block animate-spin")}
             />

@@ -116,26 +116,18 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
             </FormItem>
           )}
         />
-        <Button
-          type="submit"
-          className="flex h-8 w-full items-center gap-2 bg-indigo-500 text-white transition-all hover:bg-indigo-600"
-        >
+        <Button type="submit" className="flex w-full gap-2">
           <AiOutlineLoading3Quarters
             className={cn(!isPending ? "hidden" : "block animate-spin")}
           />
           Continue
         </Button>
       </form>
-      <div className="text-center text-sm">
-        <h1>
-          Doest not have account yet?{" "}
-          <Link
-            href={redirectTo ? `/register?next=` + redirectTo : "/register"}
-            className="text-blue-400"
-          >
-            Register
-          </Link>
-        </h1>
+      <div className="mt-4 text-center text-sm">
+        Don&apos;t have an account?{" "}
+        <Link href="/signup" className="underline">
+          Sign up
+        </Link>
       </div>
     </Form>
   );
