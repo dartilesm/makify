@@ -89,6 +89,7 @@ import RecentConversationsSidebarGroup from "./recent-conversation-sidebar-group
 import { Logo } from "../ui/logo";
 import { cn } from "@makify/ui/lib/utils";
 import { Button, ToggleGroup, ToggleGroupItem } from "@makify/ui";
+import { SecondarySidebarMenu } from "./secondary-sidebar-menu";
 // This is sample data.
 const data = {
   user: {
@@ -221,8 +222,6 @@ const data = {
 
 export function AppSidebar({ userInfo }: { userInfo: User }) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [activeTeam, setActiveTeam] = React.useState(data.teams[0]);
 
   function getAvatarFallback() {
     if (!userInfo) return "";
@@ -350,51 +349,7 @@ export function AppSidebar({ userInfo }: { userInfo: User }) {
           </SidebarMenu>
         </SidebarGroup> */}
         <RecentConversationsSidebarGroup />
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <MessageSquareIcon className="h-4 w-4" />
-                  Feedback
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <span className="flex items-center justify-start gap-2">
-                    <SunMoonIcon className="h-4 w-4" />
-                    Theme
-                  </span>
-                  <ToggleGroup
-                    type="single"
-                    size="sm"
-                    onClick={(event) => event.stopPropagation()}
-                    className="border-border bg-background rounded-md border"
-                  >
-                    <ToggleGroupItem
-                      value="system"
-                      className="aspect-square rounded-md"
-                    >
-                      <LaptopMinimalIcon className="text-muted-foreground h-3 w-3" />
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="light"
-                      className="aspect-square rounded-md"
-                    >
-                      <SunIcon className="text-muted-foreground h-3 w-3" />
-                    </ToggleGroupItem>
-                    <ToggleGroupItem
-                      value="dark"
-                      className="aspect-square rounded-md"
-                    >
-                      <MoonIcon className="text-muted-foreground h-3 w-3" />
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SecondarySidebarMenu />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

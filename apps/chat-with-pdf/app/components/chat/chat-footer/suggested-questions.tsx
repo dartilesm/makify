@@ -53,7 +53,7 @@ export const SuggestedQuestions = forwardRef<
 
   return (
     <motion.div
-      className={cn("flex flex-col gap-2")}
+      className="flex max-w-full flex-col gap-2"
       initial={{ maxHeight: 52 }}
       animate={{
         maxHeight: isSuggestedQuestionsOpen ? 200 : questionsContainer.onClose,
@@ -128,7 +128,9 @@ export const SuggestedQuestions = forwardRef<
                 <SparkleIcon className="absolute -top-1 left-1 h-3 w-3" />
                 <MessageSquareIcon className="h-3 w-3" />
               </span>
-              {question}
+              <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                {question}
+              </span>
             </AnimatedButton>
           ))}
         </motion.div>
