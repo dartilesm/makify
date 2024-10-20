@@ -1,7 +1,7 @@
 import { Header } from "@/components/header/header";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { createClient } from "@/lib/supabase/server";
-import { SidebarInset, SidebarProvider } from "@makify/ui";
+import { SidebarProvider } from "@makify/ui";
 import { cn } from "@makify/ui/lib/utils";
 import { User } from "@supabase/supabase-js";
 import { Metadata } from "next";

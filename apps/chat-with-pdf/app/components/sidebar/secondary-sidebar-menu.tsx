@@ -46,7 +46,7 @@ export function SecondarySidebarMenu() {
           <SidebarMenuItem>
             <FeedbackDialog
               triggerEl={
-                <SidebarMenuButton>
+                <SidebarMenuButton tooltip="Feedback">
                   <MessageSquareIcon className="h-4 w-4" />
                   Feedback
                 </SidebarMenuButton>
@@ -56,7 +56,7 @@ export function SecondarySidebarMenu() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
+                <SidebarMenuButton tooltip="Theme">
                   <span className="flex items-center justify-start gap-2">
                     <CurrentThemeIcon className="h-4 w-4" />
                     Theme
