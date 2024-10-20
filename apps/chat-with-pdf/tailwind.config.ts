@@ -14,12 +14,10 @@ const config: TailwindConfig = {
       "components/**/*.{ts,tsx}",
     ),
   ],
+  presets: [uiTailwindConfig],
   theme: {
-    ...uiTailwindConfig.theme,
     extend: {
-      ...uiTailwindConfig.theme.extend,
       keyframes: {
-        ...uiTailwindConfig.theme.extend.keyframes,
         shake: {
           "0%, 100%": {
             transform: "translateX(0)",
@@ -33,12 +31,11 @@ const config: TailwindConfig = {
         },
       },
       animation: {
-        ...uiTailwindConfig.theme.extend.animation,
         shake: "shake 0.6s ease-in-out 0.25s 1",
       },
     },
   },
-  plugins: [...uiTailwindConfig.plugins],
+  plugins: [],
 };
 
 export default config;

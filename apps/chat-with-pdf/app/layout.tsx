@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "@makify/ui/globals.css";
-import { Toaster } from "@makify/ui";
+import { SidebarProvider, Toaster } from "@makify/ui";
 import { ThemeProvider } from "./components/theme-provider";
 import { cn } from "@makify/ui/lib/utils";
 import PlausibleProvider from "next-plausible";
@@ -31,7 +31,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <SidebarProvider>{children}</SidebarProvider>
         </ThemeProvider>
         <Toaster />
       </body>

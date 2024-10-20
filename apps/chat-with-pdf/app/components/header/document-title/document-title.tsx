@@ -15,7 +15,8 @@ import { cn } from "@makify/ui/lib/utils";
 import { Tables } from "database.types";
 import { ChevronDownIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getDocumentByChatId } from "@/app/actions/get-document-by-chat-id";
 import {
   EDIT_DOCUMENT_TAB,
   EditDocumentDialog,
@@ -23,19 +24,28 @@ import {
 
 type DocumentTitleProps = {
   className?: string;
-  documents: Tables<"Document">[];
 };
 
-export function DocumentTitle({ className, documents }: DocumentTitleProps) {
+export function DocumentTitle({ className }: DocumentTitleProps) {
   const params = useParams();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [editDocumentDialogTab, setEditDocumentDialogTab] =
     useState<EDIT_DOCUMENT_TAB | null>(null);
+  const [document, setDocument] = useState<Tables<"Document">>();
 
-  const selectedDocument = useMemo(
-    () => documents.find((document) => document.chatId === params.documentId),
-    [params.documentId, documents],
-  );
+  useEffect(() => {
+    getDocument();
+  }, [params]);
+
+  async function getDocument() {
+    console.log("params", params);
+    try {
+      const document = await getDocumentByChatId(params.documentId as string);
+      setDocument(document);
+    } catch (error) {
+      setDocument(undefined);
+    }
+  }
 
   function toggleEditDocumentDialog(isOpen: boolean) {
     setEditDocumentDialogTab(isOpen ? EDIT_DOCUMENT_TAB.EDIT : null);
@@ -43,6 +53,10 @@ export function DocumentTitle({ className, documents }: DocumentTitleProps) {
 
   function handleOpenEditDocumentDialog(tab: EDIT_DOCUMENT_TAB) {
     setEditDocumentDialogTab(tab);
+  }
+
+  if (!document) {
+    return null;
   }
 
   return (
@@ -57,7 +71,7 @@ export function DocumentTitle({ className, documents }: DocumentTitleProps) {
             className={cn("flex justify-between gap-2 truncate", className)}
           >
             <div className="flex flex-col truncate text-left">
-              <span className="truncate">{selectedDocument?.name}</span>
+              <span className="truncate">{document?.name}</span>
             </div>
             <ChevronDownIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -87,9 +101,9 @@ export function DocumentTitle({ className, documents }: DocumentTitleProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      {selectedDocument && editDocumentDialogTab && (
+      {document && editDocumentDialogTab && (
         <EditDocumentDialog
-          document={selectedDocument}
+          document={document}
           defaultTab={editDocumentDialogTab}
           isOpen
           onOpenChange={toggleEditDocumentDialog}

@@ -52,7 +52,7 @@ export function ChatsContainer({
   const fakeChatsList = Array.from({ length: 6 }).fill(null);
 
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full flex-1 flex-col gap-4 p-4">
       <div>
         <Container className="pb-4">
           <Heading
