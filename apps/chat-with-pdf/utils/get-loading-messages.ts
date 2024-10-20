@@ -1,7 +1,8 @@
 import {
   loadingPdfFileMessages,
   loadingPdfLinkMessages,
-} from "@/components/header/document-switcher/constants/loading-messages";
+} from "@/components/header/document-title/constants/loading-messages";
+import { PostgrestError } from "@supabase/supabase-js";
 
 let currentActiveIndex = -1;
 let loadingMessagesCopy = [] as
@@ -16,7 +17,7 @@ export function resetLoadingMessages() {
 type GetLoadingMessagesProps = {
   isViaLink: boolean;
   chatId: string | null;
-  errorMessage?: string;
+  errorMessage?: string | PostgrestError;
   friendlyError?: string;
 };
 
@@ -34,8 +35,8 @@ export function getLoadingMessages({
         : loadingPdfFileMessages
       : loadingMessagesCopy;
     const loadingMessagesNewCopy = structuredClone(loadingMessagesToClone);
-    loadingMessagesNewCopy[currentActiveIndex]!.error =
-      errorMessage || friendlyError;
+    loadingMessagesNewCopy[currentActiveIndex]!.error = (errorMessage ||
+      friendlyError) as string;
     loadingMessagesNewCopy[currentActiveIndex]!.friendlyError =
       friendlyError ||
       loadingMessagesNewCopy[currentActiveIndex]!.friendlyError;

@@ -1,6 +1,6 @@
 import { ChatProvider } from "@/app/context/chat-context";
 import { ChatScreen } from "../chat/chat-screen";
-import { Chat } from "@prisma/client";
+import { Tables } from "database.types";
 
 type ChatIdContainerProps =
   | {
@@ -9,7 +9,7 @@ type ChatIdContainerProps =
     }
   | {
       loading?: false;
-      chatData: Chat;
+      chatData: Tables<"Chat">;
     };
 
 export function ChatIdContainer({ chatData, loading }: ChatIdContainerProps) {

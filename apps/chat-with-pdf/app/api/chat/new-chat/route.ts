@@ -1,15 +1,14 @@
-import { deleteChatAndDependencies } from "@/app/actions/delete-chat";
-import { INPUT_NAME } from "@/components/header/document-switcher/constants/input-names";
-import { chunkedUpsert } from "@/lib/chunked-upsert";
+import { deleteChat } from "@/app/actions/delete-chat";
+import { INPUT_NAME } from "@/components/header/document-title/constants/input-names";
 import { embedDocument, prepareDocument } from "@/lib/embed-document";
 import { getLoadingMessages } from "@/lib/get-loading-messages";
 import { getPdfData } from "@/lib/get-pdf-metadata";
-import { prisma } from "@/lib/prisma";
 import { rateLimitRequests } from "@/lib/rate-limit-requests";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { PineconeRecord } from "@pinecone-database/pinecone";
-import { Prisma } from "@prisma/client";
+import { Tables } from "database.types";
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 0;
@@ -27,13 +26,15 @@ export async function POST(request: NextRequest) {
     });
   }
 
+  let stream;
+
   try {
     const formData = await request.formData();
 
     const documentUrl = formData.get(INPUT_NAME.LINK) as string;
     const documentFile = formData.get(INPUT_NAME.FILE) as File;
 
-    const stream = new ReadableStream({
+    stream = new ReadableStream({
       async start(controller) {
         /* for await (const loadingMessages of createNewChatMocked({
           documentUrl,
@@ -64,15 +65,17 @@ export async function POST(request: NextRequest) {
         controller.close();
       },
     });
-
-    return new NextResponse(stream, {
-      headers,
-    });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error?.message }), {
       status: 500,
     });
   }
+
+  revalidateTag("chats");
+
+  return new NextResponse(stream, {
+    headers,
+  });
 }
 
 async function* createNewChat({
@@ -82,6 +85,7 @@ async function* createNewChat({
   documentUrl: string;
   documentFile?: File;
 }) {
+  const supabase = createClient();
   // Fetching PDF data and creating a new chat in the database
   yield getLoadingMessages({
     isViaLink: !!documentUrl,
@@ -90,22 +94,43 @@ async function* createNewChat({
   // TODO: How to remove this delay?
   // It doesn't work well without it, the data seems to arrive appended to the fronted
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  let chat: any;
-  let pdfData;
-  try {
-    pdfData = await getPdfData({ documentUrl, documentFile });
-    chat = await prisma.chat.create({
-      data: {
-        documentUrl: documentUrl,
-        documentMetadata: pdfData?.metadata,
-      },
-    });
-  } catch (error: any) {
-    console.error(error);
+  const pdfData = await getPdfData({ documentUrl, documentFile });
+  // Insert the chat in the database
+  const { data: chat, error: chatError } = await supabase
+    .from("Chat")
+    .insert({
+      documentUrl,
+      documentMetadata: pdfData?.metadata,
+    })
+    .select("id")
+    .single();
+
+  if (chatError) {
+    console.error(chatError);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: null,
-      errorMessage: error?.message || error,
+      errorMessage: chatError?.message || chatError,
+    });
+  }
+
+  // Insert the document in the database
+  const { data: document, error: documentError } = await supabase
+    .from("Document")
+    .insert({
+      url: documentUrl,
+      metadata: pdfData?.metadata,
+      chatId: chat?.id,
+    })
+    .select("id")
+    .single();
+
+  if (documentError) {
+    console.error(documentError);
+    return getLoadingMessages({
+      isViaLink: !!documentUrl,
+      chatId: null,
+      errorMessage: documentError?.message || documentError,
     });
   }
 
@@ -115,27 +140,28 @@ async function* createNewChat({
       .upload(`${chat.id}.pdf`, documentFile!);
     if (error) {
       console.error(error);
-      await deleteChatAndDependencies(chat, false);
+      await deleteChat(chat.id, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
         errorMessage: error?.message,
       });
     }
-    try {
-      documentUrl = getPdfUrlFromSupabaseStorage(data!);
 
-      await prisma.chat.update({
-        where: { id: chat.id },
-        data: { documentUrl },
-      });
-    } catch (error: any) {
-      console.error(error);
-      await deleteChatAndDependencies(chat, false);
+    documentUrl = getPdfUrlFromSupabaseStorage(data!);
+    const { error: chatUpdateError } = await supabase
+      .from("Chat")
+      .update({
+        documentUrl,
+      })
+      .eq("id", chat.id);
+
+    if (chatUpdateError) {
+      await deleteChat(chat.id, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
-        errorMessage: error?.message || error,
+        errorMessage: chatUpdateError?.message || chatUpdateError,
       });
     }
   }
@@ -153,7 +179,7 @@ async function* createNewChat({
     const loader = new WebPDFLoader(pdfData?.pdfBlob as Blob);
     pages = await loader.load();
     if (pages.length > 5) {
-      await deleteChatAndDependencies(chat, false);
+      await deleteChat(chat.id, false);
       return getLoadingMessages({
         isViaLink: !!documentUrl,
         chatId: chat.id,
@@ -164,7 +190,7 @@ async function* createNewChat({
     }
   } catch (error: any) {
     console.error(error);
-    await deleteChatAndDependencies(chat, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -183,7 +209,7 @@ async function* createNewChat({
     );
   } catch (error: any) {
     console.error(error);
-    await deleteChatAndDependencies(chat, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -206,7 +232,7 @@ async function* createNewChat({
     )) as PineconeRecord[];
   } catch (error: any) {
     console.error(error);
-    await deleteChatAndDependencies(chat, false);
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
@@ -222,15 +248,25 @@ async function* createNewChat({
   // TODO: How to remove this delay?
   // It doesn't work well without it, the data seems to arrive appended to the fronted
   await new Promise((resolve) => setTimeout(resolve, 10));
-  try {
-    await chunkedUpsert(vectors, chat.id);
-  } catch (error: any) {
-    console.error(error);
-    await deleteChatAndDependencies(chat, false);
+
+  const vectorsToInsert = vectors.map((vector) => ({
+    chatId: chat.id,
+    embedding: vector.values,
+    text: vector.metadata?.text ? vector.metadata.text : null,
+    textChunk: vector.metadata?.textChunk ? vector.metadata.textChunk : null,
+    pageNumber: vector.metadata?.pageNumber ? vector.metadata.pageNumber : null,
+    documentId: document.id,
+  }));
+
+  const { error: documentSectionsError } = await supabase
+    .from("DocumentSections")
+    .insert(vectorsToInsert);
+  if (documentSectionsError) {
+    await deleteChat(chat.id, false);
     return getLoadingMessages({
       isViaLink: !!documentUrl,
       chatId: chat.id,
-      errorMessage: error?.message || error,
+      errorMessage: documentSectionsError?.message || documentSectionsError,
     });
   }
 

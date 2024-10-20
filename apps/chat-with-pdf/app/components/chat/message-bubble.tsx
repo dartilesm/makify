@@ -104,9 +104,9 @@ export function MessageBubble({
                 {isTyping && (
                   <div className="flex h-11 items-center gap-2 px-4 py-3">
                     <div className="flex gap-1">
-                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
-                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_0.5s_ease-in-out_infinite] dark:bg-slate-300"></span>
-                      <span className="size-1.5 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
+                      <span className="h-2 w-2 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
+                      <span className="h-2 w-2 rounded-full bg-slate-700 motion-safe:animate-[bounce_0.5s_ease-in-out_infinite] dark:bg-slate-300"></span>
+                      <span className="h-2 w-2 rounded-full bg-slate-700 motion-safe:animate-[bounce_1s_ease-in-out_infinite] dark:bg-slate-300"></span>
                     </div>
                   </div>
                 )}
@@ -124,7 +124,7 @@ export function MessageBubble({
                       <TooltipContent
                         align="start"
                         side="bottom"
-                        className="bg-background rounded-md border p-1 dark:border-2"
+                        className="bg-background z-[1] rounded-md border p-1 dark:border-2"
                         sideOffset={-10}
                         alignOffset={10}
                         avoidCollisions={false}

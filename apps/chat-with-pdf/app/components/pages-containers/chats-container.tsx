@@ -13,27 +13,30 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@makify/ui";
-import { Chat } from "@prisma/client";
 import { FileTextIcon, PlusCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Container } from "../ui/container";
 import { Heading } from "../ui/heading";
 import { SadFaceIcon } from "icons/sad-face";
-import { NewDocumentDialog } from "../header/document-switcher/new-document-dialog/new-document-dialog";
+import { NewDocumentDialog } from "../header/document-title/new-document-dialog/new-document-dialog";
+import { Tables } from "database.types";
 
 type ChatsContainerProps =
   | {
       loading: true;
       chats?: never;
+      documents?: never;
     }
   | {
       loading?: false;
-      chats: Chat[];
+      chats: Tables<"Chat">[];
+      documents: Tables<"Document">[];
     };
 
 export function ChatsContainer({
   chats,
+  documents,
   loading = false,
 }: ChatsContainerProps) {
   const [isNewChatDialogOpen, setIsNewChatDialogOpen] = useState(false);
@@ -42,10 +45,14 @@ export function ChatsContainer({
     setIsNewChatDialogOpen(!isNewChatDialogOpen);
   }
 
+  function getChatData(chatId: string) {
+    return chats?.find((chat) => chat.id === chatId);
+  }
+
   const fakeChatsList = Array.from({ length: 6 }).fill(null);
 
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full flex-1 flex-col gap-4 p-4">
       <div>
         <Container className="pb-4">
           <Heading
@@ -57,7 +64,7 @@ export function ChatsContainer({
                 <Tooltip disableHoverableContent>
                   <TooltipTrigger asChild>
                     <Button
-                      disabled={chats?.length === 5}
+                      disabled={documents?.length === 5}
                       className="flex gap-2"
                       onClick={handleNewChatDialogToggle}
                     >
@@ -65,7 +72,7 @@ export function ChatsContainer({
                       Start a new chat
                     </Button>
                   </TooltipTrigger>
-                  {chats?.length === 5 && (
+                  {documents?.length === 5 && (
                     <TooltipContent>
                       You have reached the maximum number of documents.
                     </TooltipContent>
@@ -81,51 +88,52 @@ export function ChatsContainer({
         <Card className="col-span-4 flex h-full hover:shadow-none">
           <CardContent className="flex flex-1 flex-col gap-4 p-4">
             {!loading &&
-              chats?.map((chat) => (
+              documents?.map((document) => (
                 <Card
                   className="flex flex-row items-center justify-between p-4"
-                  key={chat.id}
+                  key={document.chatId}
                 >
                   <div className="flex flex-row items-center gap-4">
                     <FileTextIcon className="h-6 w-6" />
                     <div className="flex flex-col gap-2">
                       <CardHeader className="p-0">
-                        <CardTitle>
-                          {
-                            (chat?.documentMetadata as Record<string, any>)
-                              ?.title
-                          }
-                        </CardTitle>
+                        <CardTitle>{document?.name}</CardTitle>
                       </CardHeader>
                       <CardContent className="text-muted-foreground flex gap-2 p-0">
                         <span>
                           {
-                            (chat?.documentMetadata as Record<string, any>)
-                              ?.numPages
+                            (
+                              getChatData(document.chatId || "")
+                                ?.documentMetadata as Record<string, any>
+                            )?.numPages
                           }{" "}
                           page
-                          {(chat?.documentMetadata as Record<string, any>)
-                            ?.numPages > 1
+                          {(
+                            getChatData(document.chatId || "")
+                              ?.documentMetadata as Record<string, any>
+                          )?.numPages > 1
                             ? "s"
                             : ""}{" "}
                         </span>
                         <span>
-                          {(chat?.documentMetadata as Record<string, any>)?.size
-                            .mb > 1
-                            ? `${(chat?.documentMetadata as Record<string, any>)?.size.mb} MB`
-                            : `${(chat?.documentMetadata as Record<string, any>)?.size.kb} KB`}
+                          {(
+                            getChatData(document.chatId || "")
+                              ?.documentMetadata as Record<string, any>
+                          )?.size.mb > 1
+                            ? `${(getChatData(document.chatId || "")?.documentMetadata as Record<string, any>)?.size.mb} MB`
+                            : `${(getChatData(document.chatId || "")?.documentMetadata as Record<string, any>)?.size.kb} KB`}
                         </span>
                       </CardContent>
                     </div>
                   </div>
                   <Button className="flex-shrink-0" variant="secondary" asChild>
-                    <Link href={`/chat/${chat.id}`}>Open chat</Link>
+                    <Link href={`/chat/${document.chatId}`}>Open chat</Link>
                   </Button>
                 </Card>
               ))}
             {loading &&
               fakeChatsList.map((_, index) => (
-                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" key={index} />
               ))}
             {!loading && chats?.length === 0 && (
               <div className="flex h-full flex-col items-center justify-center gap-4">

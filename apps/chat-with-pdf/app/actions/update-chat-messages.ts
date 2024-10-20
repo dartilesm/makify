@@ -1,12 +1,13 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { Chat, Prisma } from "@prisma/client";
+import { createClient } from "@/lib/supabase/server";
+import { Tables } from "database.types";
+import { revalidatePath } from "next/cache";
 
 type UpdateChatMessagesParams = {
   documentId: string;
-  messages?: Chat["messages"];
-  documentMetadata?: Chat["documentMetadata"];
+  messages?: Tables<"Chat">["messages"];
+  documentMetadata?: Tables<"Chat">["documentMetadata"];
 };
 
 export async function updateChatMessages({
@@ -14,14 +15,15 @@ export async function updateChatMessages({
   messages,
   documentMetadata,
 }: UpdateChatMessagesParams) {
-  const chat = await prisma.chat.update({
-    where: {
-      id: documentId as string,
-    },
-    data: {
-      messages: messages as unknown as Chat["messages"][],
-      documentMetadata: documentMetadata as Prisma.JsonObject,
-    },
-  });
-  return chat;
+  const supabase = createClient();
+
+  await supabase
+    .from("Chat")
+    .update({
+      messages,
+      documentMetadata,
+    })
+    .eq("id", documentId);
+
+  revalidatePath(`/chat/${documentId}`, "page");
 }

@@ -1,49 +1,28 @@
 "use server";
 
-import { getPineconeClient } from "@/lib/pinecone.client";
-import { prisma } from "@/lib/prisma";
-import { supabase } from "@/lib/supabase";
-import { Chat } from "@prisma/client";
-import { revalidatePath } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { Tables } from "database.types";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
-async function deleteChat(chat: Chat) {
-  return prisma.chat.delete({
-    where: {
-      id: chat.id,
-    },
-  });
-}
-
-async function deleteDocumentFile(chat: Chat) {
-  if (chat.documentUrl?.includes(process.env.SUPABASE_URL as string)) {
-    return supabase.storage.from("documents").remove([`${chat.id}.pdf`]);
-  }
-  return null;
-}
-
-async function deleteNamespace(chat: Chat) {
-  const pinecone = await getPineconeClient(chat.id);
-
-  return pinecone.deleteAll();
-}
-
-export async function deleteChatAndDependencies(
-  chat: Chat,
+export async function deleteChat(
+  chatId: Tables<"Chat">["id"],
   shouldRedirect = true,
 ) {
-  await Promise.allSettled([
-    deleteChat(chat),
-    deleteDocumentFile(chat),
-    deleteNamespace(chat),
-  ]);
+  const supabase = createClient();
 
+  await supabase.from("Chat").delete().eq("id", chatId).select("id");
+
+  revalidateTag("documents");
   revalidatePath("/chat");
 
   if (!shouldRedirect) return;
 
-  const firstChat = await prisma.chat.findFirst();
+  const { data: firstDocument } = await supabase
+    .from("Document")
+    .select("chatId")
+    .single();
 
-  if (firstChat?.id) return redirect(`/chat/${firstChat.id}`);
+  if (firstDocument?.chatId) return redirect(`/chat/${firstDocument.chatId}`);
   redirect("/chat");
 }

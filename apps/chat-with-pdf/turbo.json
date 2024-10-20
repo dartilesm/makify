@@ -4,16 +4,10 @@
     ],
     "tasks": {
         "build": {
-            "dependsOn": [
-                "prisma:generate"
-            ],
             "outputs": [
                 ".next/**",
                 "!.next/cache/**"
             ]
-        },
-        "prisma:generate": {
-            "cache": false
         }
     }
 }
